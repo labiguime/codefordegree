@@ -12,7 +12,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 
-/* Internal Modules */
+/* Export Models */
 const User = require('./models/user');
 
 /*Setup database*/
@@ -43,13 +43,23 @@ User.find({ name: "Rafid Ashab Pranta", age: 21})
 				})
 		}
 		else {
-			console.log("Record Already Exist");
+			console.error("Record Already Exist");
 		}
 	})
 	.catch(err => {
 		console.error(err);
 	})
 
+
+/* (Can be removed in the future Views in Express */
+app.set('views', './views');
+app.set('view engine', 'pug');
+
 /*Routes*/
-app.get('/', (req, res) => {res.send('Hello World!')});
+app.get('/', (req, res) => {
+	res.render('welcome', {title: "Code4Degree", message: "An online assignment submission platform"});
+});
+
+
+
 app.listen(port, () => console.log(`${env} server listening on port ${port}!`));
