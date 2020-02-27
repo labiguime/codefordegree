@@ -12,6 +12,10 @@ A Web Application where instructors can create programming assignments for stude
 	- cd frontend
 	- npm install
 	- npm start
+## Run Nodejs debugger in Chrome
+	- npm run debug
+	- about:inspect (Google Chrome URL Bar)
+	- Click inspect under "Remote Target"
 ## Team member:
     Rafid Pranta
     Kevin Antonius
