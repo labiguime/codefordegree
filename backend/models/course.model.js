@@ -10,18 +10,18 @@ var courseSchema = new Schema({
     term: {
         type: String,
         enum: ["Spring", "Summer", "Fall"],
-        required: [true, "Term is needed to distinguish courses"]   
+        required: [true, "Term is needed to distinguish courses and must be either Spring, Summer or Fall"]   
     },
     admin_id: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: [true, "Course need to be administrated by an user"]
     },
-    problems_id: [{
+    problem_ids: [{
         type: Schema.Types.ObjectId,
         ref: 'Problem'
     }],
-    users: [{
+    user_ids: [{
         type: Schema.Types.ObjectId,
         ref: 'User'
     }]
