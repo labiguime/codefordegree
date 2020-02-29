@@ -2,7 +2,10 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var courseSchema = new Schema({
-    name: String,
+    name: {
+        type: String,
+        required: [true, "A course needs a name"]
+    },
     description: String,
     term: {
         type: String,
