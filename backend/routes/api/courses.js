@@ -48,8 +48,8 @@ router.delete('/:id', (req, res) => {
   * @access       Private
   */
 
-/*router.update('/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     res.status(200);
-});*/
+});
 
 module.exports = router;
