@@ -10,7 +10,7 @@ var courseSchema = new Schema({
     term: {
         type: String,
         enum: ["Spring", "Summer", "Fall"],
-        required: [true, "Term is needed to distinguish courses and must be either Spring, Summer or Fall"]   
+        required: [true, "Term is needed to distinguish courses and must be either Spring, Summer or Fall"]
     },
     admin_id: {
         type: Schema.Types.ObjectId,
@@ -27,6 +27,4 @@ var courseSchema = new Schema({
     }]
 });
 
-var Course = mongoose.Model('Course', courseSchema);
-module.exports = Course;
-
+module.exports = mongoose.model('Course', courseSchema);;
