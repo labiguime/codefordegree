@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const course = require('../models/course.model.js');
+const course = require('../../models/course.model');
 
 /**
   * @route        GET api/courses
@@ -51,3 +51,5 @@ router.delete('/:id', (req, res) => {
 router.update('/:id', (req, res) => {
     res.status(200);
 });
+
+module.exports = router;
