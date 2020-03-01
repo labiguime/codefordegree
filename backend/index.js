@@ -9,6 +9,8 @@ const env = process.env.NODE_ENV || "development";
 /* Installed Modules */
 const express = require("express");
 const app = express();
+const port = 5000;
+const courses = require(__dirname+'/routes/api/courses');
 const mongoose = require("mongoose");
 
 /* Setup database */
@@ -27,7 +29,9 @@ db.once("open", function() {
 app.set("views", "./views"); 
 app.set("view engine", "pug"); //Can used for quickly testing out the backend
 
-/* Routes */
+/*Routes*/
+app.use('/api/courses', courses);
+
 app.get("/", (req, res) => {
   res.render("welcome", {
     title: "Code4Degree",
