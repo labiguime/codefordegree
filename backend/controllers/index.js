@@ -1,7 +1,15 @@
-const {getCourseInfo} = require("./course.controller");
+const {getCourse, 
+        createCourse, 
+        updateCourse,
+        deleteCourse,
+        getCourses} = require("./course.controller");
 
 module.exports = {
     course:{
-        getCourseInfo
+        getCourse,
+        createCourse,
+        updateCourse,
+        deleteCourse,
+        getCourses
     }
 };
