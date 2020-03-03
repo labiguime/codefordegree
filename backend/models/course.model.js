@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-
 var courseSchema = new Schema({
     name: {
         type: String,
@@ -9,7 +8,7 @@ var courseSchema = new Schema({
     description: String,
     term: {
         type: String,
-        enum: ["Spring", "Summer", "Fall"],
+        enum: ["spring", "summer", "fall"],
         required: [true, "Term is needed to distinguish courses and must be either Spring, Summer or Fall"]
     },
     admin_id: {
@@ -27,4 +26,5 @@ var courseSchema = new Schema({
     }]
 });
 
+courseSchema.index({name: 1, admin_id: 1, term: 1}, {unique: true});
 module.exports = mongoose.model('Course', courseSchema);;

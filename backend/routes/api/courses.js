@@ -1,16 +1,16 @@
+'use-strict'
 const express = require('express');
 const router = express.Router();
-const course = require('../../models/course.model');
-
+const Course = require('../../models/course.model');
+const {getCourse, getCourses, 
+      createCourse, updateCourse, deleteCourse} = require("../../controllers").course;
 /**
   * @route        GET api/courses
   * @description  Retrieve all the courses
   * @access       Public
   */
 
-router.get('/', (req, res) => {
-    res.status(200);
-});
+router.get('/', getCourses);
 
 /**
   * @route        GET api/courses/:id
@@ -18,9 +18,7 @@ router.get('/', (req, res) => {
   * @access       Public
   */
 
-router.get('/:id', (req, res) => {
-    res.status(200);
-});
+router.get('/:courseId', getCourse);
 
 /**
   * @route        POST api/courses
@@ -28,9 +26,7 @@ router.get('/:id', (req, res) => {
   * @access       Private
   */
 
-router.post('/', (req, res) => {
-    res.status(200);
-});
+router.post('/', createCourse);
 
 /**
   * @route        DELETE api/courses/:id
@@ -38,9 +34,7 @@ router.post('/', (req, res) => {
   * @access       Private
   */
 
-router.delete('/:id', (req, res) => {
-    res.status(200);
-});
+router.delete('/:courseId', deleteCourse); 
 
 /**
   * @route        UPDATE api/courses/:id
@@ -48,8 +42,6 @@ router.delete('/:id', (req, res) => {
   * @access       Private
   */
 
-router.put('/:id', (req, res) => {
-    res.status(200);
-});
+router.put('/:courseId', updateCourse);
 
 module.exports = router;
