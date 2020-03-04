@@ -17,7 +17,7 @@ const problemSchema = new Schema({
 	course_id: {
 		type: Schema.Types.ObjectId,
 		ref: 'Course',
-		required: [true, 'A problem must be linked to a course']
+		required: [false, 'A problem must be linked to a course']
 	},
 	test_ids: {
 		type: Schema.Types.ObjectId,

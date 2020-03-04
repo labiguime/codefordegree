@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-
+const problem = require('../../controllers/problem.controller');
 /**
   * @route        GET api/user/:userId/course/:courseId/problem
   * @description  Let a user retrieve all problems for a specific course
   * @access       Private
   */
 
-router.get('/', () => {});
+router.get('/', problem.getProblems);
 
 /**
   * @route        GET api/user/:userId/course/:courseId/problem/:problemId
@@ -15,7 +15,13 @@ router.get('/', () => {});
   * @access       Private
   */
 
-router.get('/:problemId', () => {});
+router.get('/haha', (req, res) => {
+	problem.createProblem(req, res);
+});
+
+router.get('/:problemId', (req, res) => {
+	problem.getProblem(req, res);
+});
 
 /**
   * @route        POST api/user/:userId/course/:courseId/problem
