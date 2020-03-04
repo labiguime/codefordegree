@@ -1,6 +1,11 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema;
 
+const languageSchema = new Schema({
+    id: Number,
+    name: String
+});
+
 const problemSubmissionSchema = new Schema({
     created_at: {
         type: Date,
@@ -23,17 +28,15 @@ const problemSubmissionSchema = new Schema({
         type: String,
         required: true
     },
-    language_id: {
-        type: Schema.Types.ObjectId,
-        ref: 'Language'
-    },
+    language: languageSchema,
+    //Ids of each small submission for a specific test case
     judge_submisson_ids: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'JudgeSubmission'
+            ref: 'Judge_Submission'
         }
     ]
 
 });
 
-module.exports = mongoose.model('ProblemSubmission', problemSubmissionSchema);
+module.exports = mongoose.model('Problem_Submission', problemSubmissionSchema);
