@@ -71,8 +71,33 @@ problemController.deleteProblem = async function(req, res) {
 		if (await Problem.deleteOne({_id: userId})) {
 			res.status(200).json({success: true});
 		} else {
-			throw Error('Cannot save the new problem in the database.');
+			throw Error('Cannot delete this problem.');
 		}
+
+	} catch (e) {
+		res.send(400).json({error: e.message, success: false});
+	}
+};
+
+problemController.updateProblem = async function(req, res) {
+	const {name, description, mark, runtime_limit, deadline, test_ids} = req.body;
+	const {problemId} = req.params;
+	const {courseId, userId} = res.locals;
+
+	try {
+		const adminId = await Course.findById(courseId, 'admin_id');
+		if (!adminId) throw Error('Cannot match course id provided in problem update with an entry in Courses.');
+		if (adminId != userId) {
+			throw Error('User trying to update a problem is not an administrator of this course.')
+		}
+
+		const updatedProblem = await Problem.updateOne({_id: userId}, {name, description, mark, runtime_limit, deadline, test_ids}, {runValidators: true});
+		if (!updatedProblem) {
+			throw Error('Cannot update this problem.');
+
+		}
+		updatedProblem.success = true;
+		res.status(200).json({updatedProblem});
 
 	} catch (e) {
 		res.send(400).json({error: e.message, success: false});
