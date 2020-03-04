@@ -31,7 +31,7 @@ router.post('/', problem.createProblem);
   * @access       Private
   */
 
-router.delete('/:problemId', () => {});
+router.delete('/:problemId', problem.deleteCourse);
 
 /**
   * @route        UPDATE api/user/:userId/course/:courseId/problem/:problemId
@@ -39,6 +39,6 @@ router.delete('/:problemId', () => {});
   * @access       Private
   */
 
-router.put('/:problemId', () => {});
+router.put('/:problemId', problem.updateCourse);
 
 module.exports = router;
