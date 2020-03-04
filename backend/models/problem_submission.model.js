@@ -35,7 +35,11 @@ const problemSubmissionSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Judge_Submission'
         }
-    ]
+    ],
+    testcase_ids: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Testcase'
+    }]
 
 });
 
