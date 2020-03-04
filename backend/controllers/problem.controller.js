@@ -57,4 +57,26 @@ problemController.createProblem = async function(req, res) {
 	}
 };
 
+problemController.deleteProblem = async function(req, res) {
+	const {problemId} = req.params;
+	const {courseId, userId} = res.locals;
+
+	try {
+		const adminId = await Course.findById(courseId, 'admin_id');
+		if (!adminId) throw Error('Cannot match course id provided in problem deletion with an entry in Courses.');
+		if (adminId != userId) {
+			throw Error('User trying to delete a problem is not an administrator of this course.')
+		}
+
+		if (await Problem.deleteOne({_id: userId})) {
+			res.status(200).json({success: true});
+		} else {
+			throw Error('Cannot save the new problem in the database.');
+		}
+
+	} catch (e) {
+		res.send(400).json({error: e.message, success: false});
+	}
+};
+
 module.exports = problemController;
