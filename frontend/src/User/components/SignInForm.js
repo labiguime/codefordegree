@@ -12,13 +12,14 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { useForm, Controller} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="https://csil-git1.cs.surrey.sfu.ca/tln3/codefordegree">
+        Code4Degree
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -49,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignIn() {
   const classes = useStyles();
-  const { errors, handleSubmit, register, control} = useForm();
+  const { errors, handleSubmit, register} = useForm();
 
   const onSubmit = data => {
     console.log(data);
@@ -66,24 +67,9 @@ export default function SignIn() {
           Sign in
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)} >
-         
-          {/*  
-          <Controller as={<TextField />}
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            control={control} 
-          /> 
-          */}
           <TextField
             inputRef={register({
-              required: 'Required',
+              required: true,
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                 message: "Invalid email address"
@@ -101,7 +87,10 @@ export default function SignIn() {
           />
           {errors.email && errors.email.message} 
           <TextField
-            inputRef={register}
+            inputRef={register({
+              required: true,
+              minLength: 6,
+            })}
             variant="outlined"
             margin="normal"
             required
@@ -112,6 +101,8 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
+          {errors.password && errors.password.type === "minLength" 
+            && "Password need to have at least 6 characters"}
           {  
           <FormControlLabel
             control={<Checkbox name="remember" inputRef={register} color="primary" />}
@@ -129,12 +120,12 @@ export default function SignIn() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <Link href="signup" variant="body2">
                 Forgot password?
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
