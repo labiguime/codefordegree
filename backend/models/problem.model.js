@@ -12,7 +12,7 @@ const problemSchema = new Schema({
 		min: 0,
 		required: [true, 'Total amount of marks that can be earned must be specified for this problem.']
 	},
-	runTimeLimit: Number,
+	runtime_limit: Number,
 	deadline: Date,
 	course_id: {
 		type: Schema.Types.ObjectId,
