@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const problem = require('../../controllers/problem.controller');
+
 /**
   * @route        GET api/user/:userId/course/:courseId/problem
   * @description  Let a user retrieve all problems for a specific course
   * @access       Private
   */
-
 router.get('/', problem.getProblems);
 
 /**
@@ -14,7 +14,6 @@ router.get('/', problem.getProblems);
   * @description  Retrieve a specific problem
   * @access       Private
   */
-
 router.get('/:problemId', problem.getProblem);
 
 /**
@@ -22,7 +21,6 @@ router.get('/:problemId', problem.getProblem);
   * @description  Let the administrator of the course create a new problem
   * @access       Private
   */
-
 router.post('/', problem.createProblem);
 
 /**
@@ -30,15 +28,13 @@ router.post('/', problem.createProblem);
   * @description  Let the administrator of the course delete a problem
   * @access       Private
   */
-
-router.delete('/:problemId', problem.deleteCourse);
+router.delete('/:problemId', problem.deleteProblem);
 
 /**
   * @route        UPDATE api/user/:userId/course/:courseId/problem/:problemId
   * @description  Let the administrator of the course update a problem
   * @access       Private
   */
-
-router.put('/:problemId', problem.updateCourse);
+router.put('/:problemId', problem.updateProblem);
 
 module.exports = router;

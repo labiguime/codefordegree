@@ -51,9 +51,8 @@ problemController.createProblem = async function(req, res) {
 		} else {
 			throw Error('Cannot save the new problem in the database.');
 		}
-
 	} catch (e) {
-		res.send(400).json({error: e.message});
+		res.status(400).json({error: e.message});
 	}
 };
 
@@ -68,14 +67,14 @@ problemController.deleteProblem = async function(req, res) {
 			throw Error('User trying to delete a problem is not an administrator of this course.')
 		}
 
-		if (await Problem.deleteOne({_id: userId})) {
+		if (await Problem.deleteOne({_id: problemId})) {
 			res.status(200).json({success: true});
 		} else {
 			throw Error('Cannot delete this problem.');
 		}
 
 	} catch (e) {
-		res.send(400).json({error: e.message, success: false});
+		res.status(400).json({error: e.message, success: false});
 	}
 };
 
@@ -91,7 +90,7 @@ problemController.updateProblem = async function(req, res) {
 			throw Error('User trying to update a problem is not an administrator of this course.')
 		}
 
-		const updatedProblem = await Problem.updateOne({_id: userId}, {name, description, mark, runtime_limit, deadline, test_ids}, {runValidators: true});
+		const updatedProblem = await Problem.updateOne({_id: problemId}, {name, description, mark, runtime_limit, deadline, test_ids}, {runValidators: true});
 		if (!updatedProblem) {
 			throw Error('Cannot update this problem.');
 
@@ -100,7 +99,7 @@ problemController.updateProblem = async function(req, res) {
 		res.status(200).json({updatedProblem});
 
 	} catch (e) {
-		res.send(400).json({error: e.message, success: false});
+		res.status(400).json({error: e.message, success: false});
 	}
 };
 
