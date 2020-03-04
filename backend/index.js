@@ -10,7 +10,6 @@ const env = process.env.NODE_ENV || "development";
 const express = require("express");
 const app = express();
 const courses = require(__dirname+'/routes/api/courses');
-const problems = require(__dirname+'/routes/api/problems');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 /* Setup database */
@@ -46,8 +45,6 @@ app.use('/api/user/:userId/course', (req, res, next) => {
   res.locals.userId = req.params.userId;
   next();
 },courses);
-
-app.use('/hoho', problems);
 
 
 app.listen(port, () => console.log(`${env} server listening on port ${port}!`));

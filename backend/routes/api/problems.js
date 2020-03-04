@@ -15,13 +15,7 @@ router.get('/', problem.getProblems);
   * @access       Private
   */
 
-router.get('/haha', (req, res) => {
-	problem.createProblem(req, res);
-});
-
-router.get('/:problemId', (req, res) => {
-	problem.getProblem(req, res);
-});
+router.get('/:problemId', problem.getProblem);
 
 /**
   * @route        POST api/user/:userId/course/:courseId/problem
@@ -29,7 +23,7 @@ router.get('/:problemId', (req, res) => {
   * @access       Private
   */
 
-router.post('/', () => {});
+router.post('/', problem.createProblem);
 
 /**
   * @route        DELETE api/user/:userId/course/:courseId/problem/:problemId

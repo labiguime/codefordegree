@@ -21,7 +21,7 @@ const problemSchema = new Schema({
 	},
 	test_ids: {
 		type: Schema.Types.ObjectId,
-		ref: 'Test'
+		ref: 'Testcase'
 	}
 });
 
