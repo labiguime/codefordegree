@@ -3,7 +3,6 @@ const Course = require("../models/course.model");
 
 let problemController = {};
 
-problemController.load
 problemController.getProblem = async function (req, res) {
 	try {
 		const {problemId} = req.params;
@@ -27,7 +26,7 @@ problemController.getProblems = async function(req, res) {
 };
 
 problemController.createProblem = async function(req, res) {
-	const {name, description, mark, runtime_limit, deadline, test_ids} = req.body;
+	const {name, description, mark, runtime_limit, deadline} = req.body;
 	const {courseId, userId} = res.locals;
 	const newProblem = new Problem({
 		name: name,
@@ -35,7 +34,6 @@ problemController.createProblem = async function(req, res) {
 		mark: mark,
 		runtime_limit: runtime_limit,
 		deadline: deadline,
-		test_ids: test_ids,
 		course_id: courseId
 	});
 
@@ -79,7 +77,7 @@ problemController.deleteProblem = async function(req, res) {
 };
 
 problemController.updateProblem = async function(req, res) {
-	const {name, description, mark, runtime_limit, deadline, test_ids} = req.body;
+	const {name, description, mark, runtime_limit, deadline} = req.body;
 	const {problemId} = req.params;
 	const {courseId, userId} = res.locals;
 
@@ -95,8 +93,7 @@ problemController.updateProblem = async function(req, res) {
 			throw Error('Cannot update this problem.');
 
 		}
-		updatedProblem.success = true;
-		res.status(200).json({updatedProblem});
+		res.status(200).json({updatedProblem, success: true});
 
 	} catch (e) {
 		res.status(400).json({error: e.message, success: false});
