@@ -32,7 +32,7 @@ module.exports = {
     createCourse: (req, res, next) => {
         let {name, description, term} = req.body;
         let {userId} = res.locals;
-        //TODO: Check if userId equals to the authenticated user 
+        //TODO: Check if userId equals to the authenticated user
         let newCourse = new Course({
             name,
             description,
@@ -66,7 +66,7 @@ module.exports = {
                     error: ["Course can only modified by admin"]
                 })
             }
-            Course.updateOne({_id: courseId}, {name, description, term}, 
+            Course.updateOne({_id: courseId}, {name, description, term},
                 {runValidators: true},
                 (err, course) => {
                     if(err){
@@ -75,10 +75,11 @@ module.exports = {
                             error: ["Course cannot be updated", err]
                         })
                     }
+                    course.success = true;
                     return res.status(200).json(course);
             });
         })
-        
+
     },
 
     deleteCourse: async (req, res, next) => {
@@ -105,6 +106,6 @@ module.exports = {
                 return res.status(200).json({})
             });
         });
-        
+
     }
 }
