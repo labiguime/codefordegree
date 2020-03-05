@@ -88,7 +88,7 @@ problemController.updateProblem = async function(req, res) {
 			throw Error('User trying to update a problem is not an administrator of this course.')
 		}
 
-		const updatedProblem = await Problem.updateOne({_id: problemId}, {name, description, mark, runtime_limit, deadline, test_ids}, {runValidators: true});
+		const updatedProblem = await Problem.updateOne({_id: problemId}, {name, description, mark, runtime_limit, deadline}, {runValidators: true});
 		if (!updatedProblem) {
 			throw Error('Cannot update this problem.');
 
