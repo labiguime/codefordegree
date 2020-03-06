@@ -10,6 +10,7 @@ const env = process.env.NODE_ENV || "development";
 const express = require("express");
 const app = express();
 const user = require(__dirname+'/routes/api/user');
+const auth = require(__dirname+'/routes/api/auth');
 const courses = require(__dirname+'/routes/api/courses');
 const problems = require(__dirname+'/routes/api/problems');
 const mongoose = require("mongoose");
@@ -46,6 +47,7 @@ app.get("/", (req, res, next) => {
 // I want to use api/user but this will conflict with the other routes
 // Other routes need to be changes, pass parameters in body not in the url
 app.use('/user', user);
+app.use('/api/auth', auth);
 
 app.use('/api/user/:userId/course', (req, res, next) => {
   res.locals.userId = req.params.userId;
