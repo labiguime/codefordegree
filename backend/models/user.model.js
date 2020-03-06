@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function() {
+    //payload needs to be decided based on the user levels
     token = jwt.sign({ _id: this.id}, process.env.JWT_PRIVATE_KEY);
     return token;
 }

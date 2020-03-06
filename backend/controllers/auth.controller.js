@@ -18,7 +18,7 @@ authController.login = async function getCourse(req, res) {
     
     //Generate Json Web Token
     const token = user.generateAuthToken();
-    res.send(token)
+    res.send(token);
 }
 
 

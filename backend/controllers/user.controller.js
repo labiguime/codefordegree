@@ -1,3 +1,4 @@
+
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 const {User, validate} = require('../models/user.model');
@@ -29,6 +30,11 @@ userController.createUser = async function getCourse(req, res) {
 
     const token = user.generateAuthToken();
     res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email', 'password']));
+}
+
+userController.getCurrentUser = async function (req,res) {
+    const user = await User.findById(req.user_id).select('-password -__v');
+    res.send(user);
 }
 
 module.exports = userController;
