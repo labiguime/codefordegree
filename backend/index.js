@@ -47,7 +47,7 @@ app.get("/", (req, res, next) => {
 // I want to use api/user but this will conflict with the other routes
 // Other routes need to be changes, pass parameters in body not in the url
 app.use('/user', user);
-app.use('/api/auth', auth);
+app.use('/auth', auth);
 
 app.use('/api/user/:userId/course', (req, res, next) => {
   res.locals.userId = req.params.userId;

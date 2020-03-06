@@ -1,33 +1,41 @@
-const _ = require('lodash');
-const Joi = require('Joi');
-const bcrypt = require('bcryptjs');
-const {User} = require('../models/user.model');
+const _ = require("lodash");
+const Joi = require("Joi");
+const bcrypt = require("bcryptjs");
+const { User } = require("../models/user.model");
 
 let authController = {};
 
 authController.login = async function getCourse(req, res) {
-    //Validate User Input using Joi
-    const {error} = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+  //Validate User Input using Joi
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-    let user = await User.findOne({ email: req.body.email });
-    if(!user) return res.status(400).send('Invalid Email or Password');
+  let user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).send("Invalid Email or Password");
 
-    const validPassword = bcrypt.compare(req.body.password, user.password);
-    if (!validPassword) return res.status(400).send('Invalid Email or Password');
-    
-    //Generate Json Web Token
-    const token = user.generateAuthToken();
-    res.send(token);
-}
+  const validPassword = bcrypt.compare(req.body.password, user.password);
+  if (!validPassword) return res.status(400).send("Invalid Email or Password");
 
+  //Generate Json Web Token and send it to the client with user information
+  const token = user.generateAuthToken();
+  res
+    .header("x-auth-token", token)
+    .send(_.pick(user, ["_id", "name", "email"]));
+};
 
 function validate(req) {
-    const schema = {
-        email: Joi.string().min(5).max(50).required().email(),
-        password: Joi.string().min(5).max(50).required()
-    };
-    return Joi.validate(req, schema);
+  const schema = {
+    email: Joi.string()
+      .min(5)
+      .max(50)
+      .required()
+      .email(),
+    password: Joi.string()
+      .min(5)
+      .max(50)
+      .required()
+  };
+  return Joi.validate(req, schema);
 }
 
 module.exports = authController;
