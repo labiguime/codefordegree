@@ -28,7 +28,7 @@ userController.createUser = async function (req, res) {
 
   //Generate a web token and send it to the client with user information
   const token = user.generateAuthToken();
-  res
+  return res
     .header("x-auth-token", token)
     .send(_.pick(user, ["_id", "name", "email"]));
 };
