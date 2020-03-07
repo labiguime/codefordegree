@@ -5,7 +5,7 @@ const { User } = require("../models/user.model");
 
 let authController = {};
 
-authController.login = async function getCourse(req, res) {
+authController.login = async function(req, res) {
   //Validate User Input using Joi
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -18,7 +18,7 @@ authController.login = async function getCourse(req, res) {
 
   //Generate Json Web Token and send it to the client with user information
   const token = user.generateAuthToken();
-  res
+  return res
     .header("x-auth-token", token)
     .send(_.pick(user, ["_id", "name", "email"]));
 };

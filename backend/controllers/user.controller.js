@@ -4,7 +4,7 @@ const { User, validate } = require("../models/user.model");
 
 let userController = {};
 
-userController.createUser = async function getCourse(req, res) {
+userController.createUser = async function (req, res) {
   //Validate User Input using Joi
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -23,7 +23,7 @@ userController.createUser = async function getCourse(req, res) {
     for (field in err.errors) {
       error.push(err.errors[field].message);
     }
-    res.send(error);
+    return res.send(error);
   }
 
   //Generate a web token and send it to the client with user information
@@ -35,7 +35,7 @@ userController.createUser = async function getCourse(req, res) {
 
 userController.getCurrentUser = async function(req, res) {
   const user = await User.findById(req.user_id).select("-password -__v");
-  res.send(user);
+  return res.send(user);
 };
 
 module.exports = userController;
