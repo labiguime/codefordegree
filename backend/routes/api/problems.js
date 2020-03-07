@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const problem = require('../../controllers/problem.controller');
+const problemSubmissions = require('./problem_submissions');
+const {verifyCourseAdminOrUser} = require('../../middlewares/verifyEntity.middleware');
 
+
+router.use(verifyCourseAdminOrUser);
 /**
   * @route        GET api/user/:userId/course/:courseId/problem
   * @description  Let a user retrieve all problems for a specific course
   * @access       Private
   */
+
 router.get('/', problem.getProblems);
 
 /**
@@ -36,5 +41,7 @@ router.delete('/:problemId', problem.deleteProblem);
   * @access       Private
   */
 router.put('/:problemId', problem.updateProblem);
+
+router.use('/:problemId/submissions', problemSubmissions);
 
 module.exports = router;
