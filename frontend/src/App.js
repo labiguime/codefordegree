@@ -13,12 +13,8 @@ function App() {
     <div className="App">
     <Router>
       <Switch>
-        <Route path="/login" exact>
-          <Auth />
-        </Route>
-        <Route path="/signup" exact>
-          <SignUp />
-        </Route>
+        <Route path="/login" component={Auth} exact/>
+        <Route path="/signup" component={SignUp} exact />
       </Switch>
     </Router>
     </div>

@@ -45,6 +45,9 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  error: {
+    color: "red"
+  }
 }));
 
 export default function SignUp() {
@@ -54,7 +57,7 @@ export default function SignUp() {
   const onSubmit = data => {
     console.log('Submit SignUp event', data)
   };
-
+  console.log(errors);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -69,68 +72,77 @@ export default function SignUp() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
-              inputRef={register({
-                required: true,
-                pattern: {
-                  message: "First Name Required"
-                }
-              })}
+                inputRef={register({
+                  required:{
+                    value: true,
+                    message: "First name is required"
+                  }
+                })}
+                error={errors.firstName != undefined}
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
-                required
                 fullWidth
                 id="firstName"
                 label="First Name"
                 autoFocus
               />
-              {errors.firstName && errors.firstName.message} 
+              <div className={classes.error}>{errors.firstName && errors.firstName.message}</div> 
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-              inputRef={register({
-                required: true,
-                pattern: {
-                  message: "Last Name Required"
-                }
-              })}
+                inputRef={register({
+                  required:{
+                    value: true,
+                    message: "Last Name Required"
+                  }
+                })}
+                error={errors.lastName != undefined}
                 variant="outlined"
-                required
                 fullWidth
                 id="lastName"
                 label="Last Name"
                 name="lastName"
                 autoComplete="lname"
               />
-              {errors.lastName && errors.lastName.message} 
+              <div className={classes.error}>{errors.lastName && errors.lastName.message}</div> 
             </Grid>
             <Grid item xs={12}>
               <TextField
                 inputRef={register({
-                required: true,
+                required: {
+                  value: true,
+                  message: "Email is required"
+                },
                 pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                     message: "Invalid email address"
                 }
                 })}
+                error={errors.email ? true : false}
                 variant="outlined"
-                required
                 fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
                 autoComplete="email"
               />
-            {errors.email && errors.email.message} 
+            <div className={classes.error}>{errors.email && errors.email.message}</div> 
             </Grid>
             <Grid item xs={12}>
               <TextField
               inputRef={register({
-                required: true,
-                minLength: 6,
+                required:{
+                  value: true,
+                  message: "Password is required"
+                },
+                minLength: {
+                  value: 6,
+                  message: "Password requires at least 6 characters"
+                },
               })}             
+                error={errors.password != undefined}
                 variant="outlined"
-                required
                 fullWidth
                 name="password"
                 label="Password"
@@ -138,8 +150,7 @@ export default function SignUp() {
                 id="password"
                 autoComplete="current-password"
               />
-            {errors.password && errors.password.type === "minLength" 
-            && "Password need to have at least 6 characters"}
+            <div className={classes.error}>{errors.password && errors.password.message}</div> 
             </Grid>
             {/* <Grid item xs={12}>
               <FormControlLabel

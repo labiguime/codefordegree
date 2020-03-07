@@ -46,7 +46,11 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  error: {
+    color: "red"
+  }
 }));
+
 
 export default function SignIn() {
   const classes = useStyles();
@@ -69,15 +73,18 @@ export default function SignIn() {
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)} >
           <TextField
             inputRef={register({
-              required: true,
+              required: {
+                value: true,
+                message: "Email is required"
+              },
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                 message: "Invalid email address"
               }
             })}
+            error={errors.email ? true : false}
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
@@ -85,15 +92,21 @@ export default function SignIn() {
             autoComplete="email"
             autoFocus
           />
-          {errors.email && errors.email.message} 
+          <div className={classes.error}>{errors.email && errors.email.message}</div> 
           <TextField
             inputRef={register({
-              required: true,
-              minLength: 6,
+              required: {
+                value: true,
+                message: "Password is required"
+              },
+              minLength: {
+                value: 6,
+                message: "Password requires at least 6 characters"
+              },
             })}
+            error={errors.password ? true : false}
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Password"
@@ -101,8 +114,7 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          {errors.password && errors.password.type === "minLength" 
-            && "Password need to have at least 6 characters"}
+          <div className={classes.error}>{errors.password && errors.password.message}</div>
           {  
           <FormControlLabel
             control={<Checkbox name="remember" inputRef={register} color="primary" />}
