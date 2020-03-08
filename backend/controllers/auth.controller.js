@@ -6,21 +6,26 @@ const { User } = require("../models/user.model");
 let authController = {};
 
 authController.login = async function(req, res) {
-  //Validate User Input using Joi
+  //Validate user input
   const { error } = validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) return res.status(400).json(error.details[0].message);
 
+  try {
   let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("Invalid Email or Password");
+  if (!user) return res.status(400).json("Invalid Email or Password");
 
   const validPassword = bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send("Invalid Email or Password");
+  if (!validPassword) return res.status(400).json("Invalid Email or Password");
 
   //Generate Json Web Token and send it to the client with user information
   const token = user.generateAuthToken();
   return res
+    .status(200)
     .header("x-auth-token", token)
-    .send(_.pick(user, ["_id", "name", "email"]));
+    .json(_.pick(user, ["_id", "name", "email"]));
+  } catch (err) {
+    return res.status(400).json(err.message);
+  }
 };
 
 function validate(req) {
