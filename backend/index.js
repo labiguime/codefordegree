@@ -9,6 +9,8 @@ const env = process.env.NODE_ENV || "development";
 /* Installed Modules */
 const express = require("express");
 const app = express();
+const user = require(__dirname+'/routes/api/user');
+const auth = require(__dirname+'/routes/api/auth');
 const courses = require(__dirname+'/routes/api/courses');
 const problems = require(__dirname+'/routes/api/problems');
 const mongoose = require("mongoose");
@@ -41,6 +43,10 @@ app.get("/", (req, res, next) => {
     message: "An online assignment submission platform"
   });
 });
+
+//TODO: Other routes need to be changed
+app.use('/api/login', auth);
+app.use('/api/user', user);
 
 app.use('/api/user/:userId/course', (req, res, next) => {
   res.locals.userId = req.params.userId;
