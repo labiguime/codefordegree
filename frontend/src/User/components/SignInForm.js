@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 
 function Copyright() {
   return (
@@ -54,6 +55,8 @@ export default function SignIn() {
 
   const onSubmit = data => {
     console.log(data);
+    axios.post(`http://localhost:5000/api/login`, data)
+      .then(res => console.log(res.data))
   }
   console.log(errors);
   return (
@@ -104,10 +107,10 @@ export default function SignIn() {
           {errors.password && errors.password.type === "minLength" 
             && "Password need to have at least 6 characters"}
           {  
-          <FormControlLabel
-            control={<Checkbox name="remember" inputRef={register} color="primary" />}
-            label="Remember me"
-          />
+          // <FormControlLabel
+          //   control={<Checkbox name="remember" inputRef={register} color="primary" />}
+          //   label="Remember me"
+          // />
           }
           <Button
             type="submit"

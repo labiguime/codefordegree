@@ -15,6 +15,7 @@ const courses = require(__dirname+'/routes/api/courses');
 const problems = require(__dirname+'/routes/api/problems');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors")
 /* Setup database */
 mongoDBUrl = "mongodb://localhost/code4degree";
 mongoose.connect(mongoDBUrl, {
@@ -33,6 +34,7 @@ app.set("views", "./views");
 app.set("view engine", "pug"); //Can used for quickly testing out the backend
 
 /* Set up body parser to parse json */
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 

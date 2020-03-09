@@ -1,6 +1,8 @@
 import React from 'react';
 import Auth from './User/pages/Auth'
 import SignUp from './User/pages/SignUp'
+import Dashboard from './User/components/Dashboard'
+
 import {
   BrowserRouter as Router,
   Route,
@@ -9,7 +11,7 @@ import {
 
 
 function App() {
-  return (
+    return (
     <div className="App">
     <Router>
       <Switch>
@@ -18,6 +20,9 @@ function App() {
         </Route>
         <Route path="/signup" exact>
           <SignUp />
+        </Route>
+        <Route path="/dashboard" exact>
+          <Dashboard />
         </Route>
       </Switch>
     </Router>
