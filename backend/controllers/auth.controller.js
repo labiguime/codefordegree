@@ -14,7 +14,7 @@ authController.login = async function(req, res) {
   let user = await User.findOne({ email: req.body.email });
   if (!user) return res.status(400).json("Invalid Email or Password");
 
-  const validPassword = bcrypt.compare(req.body.password, user.password);
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) return res.status(400).json("Invalid Email or Password");
 
   //Generate Json Web Token and send it to the client with user information
