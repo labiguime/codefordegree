@@ -6,9 +6,10 @@ const {getProblemSubmission,
 const {verifyProblem} = require("../../middlewares/verifyEntity.middleware");
 
 router.use(verifyProblem);
+
 /**
   * @route        GET api/user/:userId/course/:courseId/problem/:problemId/submissions
-  * @description  Let a user retrieve all submissions for a specific problem
+  * @description  Let a participant of the course retrieve all his/her submissions for a specific problem
   * @access       Private
   */
 router.get('/', getProblemSubmissions);

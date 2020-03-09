@@ -24,14 +24,14 @@ module.exports = {
     },
 
     getCourses: async (req, res, next) => {
-        let {userId} = res.locals;
+        let userId = req.user_id;
         let coursesByUser = await Course.find({admin_id: userId});
         return res.status(200).json(coursesByUser);
     },
 
     createCourse: (req, res, next) => {
         let {name, description, term} = req.body;
-        let {userId} = res.locals;
+        let userId = req.user_id;
         //TODO: Check if userId equals to the authenticated user
         let newCourse = new Course({
             name,
@@ -61,13 +61,13 @@ module.exports = {
                 })
             }
             //Check if userId equals the authenticated user
-            
+            /* 
             if(courseTobeUpdated.admin_id != userId){
                 return res.status(400).json({
                     error: "Course can only modified by admin"
                 })
             }
-            
+            */ 
             Course.updateOne({_id: courseId}, {name, description, term},
                 {runValidators: true},
                 (err, course) => {
@@ -94,11 +94,13 @@ module.exports = {
                 })
             }
             //TODO: Check if userId equals the authenticated user
+            /*
             if(courseTobeDeleted.admin_id != userId){
                 return res.status(400).json({
                     error: "Course can only deleted by admin"
                 })
             }
+            */
             Course.deleteOne({_id: courseId}, err => {
                 if(err){
                     return res.status(400).json({

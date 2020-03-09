@@ -16,7 +16,8 @@ function getJudgeGetSubmissionUrl(token){
 
 module.exports = {
     getProblemSubmission: async (req, res, next) => {
-        const {userId, problemId} = res.locals;
+        const {problemId} = res.locals;
+        const userId = req.user_id;
         const {submissionId} = req.params;
         try{
             const submission = (await ProblemSubmission.findById(submissionId))
@@ -34,7 +35,8 @@ module.exports = {
     },
 
     getProblemSubmissions: async (req, res, next) => {
-        const {userId, problemId} = res.locals;
+        const {problemId} = res.locals;
+        const userId = req.user_id;
         try{
             const submissions = await ProblemSubmission.find({problem_id: problemId, user_id: userId});
             return res.status(200).json(submissions);
@@ -45,7 +47,8 @@ module.exports = {
     },
 
     createProblemSubmission: async (req, res, next) => {
-        const {userId, courseId, problemId} = res.locals;
+        const {courseId, problemId} = res.locals;
+        const userId = req.user_id;
         const {source_code, language_id} = req.body;
         const language = languageMap.find(e => e.id == language_id);
         if(!language)
