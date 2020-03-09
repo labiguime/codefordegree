@@ -15,20 +15,8 @@ function App() {
     <div className="App">
     <Router>
       <Switch>
-<<<<<<< HEAD
-        <Route path="/login" exact>
-          <Auth />
-        </Route>
-        <Route path="/signup" exact>
-          <SignUp />
-        </Route>
-        <Route path="/dashboard" exact>
-          <Dashboard />
-        </Route>
-=======
         <Route path="/login" component={Auth} exact/>
         <Route path="/signup" component={SignUp} exact />
->>>>>>> lam/front-end-refactor
       </Switch>
     </Router>
     </div>
