@@ -7,11 +7,12 @@ let userController = {};
 userController.createUser = async function (req, res) {
   //Validate user input
   const { error } = validate(req.body);
-  if (error) return res.status(400).json(error.details[0].message);
+  if (error) 
+    return res.status(400).json({error: error.details[0].message});
 
   try {
     let user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).json("User already registered");
+    if (user) return res.status(400).json({error: "User already registered"});
 
     user = new User(_.pick(req.body, ["name", "email", "password"]));
     const salt = await bcrypt.genSalt(10);
@@ -26,7 +27,7 @@ userController.createUser = async function (req, res) {
       .header("x-auth-token", token)
       .json(_.pick(user, ["_id", "name", "email"]));
   } catch (err) {
-    return res.status(400).json(err.message);
+    return res.status(400).json({error: err.message});
   }
 };
 
@@ -36,7 +37,7 @@ userController.getCurrentUser = async function(req, res) {
     const user = await User.findById(req.user_id).select("-password -__v");
     return res.status(200).json(user);
   } catch (err) {
-    return res.status(400).json(err.message);
+    return res.status(400).json({error: err.message});
   }
 };
 

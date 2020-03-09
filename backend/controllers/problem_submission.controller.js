@@ -97,42 +97,40 @@ module.exports = {
                 const sub = axios.get(getJudgeGetSubmissionUrl(token));
                 promises.push(sub);
             });
-
-            axios.all(promises).then(axios.spread((...responses) => {
+            //Once all promises are resolved
+            axios.all(promises).then(axios.spread(async (...responses) => {
                 responses.forEach(res => {
                     const sub = judgeSubmissions.find(e => token = res.token);
                     sub = {...sub, ...res};
                 });
                 let acceptedSub = 0;
-                judgeSubmissions.forEach(async e => {
-                    await e.save(err => {
-                        if(err){
-                            console.log(err);
-                            return res.status(400).json({error: "Cannot create submission code for testcase"});
-                        }
-                        problemSub.judge_submission_ids.push(e._id);
-                    });
+                for(let i = 0; i < JudegeSubmissions.length; ++i){
+                    let judge = judgeSubmissions[i];
                     try{
-                        await e.save();
+                        await judge.save();
+                        problemSub.judge_submission_ids.push(judge._id);
                     }catch(e){
                         console.log(e);
                         return res.status(500).json({error: "Internal server error"});
                     }
-                    let test = problemSub.testcase_results.find(e => e.id == e.testcase_id);
-                    if(e.status.id == 3){
-                        acceptedSub++;
-                        test.result = true;
-                    }else if(e.status.id > 3){
-                        test.result = false;
+                    let test = problemSub.testcase_results.find(e => judge.id == e.testcase_id);
+                    if(test){
+                        if(judge.status.id == 3){
+                            acceptedSub++;
+                            test.result = true;
+                        }else if(e.status.id > 3){
+                            test.result = false;
+                        }
                     }
                     problemSub.result = acceptedSub / judgeSubmissions.size;
-                });
+
+                }
                 problemSub.save(err => {
                     if(err){
                         console.log(err);
                         return res.status(500).json(err);
                     }
-                })
+                });
             }));
         }, 500);
         

@@ -8,6 +8,6 @@ module.exports = function(req, res, next) {
     req.user_id = decoded_payload;
     next();
   } catch (exception) {
-    return res.status(400).json("Invalid token");
+    return res.status(400).json({error: "Invalid token"});
   }
 };
