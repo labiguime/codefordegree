@@ -50,14 +50,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SignUp() {
+export default function SignUp(props) {
   const classes = useStyles();
   const { errors, handleSubmit, register} = useForm();
 
   const onSubmit = data => {
-    console.log('Submit SignUp event', data)
+    props.onSubmit(data); 
   };
-  console.log(errors);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -68,44 +67,29 @@ export default function SignUp() {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
+
+        {props.formMessage && <div className={classes.error}>{props.formMessage}</div>}
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 inputRef={register({
                   required:{
                     value: true,
-                    message: "First name is required"
+                    message: "Name is required"
                   }
                 })}
-                error={errors.firstName != undefined}
+                error={errors.name !== undefined}
                 autoComplete="fname"
-                name="firstName"
+                name="name"
                 variant="outlined"
                 fullWidth
-                id="firstName"
-                label="First Name"
+                id="name"
+                label="Name"
                 autoFocus
               />
-              <div className={classes.error}>{errors.firstName && errors.firstName.message}</div> 
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                inputRef={register({
-                  required:{
-                    value: true,
-                    message: "Last Name Required"
-                  }
-                })}
-                error={errors.lastName != undefined}
-                variant="outlined"
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-              <div className={classes.error}>{errors.lastName && errors.lastName.message}</div> 
+              <div className={classes.error}>{errors.name && errors.name.message}</div> 
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -141,7 +125,7 @@ export default function SignUp() {
                   message: "Password requires at least 6 characters"
                 },
               })}             
-                error={errors.password != undefined}
+                error={errors.password !== undefined}
                 variant="outlined"
                 fullWidth
                 name="password"

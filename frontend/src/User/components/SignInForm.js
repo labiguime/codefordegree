@@ -3,8 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -13,7 +11,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 
 function Copyright() {
   return (
@@ -53,14 +50,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-export default function SignIn() {
+export default function SignIn(props) {
   const classes = useStyles();
   const { errors, handleSubmit, register} = useForm();
 
   const onSubmit = data => {
-    console.log(data);
-    axios.post(`http://localhost:5000/api/login`, data)
-      .then(res => console.log(res.data))
+    //axios.post(`http://localhost:5000/api/login`, data)
+      //.then(res => console.log(res.data))
+    props.onSubmit(data);
   }
   console.log(errors);
   return (
@@ -73,6 +70,8 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+
+        {props.formMessage && <div className={classes.error}>{props.formMessage}</div>}
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)} >
           <TextField
             inputRef={register({

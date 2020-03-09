@@ -34,7 +34,9 @@ app.set("views", "./views");
 app.set("view engine", "pug"); //Can used for quickly testing out the backend
 
 /* Set up body parser to parse json */
-app.use(cors());
+app.use(cors({
+  exposedHeaders: 'x-auth-token'
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
