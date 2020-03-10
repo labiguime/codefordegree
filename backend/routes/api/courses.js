@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const Course = require('../../models/course.model');
+const problemRoute = require("./problems");
+const {verifyCourseAdmin, verifyCourseAdminOrUser} = require("../../middlewares/verifyEntity.middleware");
 const {getCourse, getCourses, 
       createCourse, updateCourse, deleteCourse} = require("../../controllers").course;
 /**
@@ -34,7 +36,7 @@ router.post('/', createCourse);
   * @access       Private
   */
 
-router.delete('/:courseId', deleteCourse); 
+router.delete('/:courseId', verifyCourseAdmin, deleteCourse); 
 
 /**
   * @route        UPDATE api/courses/:id
@@ -42,6 +44,13 @@ router.delete('/:courseId', deleteCourse);
   * @access       Private
   */
 
-router.put('/:courseId', updateCourse);
+router.put('/:courseId', verifyCourseAdmin, updateCourse);
+
+/**
+ * Problem routes
+ */
+router.use('/:courseId/problems', (req, res, next) => {
+  res.locals.courseId = req.params.courseId;
+},problemRoute);
 
 module.exports = router;

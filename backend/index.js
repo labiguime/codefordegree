@@ -13,6 +13,7 @@ const user = require(__dirname+'/routes/api/user');
 const auth = require(__dirname+'/routes/api/auth');
 const courses = require(__dirname+'/routes/api/courses');
 const problems = require(__dirname+'/routes/api/problems');
+const authMiddleware = require(__dirname+'/middlewares/auth.js');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors")
@@ -52,16 +53,13 @@ app.get("/", (req, res, next) => {
 app.use('/api/login', auth);
 app.use('/api/user', user);
 
-app.use('/api/user/:userId/course', (req, res, next) => {
-  res.locals.userId = req.params.userId;
-  next();
-},courses);
-
-app.use('/api/user/:userId/course/:courseId/problems', (req, res, next) => {
+app.use('/api/courses', authMiddleware, courses);
+/*
+app.use('/api/course/:courseId/problems', (req, res, next) => {
   res.locals.userId = req.params.userId;
   res.locals.courseId = req.params.courseId;
   next();
 }, problems);
-
+*/
 
 app.listen(port, () => console.log(`${env} server listening on port ${port}!`));
