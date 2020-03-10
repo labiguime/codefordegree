@@ -28,7 +28,10 @@ const problemSubmissionSchema = new Schema({
         type: String,
         required: true
     },
-    language: languageSchema,
+    language: {
+        type: languageSchema,
+        required: true
+    },
     //Ids of each small submission for a specific test case
     judge_submisson_ids: [
         {
@@ -36,9 +39,12 @@ const problemSubmissionSchema = new Schema({
             ref: 'Judge_Submission'
         }
     ],
-    testcase_ids: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Testcase'
+    testcase_results: [{
+        id: {
+            type: Schema.Types.ObjectId,
+            ref: 'Testcase'
+        },
+        result: Boolean, //Passed(True) or Failed(False)
     }]
 
 });

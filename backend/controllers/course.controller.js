@@ -9,13 +9,13 @@ module.exports = {
             if(err || !course){
                 console.log(err);
                 return res.status(404).json({
-                    error: ["Course not found", err]
+                    error: "Course not found"
                 })
             }
             Course.populate(course, {path: 'admin_id'}, (err, populatedCourse) => {
                 if(err){
                     return res.status(400).json({
-                        error: ["Cannot get information of admin for course"]
+                        error: "Cannot get information of admin for course"
                     })
                 }
                 return res.status(200).json(populatedCourse);
@@ -24,14 +24,19 @@ module.exports = {
     },
 
     getCourses: async (req, res, next) => {
-        let {userId} = req.params;
-        let coursesByUser = await Course.find({admin_id: userId});
-        return res.status(200).json(coursesByUser);
+        let userId = req.user_id;
+        try{
+            let coursesByUser = await Course.find({admin_id: userId});
+            return res.status(200).json(coursesByUser);
+        }catch(e){
+            console.log(e);
+            return res.status(500).json({error: "Internal server error"});
+        }
     },
 
     createCourse: (req, res, next) => {
         let {name, description, term} = req.body;
-        let {userId} = res.locals;
+        let userId = req.user_id;
         //TODO: Check if userId equals to the authenticated user
         let newCourse = new Course({
             name,
@@ -43,10 +48,10 @@ module.exports = {
         newCourse.save(err => {
             if(err){
                return res.status(400).json({
-                   error: ["Cannot create course", err]
+                   error: "Cannot create course",
                 });
             }
-            return res.status(200).json(newCourse);
+            return res.status(201).json(newCourse);
         });
     },
 
@@ -57,25 +62,26 @@ module.exports = {
         Course.findById(courseId, (err, courseTobeUpdated) => {
             if(err || !courseTobeUpdated){
                 return res.status(400).json({
-                    error: ["Course not found"]
+                    error: "Course not found"
                 })
             }
             //Check if userId equals the authenticated user
+            /* 
             if(courseTobeUpdated.admin_id != userId){
                 return res.status(400).json({
-                    error: ["Course can only modified by admin"]
+                    error: "Course can only modified by admin"
                 })
             }
+            */ 
             Course.updateOne({_id: courseId}, {name, description, term},
                 {runValidators: true},
                 (err, course) => {
                     if(err){
                         console.log(err);
                         return res.status(400).json({
-                            error: ["Course cannot be updated", err]
+                            error: "Course cannot be updated"
                         })
                     }
-                    course.success = true;
                     return res.status(200).json(course);
             });
         })
@@ -88,19 +94,21 @@ module.exports = {
         Course.findById(courseId, (err, courseTobeDeleted) => {
             if(err || !courseTobeDeleted){
                 return res.status(400).json({
-                    error: ["Course not found"]
+                    error: "Course not found"
                 })
             }
             //TODO: Check if userId equals the authenticated user
+            /*
             if(courseTobeDeleted.admin_id != userId){
                 return res.status(400).json({
-                    error: ["Course can only deleted by admin"]
+                    error: "Course can only deleted by admin"
                 })
             }
+            */
             Course.deleteOne({_id: courseId}, err => {
                 if(err){
                     return res.status(400).json({
-                        error: ["Course cannot be deleted"]
+                        error: "Course cannot be deleted"
                     })
                 }
                 return res.status(200).json({})
