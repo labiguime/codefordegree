@@ -51,7 +51,7 @@ module.exports = {
                    error: "Cannot create course",
                 });
             }
-            return res.status(200).json(newCourse);
+            return res.status(201).json(newCourse);
         });
     },
 
@@ -82,7 +82,6 @@ module.exports = {
                             error: "Course cannot be updated"
                         })
                     }
-                    course.success = true;
                     return res.status(200).json(course);
             });
         })
