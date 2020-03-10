@@ -3,8 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -46,14 +44,20 @@ const useStyles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  error: {
+    color: "red"
+  }
 }));
 
-export default function SignIn() {
+
+export default function SignIn(props) {
   const classes = useStyles();
   const { errors, handleSubmit, register} = useForm();
 
   const onSubmit = data => {
-    console.log(data);
+    //axios.post(`http://localhost:5000/api/login`, data)
+      //.then(res => console.log(res.data))
+    props.onSubmit(data);
   }
   console.log(errors);
   return (
@@ -66,18 +70,23 @@ export default function SignIn() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+
+        {props.formMessage && <div className={classes.error}>{props.formMessage}</div>}
         <form className={classes.form} onSubmit={handleSubmit(onSubmit)} >
           <TextField
             inputRef={register({
-              required: true,
+              required: {
+                value: true,
+                message: "Email is required"
+              },
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
                 message: "Invalid email address"
               }
             })}
+            error={errors.email ? true : false}
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
@@ -85,15 +94,21 @@ export default function SignIn() {
             autoComplete="email"
             autoFocus
           />
-          {errors.email && errors.email.message} 
+          <div className={classes.error}>{errors.email && errors.email.message}</div> 
           <TextField
             inputRef={register({
-              required: true,
-              minLength: 6,
+              required: {
+                value: true,
+                message: "Password is required"
+              },
+              minLength: {
+                value: 6,
+                message: "Password requires at least 6 characters"
+              },
             })}
+            error={errors.password ? true : false}
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Password"
@@ -101,13 +116,12 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
           />
-          {errors.password && errors.password.type === "minLength" 
-            && "Password need to have at least 6 characters"}
+          <div className={classes.error}>{errors.password && errors.password.message}</div>
           {  
-          <FormControlLabel
-            control={<Checkbox name="remember" inputRef={register} color="primary" />}
-            label="Remember me"
-          />
+          // <FormControlLabel
+          //   control={<Checkbox name="remember" inputRef={register} color="primary" />}
+          //   label="Remember me"
+          // />
           }
           <Button
             type="submit"
