@@ -25,8 +25,13 @@ module.exports = {
 
     getCourses: async (req, res, next) => {
         let userId = req.user_id;
-        let coursesByUser = await Course.find({admin_id: userId});
-        return res.status(200).json(coursesByUser);
+        try{
+            let coursesByUser = await Course.find({admin_id: userId});
+            return res.status(200).json(coursesByUser);
+        }catch(e){
+            console.log(e);
+            return res.status(500).json({error: "Internal server error"});
+        }
     },
 
     createCourse: (req, res, next) => {
@@ -43,7 +48,7 @@ module.exports = {
         newCourse.save(err => {
             if(err){
                return res.status(400).json({
-                   error: "Cannot create course"
+                   error: "Cannot create course",
                 });
             }
             return res.status(200).json(newCourse);
