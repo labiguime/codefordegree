@@ -1,5 +1,5 @@
 
-import React, {useContext} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import CameraIcon from '@material-ui/icons/PhotoCamera';
@@ -24,18 +24,8 @@ import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import ToolTip from '@material-ui/core/Tooltip';
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://csil-git1.cs.surrey.sfu.ca/tln3/codefordegree">
-        Code4Degree
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import axios from 'axios';
+
 const sections = [
     { title: 'Home', url: '/dashboard' },
     { title: 'Assignment', url: '#' },
@@ -80,6 +70,9 @@ const useStyles = makeStyles(theme => ({
   },
   courseGroupHeader: {
     marginBottom: 20 
+  },
+  courseGroup: {
+    marginBottom: 20
   }
 }));
 
@@ -87,6 +80,38 @@ const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // export default function Album() {
 export default function Dashboard(props){
+  const [pageTitle, setPageTitle] = useState("");
+  const [allCourses, setAllCourses] = useState([]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    axios({
+      url: 'http://localhost:5000/api/courses',
+      headers: {
+        "x-auth-token": token
+      }
+    }).then((res) => {
+      console.log(res);
+      const allCourses = res.data;
+      setAllCourses(allCourses);
+    }).catch(err => {
+      console.log(err);
+    });
+  }, []);
+
+  var createCourse = () => {
+    const token = localStorage.getItem('token');
+    axios({
+      url: 'http://localhost:5000/api/courses',
+      method: "post",
+      headers: {
+        "x-auth-token": token
+      }
+    }).then(res => {
+
+    }).catch(err => {
+      console.log(err);
+    })
+  }
   const classes = useStyles();
 
   const content = (
@@ -102,19 +127,23 @@ export default function Dashboard(props){
                     <AddIcon />
                 </IconButton>
               </ToolTip>
-              <Divider />
+            <Divider />
             </div>
             <Grid container spacing={4}>
-              {cards.map(card => (
-                <Grid item key={card} xs={12} sm={6} md={4}>
+              {allCourses.map(course => (
+                course.admin_id == props.userInfo._id && 
+                <Grid item key={course} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
                     <CardContent className={classes.cardContent}>
                       <Typography gutterBottom variant="h5" component="h2">
-                        CMPT 470 - Web-based information system 
+                        {course.name}
                       </Typography>
                       <Typography>
-                        This is a media card. You can use this section to describe the content.
-                        alalallalalalalallalala
+                        {course.description.substring(0, 100)}
+                        {course.description.length > 100 && "..."}
+                      </Typography>
+                      <Typography>
+                        Term: {course.term.toUpperCase()}
                       </Typography>
                     </CardContent>
                     <CardActions disableSpacing >
