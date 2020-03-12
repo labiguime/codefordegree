@@ -35,14 +35,24 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function AddCourseForm() {
+export default function AddCourseForm(props) {
   const classes = useStyles();
   
-  const [term, setTerm] = React.useState('');
-  const handleChange = event => {
-    setTerm(event.target.value);
+  const defaultValueMap = props.defaultValueMap;
+  const [courseInfo, setCourseInfo] = React.useState({
+                                              name: defaultValueMap && defaultValueMap.name,
+                                              term: defaultValueMap && defaultValueMap.term,
+                                              description: defaultValueMap && defaultValueMap.description
+                                          });
+  const handleTermChange = event => {
+    setCourseInfo({...courseInfo, term: event.target.value});
   };
-
+  const handleNameChange = event => {
+    setCourseInfo({...courseInfo, name: event.target.value});
+  }
+  const handleDescriptionChange = event => {
+    setCourseInfo({...courseInfo, description: event.target.value})
+  }
   return (
     <div className={classes.root}>
       <div>
@@ -51,18 +61,21 @@ export default function AddCourseForm() {
         id="Course-Name"
         className={classes.textField}
         color='secondary'
+        onBlur={handleNameChange}
+        defaultValue={defaultValueMap && defaultValueMap["name"]}
       />
       <FormControl className={classes.formControl}>
         <InputLabel id="add-course-model">Term</InputLabel>
         <Select
           id="Term"
-          value={term}
-          onChange={handleChange}
+          value={courseInfo.term}
+          onChange={handleTermChange}
           color='secondary'
+          defaultValue={defaultValueMap && defaultValueMap["term"]}
         >
-          <MenuItem value={10}>Spring 2020</MenuItem>
-          <MenuItem value={20}>Summer 2020</MenuItem>
-          <MenuItem value={30}>Fall 2020</MenuItem>
+          <MenuItem value={"spring"}>Spring 2020</MenuItem>
+          <MenuItem value={"summer"}>Summer 2020</MenuItem>
+          <MenuItem value={"fall"}>Fall 2020</MenuItem>
         </Select>
       </FormControl>
       </div>
@@ -76,16 +89,19 @@ export default function AddCourseForm() {
           rowsMax="10"
           margin="dense"
           color='secondary'
+          onBlur={handleDescriptionChange}
+          defaultValue={defaultValueMap && defaultValueMap["description"]}
       />
       </div>
       <Button
           type="submit"
-          size="small "
+          size="small"
           variant="contained"
           color="primary"
           className={classes.submit}
+          onClick={() => props.onSubmit(courseInfo)}
       >
-        Create Course
+        {props.buttonTitle}
       </Button>
     </div>
   );

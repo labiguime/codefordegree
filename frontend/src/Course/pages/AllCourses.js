@@ -16,7 +16,7 @@ import ToolTip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
-import AddCourseForm from '../../shared/components/AddCourseForm';
+import CourseForm from '../../shared/components/CourseForm';
 
 
 function getModalStyle() {
@@ -112,29 +112,36 @@ export default function AllCourses(props){
         });
       }, []);
 
-  var createCourse = () => {
+  var createCourse = (data) => {
+    console.log(data);
     const token = localStorage.getItem('token');
     axios({
       url: 'http://localhost:5000/api/courses',
       method: "post",
+      data: data,
       headers: {
         "x-auth-token": token
       }
     }).then(res => {
       const newCourse = res.data;
       setAllCourses([...allCourses, newCourse]);
+      setOpen(false);
     }).catch(err => {
       console.log(err);
     })
   }
-    return(
+
+  return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
           <div className={classes.main}  >
             <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h2 className={classes.modalTitle}> Adding New course</h2>
-                  <AddCourseForm />
+                   <CourseForm
+                      buttonTitle="Create course" 
+                      onSubmit={(data) => createCourse(data)}
+                   />
                 </div>
             </Modal>
             <div className={classes.courseGroupHeader}  >
