@@ -131,7 +131,43 @@ export default function AllCourses(props){
     })
   }
 
-  return(
+    let handleCreateCourse = (data) => {
+        const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses',
+          method: "post",
+          params: data,
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          const newCourse = res.data;
+          setAllCourses([...allCourses, newCourse]);
+        }).catch(err => {
+          console.log(err);
+        })
+    }
+
+    let handleDeleteCourse = (id) => {
+        const token = localStorage.getItem('token');
+        axios({
+            url: 'http://localhost:5000/api/courses/' + id,
+            method: "delete",
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(res => {
+            const newCourses = allCourses.filter(e => {
+              return e._id != id;
+            });
+            console.log(newCourses);
+            setAllCourses(newCourses);
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+
+    return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
           <div className={classes.main}  >
@@ -157,17 +193,17 @@ export default function AllCourses(props){
             <Divider />
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
-                {allCourses.map(course => (
+                {allCourses.map((course, idx) => (
                   course.admin_id == auth.userInfo._id && 
-                  <Grid item key={course} xs={12} sm={6} md={4}>
+                  <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
                           {course.name}
                         </Typography>
                         <Typography>
-                          {course.description.substring(0, 100)}
-                          {course.description.length > 100 && "..."}
+                          {course.description.length > 100 && (course.description.substring(0, 100).trim() + '....')}
+                          {course.description.length <= 100 && course.description}
                         </Typography>
                         <Typography>
                           Term: {course.term.toUpperCase()}
@@ -177,15 +213,25 @@ export default function AllCourses(props){
                         <Button size="small" color="primary">
                           View
                         </Button>
-                        <section className={classes.iconAlignRight}>
-                            <IconButton size="small" color="primary" onClick={() => console.log("edit")}>
-                                <EditIcon/> 
-                            </IconButton>
-                            <IconButton  size="small" color="primary" onClick={() => console.log("delete")}>
-                                <DeleteIcon /> 
-                            </IconButton>
+                        {course.admin_id == auth.userInfo._id && 
+                            <section className={classes.iconAlignRight}>
+                                <IconButton size="small" color="primary" onClick={() => console.log("edit")}>
+                                    <EditIcon/> 
+                                </IconButton>
+                                <IconButton  
+                                    size="small" 
+                                    color="primary" 
+                                    onClick={() => {
+                                        let isOk = window.confirm("Are you sure to delete this course")
+                                        if(isOk)
+                                            handleDeleteCourse(course._id);
+                                    }}
+                                >
+                                    <DeleteIcon /> 
+                                </IconButton>
 
-                        </section>
+                            </section>
+                        }
 
                       </CardActions>
                     </Card>
