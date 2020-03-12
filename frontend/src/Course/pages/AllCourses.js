@@ -175,27 +175,27 @@ export default function AllCourses(props){
             <Divider />
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
-                {allCourses.map((course, idx) => (
-                  course.admin_id == auth.userInfo._id && 
+                {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
+                  admin_id == auth.userInfo._id && 
                   <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
                         <Typography gutterBottom variant="h5" component="h2">
-                          {course.name}
+                          {name}
                         </Typography>
                         <Typography>
-                          {course.description.length > 100 && (course.description.substring(0, 100).trim() + '....')}
-                          {course.description.length <= 100 && course.description}
+                          {(description && description.length > 100) && (description.substring(0, 100).trim() + '....')}
+                          {description && description.length <=100 && description}
                         </Typography>
                         <Typography>
-                          Term: {course.term.toUpperCase()}
+                          Term: {term.toUpperCase()}
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
                         <Button size="small" color="primary">
                           View
                         </Button>
-                        {course.admin_id == auth.userInfo._id && 
+                        {admin_id == auth.userInfo._id && 
                             <section className={classes.iconAlignRight}>
                                 <IconButton size="small" color="primary" onClick={() => console.log("edit")}>
                                     <EditIcon/> 
@@ -206,7 +206,7 @@ export default function AllCourses(props){
                                     onClick={() => {
                                         let isOk = window.confirm("Are you sure to delete this course")
                                         if(isOk)
-                                            handleDeleteCourse(course._id);
+                                            handleDeleteCourse(_id);
                                     }}
                                 >
                                     <DeleteIcon /> 
