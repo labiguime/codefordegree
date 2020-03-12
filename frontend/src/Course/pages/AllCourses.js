@@ -16,6 +16,8 @@ import ToolTip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
+import AddCourseForm from '../../shared/components/AddCourseForm';
+
 
 function getModalStyle() {
   const top = 50;
@@ -28,6 +30,9 @@ function getModalStyle() {
   };
 }
 const useStyles = makeStyles(theme => ({
+      modalTitle: {  
+      textAlign: "center"
+      },
       icon: {
         marginRight: theme.spacing(2),
       },
@@ -68,7 +73,7 @@ const useStyles = makeStyles(theme => ({
       },
       modalBox: {
         position: 'absolute',
-        width: 400,
+        width: 800,
         backgroundColor: theme.palette.background.paper,
         border: '1px solid black',
         boxShadow: theme.shadows[5],
@@ -128,7 +133,8 @@ export default function AllCourses(props){
           <div className={classes.main}  >
             <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
-                  <h1>Modal here</h1>
+                  <h2 className={classes.modalTitle}> Adding New course</h2>
+                  <AddCourseForm />
                 </div>
             </Modal>
             <div className={classes.courseGroupHeader}  >
