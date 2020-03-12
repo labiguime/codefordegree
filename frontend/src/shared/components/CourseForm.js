@@ -16,22 +16,23 @@ const useStyles = makeStyles(theme => ({
   },
   textField: {
     margin: theme.spacing(1),
-    width: 200,
+    width: "40%",
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 150,
+    minWidth: "30%",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    float: "right",
   },
   boxField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-    width: 700,
+    width: "100%",
   },
 }));
 
@@ -54,8 +55,8 @@ export default function AddCourseForm(props) {
     setCourseInfo({...courseInfo, description: event.target.value})
   }
   return (
-    <div className={classes.root}>
-      <div>
+    <div >
+      <div className={classes.root}>
       <TextField
         label="Course Name"
         id="Course-Name"
@@ -95,7 +96,7 @@ export default function AddCourseForm(props) {
       </div>
       <Button
           type="submit"
-          size="small"
+          size="medium"
           variant="contained"
           color="primary"
           className={classes.submit}

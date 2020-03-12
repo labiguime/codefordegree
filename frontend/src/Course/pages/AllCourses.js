@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
       },
       modalBox: {
         position: 'absolute',
-        width: 800,
+        width: "70%",
         backgroundColor: theme.palette.background.paper,
         border: '1px solid black',
         boxShadow: theme.shadows[5],
@@ -112,37 +112,19 @@ export default function AllCourses(props){
         });
       }, []);
 
-  var createCourse = (data) => {
-    console.log(data);
-    const token = localStorage.getItem('token');
-    axios({
-      url: 'http://localhost:5000/api/courses',
-      method: "post",
-      data: data,
-      headers: {
-        "x-auth-token": token
-      }
-    }).then(res => {
-      const newCourse = res.data;
-      setAllCourses([...allCourses, newCourse]);
-      setOpen(false);
-    }).catch(err => {
-      console.log(err);
-    })
-  }
-
     let handleCreateCourse = (data) => {
         const token = localStorage.getItem('token');
         axios({
           url: 'http://localhost:5000/api/courses',
           method: "post",
-          params: data,
+          data: data,
           headers: {
             "x-auth-token": token
           }
         }).then(res => {
           const newCourse = res.data;
           setAllCourses([...allCourses, newCourse]);
+          setOpen(false);
         }).catch(err => {
           console.log(err);
         })
@@ -173,10 +155,10 @@ export default function AllCourses(props){
           <div className={classes.main}  >
             <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
-                  <h2 className={classes.modalTitle}> Adding New course</h2>
+                  <h1 className={classes.modalTitle}> Adding New Course</h1>
                    <CourseForm
                       buttonTitle="Create course" 
-                      onSubmit={(data) => createCourse(data)}
+                      onSubmit={(data) => handleCreateCourse(data)}
                    />
                 </div>
             </Modal>
