@@ -1,12 +1,11 @@
 # CodeForDegree
 A Web Application where instructors can create programming assignments for students, who will be able to submit their assignment through an online editor and get feedback on their submissions.
 ## Setup project
-	- Install MongoDB by following this:
+	- Install and run MongoDB by following this:
 		+ Ubuntu: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/
 		+ Window: https://docs.mongodb.com/manual/tutorial/install-mongodb-on-windows/
 	- Install nodejs: https://nodejs.org
 ## Run backend
-    - sudo service mongod start
 	- cd backend
 	- npm install 
 	- npm start
