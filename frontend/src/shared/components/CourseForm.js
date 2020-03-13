@@ -39,12 +39,8 @@ const useStyles = makeStyles(theme => ({
 export default function AddCourseForm(props) {
   const classes = useStyles();
   
-  const defaultValueMap = props.defaultValueMap;
-  const [courseInfo, setCourseInfo] = React.useState({
-                                              name: defaultValueMap && defaultValueMap.name,
-                                              term: defaultValueMap && defaultValueMap.term,
-                                              description: defaultValueMap && defaultValueMap.description
-                                          });
+  const defaultValueMap = props.defaultValueMap || {};
+  const [courseInfo, setCourseInfo] = React.useState({...defaultValueMap});
   const handleTermChange = event => {
     setCourseInfo({...courseInfo, term: event.target.value});
   };

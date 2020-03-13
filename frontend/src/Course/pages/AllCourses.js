@@ -88,14 +88,19 @@ export default function AllCourses(props){
     //Modal
     const modalStyle = getModalStyle();
     const [open, setOpen] = useState(false);
-    const handleOpenModal = () => {
+    const [modalState, setModalState] = useState({});
+    const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      // setOpen(true);
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
     }
     const handleCloseModal = () => {
+      setModalState({});
       setOpen(false);
     }
     const classes = useStyles();
     const [allCourses, setAllCourses] = useState([]);
+    const [course, setCourse] = useState([]);
       useEffect(() => {
         const token = localStorage.getItem('token');
         axios({
@@ -130,6 +135,27 @@ export default function AllCourses(props){
         })
     }
 
+    let handleEditCourse = (updatedCourse) => {
+      const token = localStorage.getItem('token');
+      axios({
+        url: 'http://localhost:5000/api/courses/' + updatedCourse._id,
+        method: "put",
+        data: updatedCourse,
+        headers: {
+          "x-auth-token": token
+        }
+      }).then(res => {
+        const newCourses = allCourses.map(e => {
+          if(e._id == updatedCourse._id)
+            return updatedCourse;
+          return e;
+        })
+        setAllCourses(newCourses);
+        setOpen(false);
+      }).catch(err => {
+        console.log(err);
+      })
+  } 
     let handleDeleteCourse = (id) => {
         const token = localStorage.getItem('token');
         axios({
@@ -155,10 +181,12 @@ export default function AllCourses(props){
           <div className={classes.main}  >
             <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
-                  <h1 className={classes.modalTitle}> Adding New Course</h1>
+                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
                    <CourseForm
-                      buttonTitle="Create course" 
-                      onSubmit={(data) => handleCreateCourse(data)}
+                      buttonTitle={modalState.buttonTitle}
+                      defaultValueMap={modalState.defaultValueMap}
+                      //onSubmit={(data) => handleCreateCourse(data)}
+                      onSubmit={modalState.onSubmit}
                    />
                 </div>
             </Modal>
@@ -167,7 +195,11 @@ export default function AllCourses(props){
                 Administrative Courses
               </Typography>
               <ToolTip title="Create course" placement="top">
-                <IconButton color="primary" className={classes.iconAlignRight} onClick={handleOpenModal}>
+                <IconButton 
+                    color="primary" 
+                    className={classes.iconAlignRight} 
+                    onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse)}
+                >
                     <AddIcon />
                 </IconButton>
               </ToolTip>
@@ -197,7 +229,15 @@ export default function AllCourses(props){
                         </Button>
                         {admin_id == auth.userInfo._id && 
                             <section className={classes.iconAlignRight}>
-                                <IconButton size="small" color="primary" onClick={() => console.log("edit")}>
+                                <IconButton size="small" 
+                                  color="primary" 
+                                  // onClick={() => handleOpenModal("Edit course", "Save", {name, term, description}, () => {console.log("EDit")})}
+                                  onClick={() => handleOpenModal(
+                                                                "Edit course",
+                                                                "Save", 
+                                                                allCourses[idx],
+                                                                ((data) => handleEditCourse(data)))}
+                                >
                                     <EditIcon/> 
                                 </IconButton>
                                 <IconButton  
@@ -214,16 +254,13 @@ export default function AllCourses(props){
 
                             </section>
                         }
-
                       </CardActions>
                     </Card>
                   </Grid>
                 ))}
             </Grid>
-
             </div>
           </div>
-          
         </Container>
       </main>
     );
