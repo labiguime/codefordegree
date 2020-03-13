@@ -16,7 +16,7 @@ export default function Login(props){
             .catch(err => {
                 if(err.response){
                     console.log(err.response.data);
-                    setLoginMessage(err.response.data);
+                    setLoginMessage(err.response.data.error);
                 }
             })
     }

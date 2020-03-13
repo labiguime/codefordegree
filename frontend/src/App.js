@@ -23,6 +23,7 @@ function App() {
     const logout = () => {
       localStorage.setItem('token', '');
       setIsLoggedIn(false);
+      setUserInfo({});
     }
     useEffect(() => {
       const token = localStorage.getItem('token');
@@ -57,7 +58,7 @@ function App() {
       )
     }
     return (
-    <AuthContext.Provider value={{isLoggedIn, login, logout}}>
+    <AuthContext.Provider value={{isLoggedIn, login, logout, userInfo}}>
       <div className="App">
         <Router>
           {routes}
