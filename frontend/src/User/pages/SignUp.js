@@ -12,7 +12,7 @@ export default function SignUp(){
                 console.log(res);
                 auth.login({user: res.data, token: res.headers['x-auth-token']});
             }).catch(err => {
-                setSignUpMessage(err.response.data);
+                setSignUpMessage(err.response.data.error);
             })
     }
     return(
