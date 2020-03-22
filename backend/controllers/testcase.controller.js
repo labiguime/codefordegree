@@ -8,6 +8,7 @@ module.exports = {
             if(err || !testcase){
                 return res.status(404).json({error: "Course not found"});
             }
+            testcase.expected_output = Buffer.from(testcase.expected_output, 'base64').toString("ascii");
             return res.status(200).json(testcase);
         })
     },
@@ -18,13 +19,17 @@ module.exports = {
             if(err){
                 return res.status(500).json({error: "Internal Server Error"});
             }
+            testcases.forEach(e => {
+                e.expected_output = Buffer.from(e.expected_output, 'base64').toString('ascii');
+            })
             return res.status(200).json(testcases);
         })
 
     },
 
     createTestcase: (req, res, next) => {
-        const {stdin, expected_output} = req.body;
+        let {stdin, expected_output} = req.body;
+        expected_output = Buffer.from(expected_output).toString('base64');
         const {problemId} = res.locals;
         const newTestcase = new Testcase({stdin, expected_output, problem_id: problemId});
         newTestcase.save(error => {

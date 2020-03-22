@@ -7,11 +7,11 @@ const axios = require("axios");
 
 
 function getJudgePostSubmissionUrl(){
-    return "https://api.judge0.com/submissions/?base64_encoded=false&wait=false";
+    return "https://api.judge0.com/submissions/?base64_encoded=true&wait=false";
 }
 
 function getJudgeGetSubmissionUrl(token){
-    return `https://api.judge0.com/submissions/${token}?base64_encoded=false`;
+    return `https://api.judge0.com/submissions/${token}?base64_encoded=true`;
 }
 
 module.exports = {
@@ -45,7 +45,10 @@ module.exports = {
             return res.status(500).json({error: "Internal server error"});
         }
     },
-
+    //Create submission for each test case and send them to judge0 api to compile
+    //Return http status 200 with problem object if there is no error
+    //Return http status 400 with compile_error if the submitted has compiled error
+    //Return http status 500 otherwise.
     createProblemSubmission: async (req, res, next) => {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
@@ -111,14 +114,20 @@ module.exports = {
             });
             //Once all promises are resolved
             axios.all(promises).then(axios.spread(async (...responses) => {
-                responses.forEach(res => {
-                    let sub = judgeSubmissions.find(e => e.token = res.data.token);
-                    const {memory, time, status} = res.data;
+                for(let i = 0; i < responses.length; ++i){
+                    let response = responses[i];
+                    let sub = judgeSubmissions.find(e => e.token = response.data.token);
+                    const {memory, time, status, compile_output} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
+                    if(status.id == 6){
+                        return res.status(404).json({
+                            //Decode the error since judge0 api will return encoded error
+                            compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
+                    }
 
-                });
+                };
                 let acceptedSub = 0;
                 for(let i = 0; i < judgeSubmissions.length; ++i){
                     let judge = judgeSubmissions[i];

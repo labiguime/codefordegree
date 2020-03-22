@@ -44,7 +44,6 @@ const problemSubmissionSchema = new Schema({
         },
         result: Boolean, //Passed(True) or Failed(False)
     }]
-
 });
 
 module.exports = mongoose.model('Problem_Submission', problemSubmissionSchema);
