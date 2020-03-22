@@ -50,28 +50,31 @@ module.exports = {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
         const {source_code, language_id} = req.body;
+        if(!language_id){
+            return res.status(404).json({error: "Submission needs a language_id value"})
+        }
         const language = languageMap.find(e => e.id == language_id);
         if(!language)
             return res.status(422).json({error: `Language with id ${language_id} doesn't exist`});
-
+        let problem;
         try{
-            const problem = await Problem.findById(problemId);
+            problem = await Problem.findById(problemId);
             if(!problem)
                 return res.status(404).json({error: "Problem not found"});
         }catch(e){
             console.log(e);
             return res.status(500).json({error: "Internal server error"});
         }
-        const problemSub = new ProblemSubmission({source_code, language});
+        const problemSub = new ProblemSubmission({source_code, language, problem_id: problemId});
         //Query for all test cases of problem
-        const testcases = [];
+        let testcases = [];
         try{
             testcases = await Testcase.find({problem_id: problemId});
         }catch(e){
             console.log(e);
             return res.staus(500).json({error: "Internal server error"});
         }
-                //Call third-party api to execute judge submission
+        //Call third-party api to execute judge submission
         const judgeSubmissions = [];
         for(let i = 0; i < testcases.length; ++i){
             const {_id, expected_output, stdin} = testcases[i];
@@ -85,10 +88,11 @@ module.exports = {
                                 stdin,
                                 runtime_limit: problem.runtime_limit
                             });
-                judgeSubmission.token = sub.token;
-                JudegeSubmissions.push(judgeSubmission);
-                problemSub.testcase_results.push({id: _id});
+                judgeSubmission.token = sub.data.token;
+                judgeSubmissions.push(judgeSubmission);
+                problemSub.testcase_results.push({testcase_id: _id});
             }catch(e){
+                console.log(e)
                 return res.status(500).json({error: "Internal server error"});
             }
         }
@@ -97,17 +101,26 @@ module.exports = {
         //Retrieve judge submisison result from third-party api
         setTimeout(async () => {
             judgeSubmissions.forEach(({token}) => {
-                const sub = axios.get(getJudgeGetSubmissionUrl(token));
-                promises.push(sub);
+                try{
+                    const sub = axios.get(getJudgeGetSubmissionUrl(token));
+                    promises.push(sub);
+                }catch(e){
+                    console.log(e);
+                    return res.status(500).json({error: "Internal server error"});
+                }
             });
             //Once all promises are resolved
             axios.all(promises).then(axios.spread(async (...responses) => {
                 responses.forEach(res => {
-                    const sub = judgeSubmissions.find(e => token = res.token);
-                    sub = {...sub, ...res};
+                    let sub = judgeSubmissions.find(e => e.token = res.data.token);
+                    const {memory, time, status} = res.data;
+                    sub.memory = memory;
+                    sub.time = time;
+                    sub.status = status;
+
                 });
                 let acceptedSub = 0;
-                for(let i = 0; i < JudegeSubmissions.length; ++i){
+                for(let i = 0; i < judgeSubmissions.length; ++i){
                     let judge = judgeSubmissions[i];
                     try{
                         await judge.save();
@@ -116,26 +129,39 @@ module.exports = {
                         console.log(e);
                         return res.status(500).json({error: "Internal server error"});
                     }
-                    let test = problemSub.testcase_results.find(e => judge.id == e.testcase_id);
+                    let test = problemSub.testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
                         if(judge.status.id == 3){
                             acceptedSub++;
                             test.result = true;
-                        }else if(e.status.id > 3){
+                        }else if(judge.status.id > 3){
                             test.result = false;
                         }
                     }
-                    problemSub.result = acceptedSub / judgeSubmissions.size;
+                    if(judgeSubmissions.length!= 0)
+                        problemSub.result = acceptedSub / judgeSubmissions.length;
 
                 }
                 problemSub.save(err => {
                     if(err){
                         console.log(err);
-                        return res.status(500).json(err);
+                        return res.status(500).json({error: "Internal server error"});
                     }
+                    ProblemSubmission.populate(problemSub, [
+                        {path: 'problem_id'},
+                        {path: 'testcase_ids'}], (err, problemSub) => {
+                            if(err){
+                                console.log(err);
+                                return res.status(500).json({error: "Internal server error"});
+                            }
+                            return res.status(200).json(problemSub);
+                        })
                 });
-            }));
-        }, 500);
+            })).catch(e => {
+                console.log(e);
+                return res.status(500).json({error: "Internal server error"});
+            });
+        }, 1000);
         
     }
 }

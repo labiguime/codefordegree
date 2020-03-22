@@ -75,14 +75,14 @@ module.exports = {
             */ 
             Course.updateOne({_id: courseId}, {name, description, term},
                 {runValidators: true},
-                (err, course) => {
+                (err) => {
                     if(err){
                         console.log(err);
                         return res.status(400).json({
                             error: "Course cannot be updated"
                         })
                     }
-                    return res.status(200).json(course);
+                    return res.status(200).json({});
             });
         })
 
