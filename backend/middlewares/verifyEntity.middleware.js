@@ -23,7 +23,7 @@ module.exports = {
         }
     },
     verifyCourseAdminOrUser: async (req, res, next) => {
-        const courseId = res.params.courseId || res.locals.courseId;
+        const courseId = req.params.courseId || res.locals.courseId;
         const user_id = req.user_id;
         try{
             const course = await Course.findById(courseId);

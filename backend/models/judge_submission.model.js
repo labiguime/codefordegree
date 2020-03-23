@@ -10,7 +10,10 @@ const judgeSubmissionSchema = new Schema({
     token: String,
     memory: Number, //In kilobytes
     time: Number, //In seconds
-    status: statusSchema,
+    status: {
+        type: statusSchema,
+        required: true
+    },
     testcase_id: {
         type: Schema.Types.ObjectId,
         ref: 'Testcase',

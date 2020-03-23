@@ -33,20 +33,17 @@ const problemSubmissionSchema = new Schema({
         required: true
     },
     //Ids of each small submission for a specific test case
-    judge_submisson_ids: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Judge_Submission'
-        }
-    ],
+    judge_submission_ids: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Judge_Submission'
+    }],
     testcase_results: [{
-        id: {
+        testcase_id: {
             type: Schema.Types.ObjectId,
             ref: 'Testcase'
         },
         result: Boolean, //Passed(True) or Failed(False)
     }]
-
 });
 
 module.exports = mongoose.model('Problem_Submission', problemSubmissionSchema);

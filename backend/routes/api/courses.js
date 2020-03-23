@@ -51,6 +51,7 @@ router.put('/:courseId', verifyCourseAdmin, updateCourse);
  */
 router.use('/:courseId/problems', (req, res, next) => {
   res.locals.courseId = req.params.courseId;
+  next();
 },problemRoute);
 
 module.exports = router;

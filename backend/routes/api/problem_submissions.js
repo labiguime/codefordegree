@@ -3,7 +3,9 @@ const router = express.Router();
 const {getProblemSubmission, 
       getProblemSubmissions,
       createProblemSubmission} = require('../../controllers/problem_submission.controller');
-const {verifyProblem} = require("../../middlewares/verifyEntity.middleware");
+const {verifyProblem, verifyCourseAdminOrUser} = require("../../middlewares/verifyEntity.middleware");
+
+router.use(verifyCourseAdminOrUser);
 
 router.use(verifyProblem);
 

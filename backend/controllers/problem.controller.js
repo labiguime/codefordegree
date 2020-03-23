@@ -16,8 +16,9 @@ problemController.getProblem = async function (req, res) {
 };
 
 problemController.getProblems = async function(req, res) {
+	const {courseId} = res.locals;
 	try {
-		const problems = await Problem.find();
+		const problems = await Problem.find({course_id: courseId});
 		if (!problems) throw Error('Cannot find any problem in the Problem table.');
 		res.status(200).json(problems);
 	} catch (e) {
@@ -68,17 +69,25 @@ problemController.deleteProblem = async function(req, res) {
 
 problemController.updateProblem = async function(req, res) {
 	const {name, description, mark, runtime_limit, deadline} = req.body;
+
+	const updatedFields = {};
+	if(name) updatedFields.name = name;
+	if(description) updatedFields.description = description;
+	if(mark) updatedFields.mark = mark;
+	if(runtime_limit) updatedFields.runtime_limit = runtime_limit;
+	if(deadline) updatedFields.deadline = deadline;
+
 	const {problemId} = req.params;
 
 	try {
 		const updatedProblem = await Problem.updateOne({_id: problemId}, 
-									{name, description, mark, runtime_limit, deadline}
+								    updatedFields
 									, {runValidators: true});
 		if (!updatedProblem) {
 			throw Error('Cannot update this problem.');
 
 		}
-		res.status(200).json({updatedProblem, success: true});
+		res.status(200).json({success: true});
 
 	} catch (e) {
 		res.status(400).json({error: e.message, success: false});
