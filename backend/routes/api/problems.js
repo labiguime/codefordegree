@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const problem = require('../../controllers/problem.controller');
-const problemSubmissions = require('./problem_submissions');
+const problemSubmission = require('./problem_submissions');
+const testcase = require('./testcase');
 const {verifyCourseAdminOrUser, verifyCourseAdmin} = require('../../middlewares/verifyEntity.middleware');
 
 
@@ -45,9 +46,14 @@ router.put('/:problemId',verifyCourseAdmin, problem.updateProblem);
 /**
  * Problem submission routes
  */
-router.use('/:problemId/submissions', verifyCourseAdminOrUser, (req, res, next) => {
+router.use('/:problemId/submissions', (req, res, next) => {
   res.locals.problemId = req.params.problemId;
   next();
-},problemSubmissions);
+},problemSubmission);
+
+router.use('/:problemId/testcases', (req, res, next) => {
+  res.locals.problemId = req.params.problemId;
+  next()
+},testcase);
 
 module.exports = router;

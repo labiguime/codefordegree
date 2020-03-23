@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const testcaseSchema = new Schema({
     stdin: {
         type: String,
-        required: true
     },
     expected_output: {
         type: String,
