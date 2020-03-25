@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import Login from './User/pages/Login'
 import SignUp from './User/pages/SignUp'
 import Dashboard from './User/components/Dashboard'
+import Editor from './CodeEditor/editor';
 import {AuthContext} from './shared/context/auth-context';
 import axios from 'axios';
 import {
@@ -44,8 +45,11 @@ function App() {
     if(isLoggedIn){
       routes = (
         <Switch>
-          <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>}/>
-          <Redirect to="/dashboard" />
+          <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>} exact/>
+          <Route path="/editor" exact >
+              <Editor /> 
+          </Route>
+          <Redirect push to="/dashboard" />
         </Switch>
       )
     }else{
