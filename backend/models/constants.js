@@ -1,5 +1,22 @@
 //Status info retrieved from: https://api.judge0.com/statuses
 //TODO: We might want to write code to get status info from api and put them into db
+const statusId = {
+  IN_QUEUE: 1,
+  PROCESSING: 2,
+  Accepted: 3,
+  WRONG_ANSWER: 4,
+  TIME_LIMIT_EXCEEDED: 5,
+  COMPILATION_ERROR: 6,
+  RUNTIME_ERROR_SIGSEGV: 7,
+  RUNTIME_ERROR_SIGXFSZ: 8,
+  RUNTIME_ERROR_SIGFPE: 9,
+  RUNTIME_ERROR_SIGABRT: 10,
+  RUNTIME_ERROR_NZEC: 11,
+  RUNTIME_ERROR_OTHER: 12,
+  INTERNAL_ERROR: 13,
+  EXEC_FORMAT_ERROR: 14,
+  RUNTIME_ERROR_GENERAL: [7,8,9,10,11,12]
+}
 const statusMap = [
   {
     "id": 1,
@@ -194,5 +211,6 @@ const languageMap = [
 
 module.exports = {
     statusMap,
-    languageMap
+    languageMap,
+    statusId
 };

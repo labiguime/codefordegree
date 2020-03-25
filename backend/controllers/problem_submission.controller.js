@@ -121,7 +121,15 @@ module.exports = {
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
-                    if(status.id == 6){
+                    if(status.id == 6){//Compile error status returned from judge0
+                        problemSub.judge_submission_ids.push(sub._id);
+                        problemSub.status = status;
+                        try{
+                            await problemSub.save();
+                        }catch(e){
+                            console.log(e);
+                            res.status(500).json({error: "Internal server error"});
+                        }
                         return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
                             compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
