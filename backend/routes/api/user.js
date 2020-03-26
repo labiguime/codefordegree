@@ -2,7 +2,7 @@ const auth = require("../../middlewares/auth");
 const express = require("express");
 const router = express.Router();
 const userController = require("../../controllers/user.controller");
-
+const {getProblemSubmissionStat} = require("../../controllers/statistic.controller");
 /**
  * @route        POST api/user
  * @description  Create a New User
@@ -20,5 +20,6 @@ router.post("/", userController.createUser);
  */
 router.get("/me", auth, userController.getCurrentUser);
 
+router.get("/statistic", auth, getProblemSubmissionStat);
 
 module.exports = router;

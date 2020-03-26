@@ -1,6 +1,7 @@
 
 import React, {useState, useEffect, useContext} from 'react';
 import AllCourses from '../../Course/pages/AllCourses';
+import Statistic from '../pages/Statistic';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import SideBar from '../../shared/components/SideBar';
@@ -24,6 +25,9 @@ export default function Dashboard(props){
   switch(pageTitle){
     case "Courses":
       content = <AllCourses />
+      break;
+    case "Statistic":
+      content = <Statistic />
       break;
     default:
       content = <div></div>

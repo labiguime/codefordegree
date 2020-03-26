@@ -6,6 +6,11 @@ const languageSchema = new Schema({
     name: String
 });
 
+const statusSchema = new Schema({
+    id: Number,
+    description: String
+})
+
 const problemSubmissionSchema = new Schema({
     created_at: {
         type: Date,
@@ -14,7 +19,8 @@ const problemSubmissionSchema = new Schema({
     result: {
         type: Number,
         min: 0,
-        max: 1
+        max: 1,
+        default: 0
     },
     user_id: {
         type: Schema.Types.ObjectId,
@@ -43,7 +49,8 @@ const problemSubmissionSchema = new Schema({
             ref: 'Testcase'
         },
         result: Boolean, //Passed(True) or Failed(False)
-    }]
+    }],
+    status: statusSchema
 });
 
 module.exports = mongoose.model('Problem_Submission', problemSubmissionSchema);

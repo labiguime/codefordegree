@@ -36,6 +36,7 @@ module.exports = {
             if(error){
                 return res.status(400).json({error: error});
             }
+            newTestcase.expected_output = Buffer.from(newTestcase.expected_output, 'base64').toString('ascii');
             return res.status(201).json(newTestcase);
         });
     },
