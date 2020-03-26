@@ -19,7 +19,8 @@ const problemSubmissionSchema = new Schema({
     result: {
         type: Number,
         min: 0,
-        max: 1
+        max: 1,
+        default: 0
     },
     user_id: {
         type: Schema.Types.ObjectId,

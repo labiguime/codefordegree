@@ -15,13 +15,13 @@ module.exports = {
                 compileErrorSub = [], 
                 runtimeErrorSub = [];
             userSubmissions.forEach(sub => {
-                if(sub.status.id == statusId.Accepted){
+                if(sub.status.id == statusId.ACCEPTED){
                     acceptedSub.push(sub);
                 }else if(sub.status.id == statusId.COMPILATION_ERROR){
                     compileErrorSub.push(sub);
                 }else if(sub.status.id == statusId.WRONG_ANSWER){
                     wrongAnswerSub.push(sub);
-                }else if(statusId.RUNTIME_ERROR_GENERAL.includes(sub.status.id)){
+                }else if(statusId.RUNTIME_ERRORS.includes(sub.status.id)){
                     runtimeErrorSub.push(sub);
                 }
             });

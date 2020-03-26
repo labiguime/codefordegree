@@ -3,7 +3,7 @@
 const statusId = {
   IN_QUEUE: 1,
   PROCESSING: 2,
-  Accepted: 3,
+  ACCEPTED: 3,
   WRONG_ANSWER: 4,
   TIME_LIMIT_EXCEEDED: 5,
   COMPILATION_ERROR: 6,
@@ -15,66 +15,72 @@ const statusId = {
   RUNTIME_ERROR_OTHER: 12,
   INTERNAL_ERROR: 13,
   EXEC_FORMAT_ERROR: 14,
-  RUNTIME_ERROR_GENERAL: [7,8,9,10,11,12]
+  RUNTIME_ERROR_GENERAL: 15,
+  RUNTIME_ERRORS: [7,8,9,10,11,12, 15],
 }
-const statusMap = [
-  {
+const statusMap = {
+  [statusId.IN_QUEUE]: {
     "id": 1,
     "description": "In Queue"
   },
-  {
+  [statusId.PROCESSING]: {
     "id": 2,
     "description": "Processing"
   },
-  {
+  [statusId.ACCEPTED]: {
     "id": 3,
     "description": "Accepted"
   },
-  {
+  [statusId.WRONG_ANSWER]: {
     "id": 4,
     "description": "Wrong Answer"
   },
-  {
+  [statusId.TIME_LIMIT_EXCEEDED]: {
     "id": 5,
     "description": "Time Limit Exceeded"
   },
-  {
+  [statusId.COMPILATION_ERROR]: {
     "id": 6,
     "description": "Compilation Error"
   },
-  {
+  [statusId.RUNTIME_ERROR_SIGSEGV]: {
     "id": 7,
     "description": "Runtime Error (SIGSEGV)"
   },
-  {
+  [statusId.RUNTIME_ERROR_SIGXFSZ]: {
     "id": 8,
     "description": "Runtime Error (SIGXFSZ)"
   },
-  {
+  [statusId.RUNTIME_ERROR_SIGFPE]: {
     "id": 9,
     "description": "Runtime Error (SIGFPE)"
   },
-  {
+  [statusId.RUNTIME_ERROR_SIGABRT]: {
     "id": 10,
     "description": "Runtime Error (SIGABRT)"
   },
-  {
+  [statusId.RUNTIME_ERROR_NZEC]: {
     "id": 11,
     "description": "Runtime Error (NZEC)"
   },
-  {
+  [statusId.RUNTIME_ERROR_OTHER]: {
     "id": 12,
     "description": "Runtime Error (Other)"
   },
-  {
+  [statusId.INTERNAL_ERROR] : {
     "id": 13,
     "description": "Internal Error"
   },
-  {
+  [statusId.EXEC_FORMAT_ERROR]: {
     "id": 14,
     "description": "Exec Format Error"
+  },
+  [statusId.RUNTIME_ERROR_GENERAL]: {
+    "id": 15,
+    "description": "Runtime Error"
   }
-]
+}
+
 // Laguanges can be retrieved from this: https://api.judge0.com/languages/
 // TODO: We might want to write code to get languages info from api and put them in db
 const languageMap = [

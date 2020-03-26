@@ -2,7 +2,7 @@ const Problem = require("../models/problem.model");
 const ProblemSubmission = require("../models/problem_submission.model");
 const JudegeSubmission = require("../models/judge_submission.model");
 const Testcase = require("../models/testcase.model");
-const {languageMap} = require("../models/constants");
+const {languageMap, statusId, statusMap} = require("../models/constants");
 const axios = require("axios");
 
 
@@ -45,6 +45,7 @@ module.exports = {
             return res.status(500).json({error: "Internal server error"});
         }
     },
+
     //Create submission for each test case and send them to judge0 api to compile
     //Return http status 200 with problem object if there is no error
     //Return http status 400 with compile_error if the submitted has compiled error
@@ -68,7 +69,10 @@ module.exports = {
             console.log(e);
             return res.status(500).json({error: "Internal server error"});
         }
-        const problemSub = new ProblemSubmission({source_code, language, problem_id: problemId});
+        const problemSub = new ProblemSubmission({source_code, 
+                                                  language, 
+                                                  problem_id: problemId,
+                                                  user_id: userId});
         //Query for all test cases of problem
         let testcases = [];
         try{
@@ -85,7 +89,7 @@ module.exports = {
                                     testcase_id: _id});
             try{
                 const sub = await axios.post(getJudgePostSubmissionUrl(), {
-                                source_code,
+                                source_code: Buffer.from(source_code).toString('base64'),
                                 language_id,
                                 expected_output,
                                 stdin,
@@ -137,6 +141,7 @@ module.exports = {
 
                 };
                 let acceptedSub = 0;
+                let wrongAnswerStatus = null, runtimeErrorStatus = null;
                 for(let i = 0; i < judgeSubmissions.length; ++i){
                     let judge = judgeSubmissions[i];
                     try{
@@ -148,16 +153,28 @@ module.exports = {
                     }
                     let test = problemSub.testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
-                        if(judge.status.id == 3){
+                        if(judge.status.id == statusId.ACCEPTED){
                             acceptedSub++;
                             test.result = true;
-                        }else if(judge.status.id > 3){
+                        }else if(judge.status.id > statusId.ACCEPTED){ //Compilation error, wrong answer or runtime error
                             test.result = false;
+                            if(judge.status.id == statusId.WRONG_ANSWER)
+                                wrongAnswerStatus = true;
+                            if(statusId.RUNTIME_ERRORS.includes(judge.status.id)){
+                                runtimeErrorStatus = true;
+                            }
+                                
                         }
                     }
                     if(judgeSubmissions.length!= 0)
                         problemSub.result = acceptedSub / judgeSubmissions.length;
-
+                }
+                if(runtimeErrorStatus){
+                    problemSub.status = statusMap[statusId.RUNTIME_ERROR_GENERAL];
+                }else if(wrongAnswerStatus){
+                    problemSub.status = statusMap[statusId.WRONG_ANSWER];
+                }else{
+                    problemSub.status = statusMap[statusId.ACCEPTED];
                 }
                 problemSub.save(err => {
                     if(err){
