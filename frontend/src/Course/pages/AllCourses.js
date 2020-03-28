@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import CourseForm from '../../shared/components/CourseForm';
-
+import {Link} from 'react-router-dom';
 
 function getModalStyle() {
   const top = 50;
@@ -224,9 +224,7 @@ export default function AllCourses(props){
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
-                        <Button size="small" color="primary">
-                          View
-                        </Button>
+                        <Button size="small" color="primary" color="inherit"><Link className={classes.linkStyle} to="/course/5e7a297d2328eb1aa487a963">View</Link></Button>
                         {admin_id == auth.userInfo._id && 
                             <section className={classes.iconAlignRight}>
                                 <IconButton size="small" 

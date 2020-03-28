@@ -3,6 +3,8 @@ import Login from './User/pages/Login'
 import SignUp from './User/pages/SignUp'
 import Dashboard from './User/components/Dashboard'
 import Problem from './Problem/pages/Problem'
+import Course from './Course/pages/Course'
+
 import Editor from './CodeEditor/editor';
 import {AuthContext} from './shared/context/auth-context';
 import axios from 'axios';
@@ -47,6 +49,7 @@ function App() {
       routes = (
         <Switch>
           <Route path="/problem/:CourseId/:ProblemId" render={(props) => <Problem {...props}/>} exact/>
+          <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
           <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>} exact/>
           <Route path="/editor" exact >
               <Editor /> 
