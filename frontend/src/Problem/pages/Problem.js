@@ -1,8 +1,10 @@
 import React ,{useState, useEffect, useContext} from 'react';
 import axios from 'axios';
+import Editor from '../../CodeEditor/editor'
 
 export default function Problem(props) {
-    const {CourseId, ProblemId} = props;
+    console.log(props);
+    const {CourseId, ProblemId} = props.match.params;
     
     const [problem, setProblem] = useState([]);
 
@@ -28,11 +30,13 @@ export default function Problem(props) {
 
     return (
     <div>
+
         <h1>Problem Name: {problem.name} </h1>
         <p> Description: {problem.description} </p>
         <p> Mark : {problem.mark} </p>
         <p> Runtime : {problem.runtime_limit} ms</p>
         <p> Deadline : {problem.deadline} </p>
+        <Editor />
 
     </div>
     );
