@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import CourseForm from '../../shared/components/CourseForm';
-
+import {COURSE_URL} from '../../shared/constants';
 
 function getModalStyle() {
   const top = 50;
@@ -80,11 +80,13 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2, 4, 3),
       }
 }));
+
 export default function AllCourses(props){
     
     //Context
     const auth = useContext(AuthContext);
-
+    const userInfo = auth.userInfo || {};
+    console.log(props);
     //Modal
     const modalStyle = getModalStyle();
     const [open, setOpen] = useState(false);
@@ -100,18 +102,15 @@ export default function AllCourses(props){
     }
     const classes = useStyles();
     const [allCourses, setAllCourses] = useState([]);
-    const [course, setCourse] = useState([]);
       useEffect(() => {
         const token = localStorage.getItem('token');
         axios({
-          url: 'http://localhost:5000/api/courses',
+          url: COURSE_URL,
           headers: {
             "x-auth-token": token
           }
         }).then((res) => {
-          console.log(res);
-          const allCourses = res.data;
-          setAllCourses(allCourses);
+          setAllCourses([...res.data]);
         }).catch(err => {
           console.log(err);
         });
@@ -120,7 +119,7 @@ export default function AllCourses(props){
     let handleCreateCourse = (data) => {
         const token = localStorage.getItem('token');
         axios({
-          url: 'http://localhost:5000/api/courses',
+          url: COURSE_URL,
           method: "post",
           data: data,
           headers: {
@@ -138,7 +137,7 @@ export default function AllCourses(props){
     let handleEditCourse = (updatedCourse) => {
       const token = localStorage.getItem('token');
       axios({
-        url: 'http://localhost:5000/api/courses/' + updatedCourse._id,
+        url: COURSE_URL + updatedCourse._id,
         method: "put",
         data: updatedCourse,
         headers: {
@@ -159,7 +158,7 @@ export default function AllCourses(props){
     let handleDeleteCourse = (id) => {
         const token = localStorage.getItem('token');
         axios({
-            url: 'http://localhost:5000/api/courses/' + id,
+            url: COURSE_URL + id,
             method: "delete",
             headers: {
                 "x-auth-token": token
@@ -174,7 +173,6 @@ export default function AllCourses(props){
             console.log(err);
         })
     }
-
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
@@ -208,7 +206,7 @@ export default function AllCourses(props){
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
                 {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
-                  admin_id == auth.userInfo._id && 
+                  admin_id == userInfo._id && 
                   <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
@@ -227,7 +225,7 @@ export default function AllCourses(props){
                         <Button size="small" color="primary">
                           View
                         </Button>
-                        {admin_id == auth.userInfo._id && 
+                        {admin_id == userInfo._id && 
                             <section className={classes.iconAlignRight}>
                                 <IconButton size="small" 
                                   color="primary" 

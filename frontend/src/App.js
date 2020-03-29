@@ -2,70 +2,32 @@ import React, {useState, useEffect} from 'react';
 import Login from './User/pages/Login'
 import SignUp from './User/pages/SignUp'
 import Dashboard from './User/components/Dashboard'
+import RequireAuthRoute from './shared/components/RequireAuthRoute';
 import {AuthContext} from './shared/context/auth-context';
 import axios from 'axios';
 import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
-
+import {USER_URL} from './shared/constants';
 
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userInfo, setUserInfo] = useState({});
-    const login = (data) => {
-      localStorage.setItem('token', data.token);
-      setIsLoggedIn(true);
-      setUserInfo(data.user);
-    }
-    const logout = () => {
-      localStorage.setItem('token', '');
-      setIsLoggedIn(false);
-      setUserInfo({});
-    }
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if(token){
-        axios({
-          url: 'http://localhost:5000/api/user/me',
-          headers: {
-            'x-auth-token': token 
-          }
-        }).then(res => {
-                login({token, user: res.data});
-              }).catch(error => {
-                console.log(error);
-              }) 
-      } 
-    }, []);
-    let routes;
-    if(isLoggedIn){
-      routes = (
-        <Switch>
-          <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>}/>
-          <Redirect to="/dashboard" />
-        </Switch>
-      )
-    }else{
-      routes = (
-        <Switch>
-          <Route path="/login" component={Login} exact/>
-          <Route path="/signup" component={SignUp} exact/>
-          <Redirect to="/login" />
-        </Switch>
-      )
-    }
+    let routes = (
+      <Switch>
+        <Route path="/signup" component={SignUp} exact />
+        <Route path="/login" component={Login} exact/>
+        <RequireAuthRoute path="/dashboard" Component={Dashboard} />
+        <Redirect to="/login"/>
+      </Switch>
+    )
     return (
-    <AuthContext.Provider value={{isLoggedIn, login, logout, userInfo}}>
       <div className="App">
         <Router>
           {routes}
         </Router>
       </div>
-    </AuthContext.Provider>
-
   );
 }
 

@@ -11,7 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import Moment from 'react-moment';
-const STATISTIC_API = "http://localhost:5000/api/user/statistic"
+
+const statisticUrl = (process.env.REACT_APP_BASE_URL || "http://localhost:5000/") + "api/user/statistic";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -69,7 +70,7 @@ export default function Statistic(){
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        axios.get(STATISTIC_API, {
+        axios.get(statisticUrl, {
             headers: {
                 "x-auth-token": token
             }

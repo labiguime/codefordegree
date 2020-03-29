@@ -57,11 +57,8 @@ export default function SignIn(props) {
   const { errors, handleSubmit, register} = useForm();
 
   const onSubmit = data => {
-    //axios.post(`http://localhost:5000/api/login`, data)
-      //.then(res => console.log(res.data))
     props.onSubmit(data);
   }
-  console.log(errors);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
