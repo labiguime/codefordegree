@@ -4,13 +4,12 @@ import axios from 'axios';
 export default function Course(props) {
 
     const [course, setCourse] = useState([]);
-    const [problems, setProblems] = useState([]);
     const {CourseId} = props.match.params;
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         try {
-        const fetchCourse = async () => {
+        const fetchProblem = async () => {
             const res = await axios({
                 url: 'http://localhost:5000/api/courses/'+CourseId,
                 method: "get",
@@ -20,15 +19,15 @@ export default function Course(props) {
             });
             setCourse(res.data);
           }
-          fetchCourse();
+          fetchProblem();
         }
         catch (err) {
             console.log(err.message);
         }
-    }, []); 
+    }, []);
 
 
     return (
-    <h1> Course Name : {course.name}</h1>
+        <h1> Course</h1>
     );
 }
