@@ -19,7 +19,12 @@ import Container from '@material-ui/core/Container';
 import Modal from '@material-ui/core/Modal';
 import ProblemForm from '../../shared/components/ProblemForm';
 import Moment from 'react-moment';
+import {Link} from 'react-router-dom';
+import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import axios from 'axios';
+import moment from 'moment'
 
 function getModalStyle() {
   const top = 50;
@@ -94,6 +99,18 @@ export default function Course(props) {
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
     }
+
+    const handleOpenModalEx = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      // setOpen(true);
+      let dl = defaultValueMap.deadline;
+      if (dl) {
+          const date = moment(dl, "YYYY-MM-DD");
+          defaultValueMap.deadline = date.format('MM-DD-YYYY');
+      }
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setOpen(true);
+    }
+
     const handleCloseModal = () => {
       setModalState({});
       setOpen(false);
@@ -112,6 +129,47 @@ export default function Course(props) {
           const newProblem = res.data;
           console.log(newProblem);
           setAllProblems([...allProblems, newProblem]);
+          setOpen(false);
+        }).catch(err => {
+          console.log(err);
+        })
+    }
+
+    let handleEditProblem = (data) => {
+        const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data._id,
+          method: "put",
+          data: data,
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          const newProblems = allProblems.map(e => {
+            if(e._id == data._id)
+              return data;
+            return e;
+          });
+          setAllProblems(newProblems);
+          setOpen(false);
+        }).catch(err => {
+          console.log(err);
+        })
+    }
+
+    let handleDeleteProblem = (data) => {
+        const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data,
+          method: "delete",
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          const newProblems = allProblems.filter(e => {
+            return e._id != data;
+          });
+          setAllProblems(newProblems);
           setOpen(false);
         }).catch(err => {
           console.log(err);
@@ -153,18 +211,17 @@ export default function Course(props) {
 
     return (
         <div>
+            <Modal onClose={handleCloseModal} open={open}>
+                <div style={modalStyle} className={classes.modalBox}>
+                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
+                   <ProblemForm
+                      buttonTitle={modalState.buttonTitle}
+                      defaultValueMap={modalState.defaultValueMap}
+                      onSubmit={modalState.onSubmit}
+                   />
+                </div>
+            </Modal>
             <Container>
-                <Modal onClose={handleCloseModal} open={open}>
-                    <div style={modalStyle} className={classes.modalBox}>
-                      <h1 className={classes.modalTitle}> {modalState.title}</h1>
-                       <ProblemForm
-                          buttonTitle={modalState.buttonTitle}
-                          defaultValueMap={modalState.defaultValueMap}
-                          //onSubmit={(data) => handleCreateCourse(data)}
-                          onSubmit={modalState.onSubmit}
-                       />
-                    </div>
-                </Modal>
                 <br />
                 <Card className={classes.card}>
                   <CardContent className={classes.cardContent}>
@@ -215,17 +272,45 @@ export default function Course(props) {
                              <TableCell>Total marks</TableCell>
                              <TableCell align="left">Deadline</TableCell>
                              <TableCell align="left">Success ratio</TableCell>
+                             <TableCell align="left">Action</TableCell>
                          </TableRow>
                          </TableHead>
                          <TableBody>
                          {allProblems.map((data, index) => (
                              <TableRow key={index}>
-                             <TableCell>{data.name}</TableCell>
+                             <TableCell>
+                             <Button size="small" color="primary" color="inherit"><Link to={ "/problem/"+CourseId+"/"+data._id  }>{data.name}</Link></Button></TableCell>
                              <TableCell>{data.mark}</TableCell>
                              <TableCell component="th" scope="row" align="left">
                                  <Moment format="HH:mm on MMM D, YYYY ">{data.deadline}</Moment> (<Moment fromNow style={{color: "blue"}}>{data.deadline}</Moment>)
                              </TableCell>
                              <TableCell align="left">0</TableCell>
+                             <TableCell>
+
+                                 <IconButton size="small"
+                                   color="primary"
+                                   onClick={() => handleOpenModalEx(
+                                                                 "Edit problem",
+                                                                 "Save changes",
+                                                                 data,
+                                                                 ((d) => handleEditProblem(d)))}
+                                 >
+                                     <EditIcon/>
+                                 </IconButton>
+
+                                 <IconButton
+                                     size="small"
+                                     color="primary"
+                                     onClick={() => {
+                                         let isOk = window.confirm("Are you sure that you want to delete this problem?")
+                                         if(isOk)
+                                             handleDeleteProblem(data._id);
+                                     }}
+                                 >
+                                     <DeleteIcon />
+                                 </IconButton>
+
+                             </TableCell>
                              </TableRow>
                          ))}
                          </TableBody>

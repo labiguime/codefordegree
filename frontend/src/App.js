@@ -35,14 +35,14 @@ function App() {
         axios({
           url: 'http://localhost:5000/api/user/me',
           headers: {
-            'x-auth-token': token 
+            'x-auth-token': token
           }
         }).then(res => {
                 login({token, user: res.data});
               }).catch(error => {
                 console.log(error);
-              }) 
-      } 
+              })
+      }
     }, []);
     let routes;
     if(isLoggedIn){
@@ -52,7 +52,7 @@ function App() {
           <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
           <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>} exact/>
           <Route path="/editor" exact >
-              <Editor /> 
+              <Editor />
           </Route>
           <Redirect push to="/dashboard" />
         </Switch>

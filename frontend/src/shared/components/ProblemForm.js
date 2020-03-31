@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-
+import moment from 'moment'
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -97,7 +97,7 @@ export default function AddProblemForm(props) {
 
 		  <TextField
 		  	label="Runtime limit (in ms)"
-		  	id="problem-dead"
+		  	id="problem-runtime_limit"
 		  	className={classes.rtField}
 		  	color='secondary'
 		  	onBlur={handleRuntimeLimitChange}
@@ -118,11 +118,13 @@ export default function AddProblemForm(props) {
 	    <br />
 		&nbsp; Deadline: &ensp;
 		<DatePicker
-	  	  id="Term"
-	  	  selected={problemInfo.deadline}
+	  	  id="problem-deadline"
+		  dateFormat="MM-dd-yyyy"
+		  selected={moment(problemInfo.deadline).toDate()}
+	  	  value={problemInfo.deadline}
 	  	  onChange={handleDeadlineChange}
 	  	  color='secondary'
-	  	  defaultValue={defaultValueMap && defaultValueMap["term"]}
+	  	  defaultValue={defaultValueMap && defaultValueMap["deadline"]}
   	  	/>
 	  </Typography>
 

@@ -19,7 +19,7 @@ export default function Dashboard(props){
   //const classes = useStyles();
   const [pageTitle, setPageTitle] = useState("Courses");
   const auth = useContext(AuthContext);
-  
+
   let content;
   switch(pageTitle){
     case "Courses":
@@ -43,8 +43,8 @@ export default function Dashboard(props){
       <CssBaseline />
       <SideBar title={pageTitle} content={content} >
         {sections.map((section, index) => (
-          <ListItem selected={section.title == pageTitle} 
-                    button key={index} 
+          <ListItem selected={section.title == pageTitle}
+                    button key={index}
                     onClick={() => {setPageTitle(section.title)}}>
             <ListItemIcon>
               {section.icon}
@@ -52,7 +52,7 @@ export default function Dashboard(props){
             <ListItemText primary={section.title}/>
           </ListItem>
         ))}
-        <ListItem 
+        <ListItem
         button
         onClick={auth.logout}>
             <ListItemIcon>
@@ -62,7 +62,7 @@ export default function Dashboard(props){
               Sign out
             </ListItemText>
         </ListItem>
-        
+
       </SideBar>
     </React.Fragment>
   );
