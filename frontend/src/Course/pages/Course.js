@@ -100,6 +100,21 @@ export default function Course(props) {
 
     let handleCreateProblem = (data) => {
         const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/',
+          method: "post",
+          data: data,
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          const newProblem = res.data;
+          console.log(newProblem);
+          setAllProblems([...allProblems, newProblem]);
+          setOpen(false);
+        }).catch(err => {
+          console.log(err);
+        })
     }
 
     const classes = useStyles();
