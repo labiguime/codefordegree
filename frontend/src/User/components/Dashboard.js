@@ -14,7 +14,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
 import { AuthContext } from '../../shared/context/auth-context';
 
-
 export default function Dashboard(props){
 
   //const classes = useStyles();
@@ -24,7 +23,7 @@ export default function Dashboard(props){
   let content;
   switch(pageTitle){
     case "Courses":
-      content = <AllCourses />
+      content = <AllCourses/>
       break;
     case "Statistic":
       content = <Statistic />
