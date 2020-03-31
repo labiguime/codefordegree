@@ -1,5 +1,9 @@
 import React, {useState, useEffect, useContext} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,12 +19,39 @@ import Container from '@material-ui/core/Container';
 import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
-      iconAlignRight: {
+    root: {
+        flexGrow: 1
+    },
+    iconAlignRight: {
           marginLeft:'auto'
-      },
-      problemTableTitlingHeader: {
+    },
+    problemTableTitlingHeader: {
         display: 'flex'
-      }
+    },
+    textCenter: {
+        textAlign: 'center'
+    },
+    cardGrid: {
+      paddingTop: theme.spacing(8),
+      paddingBottom: theme.spacing(8),
+    },
+    card: {
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    cardMedia: {
+      paddingTop: '56.25%', // 16:9
+    },
+    cardContent: {
+      flexGrow: 1,
+    },
+    textRight: {
+        textAlign: 'right'
+    },
+    alignCenter: {
+        alignItems: 'center'
+    }
 }));
 
 export default function Course(props) {
@@ -55,14 +86,38 @@ export default function Course(props) {
     return (
         <div>
             <Container>
-                <Typography variant="h6" >
-                  Course name:
-                </Typography>
-                <Typography variant="h6" >
-                  Description:
-                </Typography>
+                <br />
+                <Card className={classes.card}>
+                  <CardContent className={classes.cardContent}>
+                      <Grid container>
+                          <Grid item xs={6}>
+                              <Typography variant="h5">
+                                Course name: CMPT 470
+                              </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                              <Typography variant="h5" className={classes.textRight}>
+                                Administrator: Leo Abiguime
+                              </Typography>
+                          </Grid>
+                      </Grid>
+                      <br />
+                      <Divider />
+                      <br />
+                      <Grid container>
+                          <Grid item xs={12}>
+                              <Typography variant="h6" className={classes.textCenter}>
+                                This course has always been about finding your true self through meditation and yoga. You will rediscover the joys of stretching your body through well thought exercises.
+                              </Typography>
+                          </Grid>
+                      </Grid>
+
+                  </CardContent>
+                </Card>
+                <br />
+                <br />
                 <div className={classes.problemTableTitlingHeader}>
-                  <Typography variant="h6" >
+                  <Typography variant="h6" className={classes.alignCenter} >
                     List of problems
                   </Typography>
                   <ToolTip title="Create problem" placement="top">
