@@ -18,6 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 import Container from '@material-ui/core/Container';
 import Modal from '@material-ui/core/Modal';
 import ProblemForm from '../../shared/components/ProblemForm';
+import Moment from 'react-moment';
 import axios from 'axios';
 
 function getModalStyle() {
@@ -139,7 +140,8 @@ export default function Course(props) {
                         "x-auth-token": token
                     }
                 });
-                setAllProblems(problemsData);
+                const myProblems = problemsData.data;
+                setAllProblems(myProblems);
             }
             fetchData();
         }
@@ -210,13 +212,22 @@ export default function Course(props) {
                          <TableHead>
                          <TableRow>
                              <TableCell>Name</TableCell>
-                             <TableCell align="left">Description</TableCell>
+                             <TableCell>Total marks</TableCell>
                              <TableCell align="left">Deadline</TableCell>
                              <TableCell align="left">Success ratio</TableCell>
                          </TableRow>
                          </TableHead>
                          <TableBody>
-
+                         {allProblems.map((data, index) => (
+                             <TableRow key={index}>
+                             <TableCell>{data.name}</TableCell>
+                             <TableCell>{data.mark}</TableCell>
+                             <TableCell component="th" scope="row" align="left">
+                                 <Moment format="HH:mm on MMM D, YYYY ">{data.deadline}</Moment> (<Moment fromNow style={{color: "blue"}}>{data.deadline}</Moment>)
+                             </TableCell>
+                             <TableCell align="left">0</TableCell>
+                             </TableRow>
+                         ))}
                          </TableBody>
                      </Table>
                  </TableContainer>
