@@ -16,9 +16,25 @@ import Divider from '@material-ui/core/Divider';
 import ToolTip from '@material-ui/core/Tooltip';
 import AddIcon from '@material-ui/icons/Add';
 import Container from '@material-ui/core/Container';
+import Modal from '@material-ui/core/Modal';
+import ProblemForm from '../../shared/components/ProblemForm';
 import axios from 'axios';
 
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  };
+}
+
 const useStyles = makeStyles(theme => ({
+    modalTitle: {
+        textAlign: "center"
+    },
     root: {
         flexGrow: 1
     },
@@ -51,6 +67,14 @@ const useStyles = makeStyles(theme => ({
     },
     alignCenter: {
         alignItems: 'center'
+    },
+    modalBox: {
+      position: 'absolute',
+      width: "70%",
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid black',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
     }
 }));
 
@@ -58,15 +82,32 @@ export default function Course(props) {
 
     const [course, setCourse] = useState([]);
     const [user, setUser] = useState([]);
+    const [allProblems, setAllProblems] = useState([]);
     const {CourseId} = props.match.params;
 
+    const [open, setOpen] = useState(false);
+    const modalStyle = getModalStyle();
+    const [modalState, setModalState] = useState({});
+    const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      // setOpen(true);
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setOpen(true);
+    }
+    const handleCloseModal = () => {
+      setModalState({});
+      setOpen(false);
+    }
+
+    let handleCreateProblem = (data) => {
+        const token = localStorage.getItem('token');
+    }
 
     const classes = useStyles();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         try {
-            const fetchProblem = async () => {
+            const fetchData = async () => {
                 const res = await axios({
                     url: 'http://localhost:5000/api/courses/'+CourseId,
                     method: "get",
@@ -75,10 +116,17 @@ export default function Course(props) {
                     }
                 });
                 setCourse(res.data);
-                const adminId = res.data.admin_id;
-                setUser(adminId);
+                setUser(res.data.admin_id);
+                const problemsData = await axios({
+                    url: 'http://localhost:5000/api/courses/'+CourseId+'/problems',
+                    method: "get",
+                    headers: {
+                        "x-auth-token": token
+                    }
+                });
+                setAllProblems(problemsData);
             }
-            fetchProblem();
+            fetchData();
         }
         catch (err) {
             console.log(err.message);
@@ -89,6 +137,17 @@ export default function Course(props) {
     return (
         <div>
             <Container>
+                <Modal onClose={handleCloseModal} open={open}>
+                    <div style={modalStyle} className={classes.modalBox}>
+                      <h1 className={classes.modalTitle}> {modalState.title}</h1>
+                       <ProblemForm
+                          buttonTitle={modalState.buttonTitle}
+                          defaultValueMap={modalState.defaultValueMap}
+                          //onSubmit={(data) => handleCreateCourse(data)}
+                          onSubmit={modalState.onSubmit}
+                       />
+                    </div>
+                </Modal>
                 <br />
                 <Card className={classes.card}>
                   <CardContent className={classes.cardContent}>
@@ -124,7 +183,8 @@ export default function Course(props) {
                     List of problems
                   </Typography>
                   <ToolTip title="Create problem" placement="top">
-                    <IconButton color="primary" className={classes.iconAlignRight}>
+                    <IconButton color="primary" className={classes.iconAlignRight}
+                    onClick={() => handleOpenModal("Creating new problem", "Create problem", {},  handleCreateProblem)}>
                         <AddIcon />
                     </IconButton>
                   </ToolTip>
