@@ -75,17 +75,8 @@ export default function Course(props) {
                     }
                 });
                 setCourse(res.data);
-
                 const adminId = res.data.admin_id;
-
-                const userData = await axios({
-                    url: 'http://localhost:5000/api/user/me', // When GET will be made we must change /me/ with /adminId/
-                    method: "get",
-                    headers: {
-                        "x-auth-token": token
-                    }
-                });
-                setUser(userData.data);
+                setUser(adminId);
             }
             fetchProblem();
         }

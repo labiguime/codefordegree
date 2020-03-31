@@ -41,14 +41,4 @@ userController.getCurrentUser = async function(req, res) {
   }
 };
 
-userController.getUser = async function(req, res) {
-  try {
-    const {userId} = req.params;
-    const user = await User.findById(userId).select("-password -__v");
-    return res.status(200).json(user);
-  } catch (err) {
-    return res.status(400).json({error: err.message});
-  }
-};
-
 module.exports = userController;
