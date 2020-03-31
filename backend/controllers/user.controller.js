@@ -7,7 +7,7 @@ let userController = {};
 userController.createUser = async function (req, res) {
   //Validate user input
   const { error } = validate(req.body);
-  if (error) 
+  if (error)
     return res.status(400).json({error: error.details[0].message});
 
   try {
@@ -35,6 +35,16 @@ userController.createUser = async function (req, res) {
 userController.getCurrentUser = async function(req, res) {
   try {
     const user = await User.findById(req.user_id).select("-password -__v");
+    return res.status(200).json(user);
+  } catch (err) {
+    return res.status(400).json({error: err.message});
+  }
+};
+
+userController.getUser = async function(req, res) {
+  try {
+    const {userId} = req.params;
+    const user = await User.findById(userId).select("-password -__v");
     return res.status(200).json(user);
   } catch (err) {
     return res.status(400).json({error: err.message});
