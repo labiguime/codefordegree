@@ -66,13 +66,13 @@ module.exports = {
                 })
             }
             //Check if userId equals the authenticated user
-            /* 
+            /*
             if(courseTobeUpdated.admin_id != userId){
                 return res.status(400).json({
                     error: "Course can only modified by admin"
                 })
             }
-            */ 
+            */
             Course.updateOne({_id: courseId}, {name, description, term},
                 {runValidators: true},
                 (err) => {

@@ -117,6 +117,8 @@ export default function AllCourses(props){
         }).catch(err => {
           console.log(err);
         });
+
+
       }, []);
 
     let handleCreateCourse = (data) => {
