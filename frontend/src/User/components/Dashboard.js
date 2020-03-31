@@ -2,6 +2,8 @@
 import React, {useState, useEffect, useContext} from 'react';
 import AllCourses from '../../Course/pages/AllCourses';
 import Statistic from '../pages/Statistic';
+import UserProfile from '../pages/UserProfile';
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import SideBar from '../../shared/components/SideBar';
@@ -28,6 +30,9 @@ export default function Dashboard(props){
       break;
     case "Statistic":
       content = <Statistic />
+      break;
+    case "Profile":
+      content = <UserProfile />
       break;
     default:
       content = <div></div>
