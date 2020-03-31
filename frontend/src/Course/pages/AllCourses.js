@@ -30,7 +30,7 @@ function getModalStyle() {
   };
 }
 const useStyles = makeStyles(theme => ({
-      modalTitle: {  
+      modalTitle: {
       textAlign: "center"
       },
       icon: {
@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(6),
       },
       iconAlignRight: {
-          marginLeft:'auto' 
+          marginLeft:'auto'
       },
       courseGroupHeader: {
         display: 'flex'
@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
       }
 }));
 export default function AllCourses(props){
-    
+
     //Context
     const auth = useContext(AuthContext);
 
@@ -155,7 +155,7 @@ export default function AllCourses(props){
       }).catch(err => {
         console.log(err);
       })
-  } 
+  }
     let handleDeleteCourse = (id) => {
         const token = localStorage.getItem('token');
         axios({
@@ -191,13 +191,13 @@ export default function AllCourses(props){
                 </div>
             </Modal>
             <div className={classes.courseGroupHeader}  >
-              <Typography variant="h4" > 
+              <Typography variant="h4" >
                 Administrative Courses
               </Typography>
               <ToolTip title="Create course" placement="top">
-                <IconButton 
-                    color="primary" 
-                    className={classes.iconAlignRight} 
+                <IconButton
+                    color="primary"
+                    className={classes.iconAlignRight}
                     onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse)}
                 >
                     <AddIcon />
@@ -208,7 +208,7 @@ export default function AllCourses(props){
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
                 {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
-                  admin_id == auth.userInfo._id && 
+                  admin_id == auth.userInfo._id &&
                   <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
@@ -224,30 +224,30 @@ export default function AllCourses(props){
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
-                        <Button size="small" color="primary" color="inherit"><Link className={classes.linkStyle} to="/course/5e7a297d2328eb1aa487a963">View</Link></Button>
-                        {admin_id == auth.userInfo._id && 
+                        <Button size="small" color="primary" color="inherit"><Link className={classes.linkStyle} to="/course/5e832dcbb9711b4cac9c13bb">View</Link></Button>
+                        {admin_id == auth.userInfo._id &&
                             <section className={classes.iconAlignRight}>
-                                <IconButton size="small" 
-                                  color="primary" 
+                                <IconButton size="small"
+                                  color="primary"
                                   // onClick={() => handleOpenModal("Edit course", "Save", {name, term, description}, () => {console.log("EDit")})}
                                   onClick={() => handleOpenModal(
                                                                 "Edit course",
-                                                                "Save", 
+                                                                "Save",
                                                                 allCourses[idx],
                                                                 ((data) => handleEditCourse(data)))}
                                 >
-                                    <EditIcon/> 
+                                    <EditIcon/>
                                 </IconButton>
-                                <IconButton  
-                                    size="small" 
-                                    color="primary" 
+                                <IconButton
+                                    size="small"
+                                    color="primary"
                                     onClick={() => {
                                         let isOk = window.confirm("Are you sure to delete this course")
                                         if(isOk)
                                             handleDeleteCourse(_id);
                                     }}
                                 >
-                                    <DeleteIcon /> 
+                                    <DeleteIcon />
                                 </IconButton>
 
                             </section>

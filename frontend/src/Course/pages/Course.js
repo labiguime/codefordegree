@@ -57,6 +57,7 @@ const useStyles = makeStyles(theme => ({
 export default function Course(props) {
 
     const [course, setCourse] = useState([]);
+    const [user, setUser] = useState([]);
     const {CourseId} = props.match.params;
 
 
@@ -65,17 +66,28 @@ export default function Course(props) {
     useEffect(() => {
         const token = localStorage.getItem('token');
         try {
-        const fetchProblem = async () => {
-            const res = await axios({
-                url: 'http://localhost:5000/api/courses/'+CourseId,
-                method: "get",
-                headers: {
-                    "x-auth-token": token
-                }
-            });
-            setCourse(res.data);
-          }
-          fetchProblem();
+            const fetchProblem = async () => {
+                const res = await axios({
+                    url: 'http://localhost:5000/api/courses/'+CourseId,
+                    method: "get",
+                    headers: {
+                        "x-auth-token": token
+                    }
+                });
+                setCourse(res.data);
+
+                const adminId = res.data.admin_id;
+
+                const userData = await axios({
+                    url: 'http://localhost:5000/api/user/me', // When GET will be made we must change /me/ with /adminId/
+                    method: "get",
+                    headers: {
+                        "x-auth-token": token
+                    }
+                });
+                setUser(userData.data);
+            }
+            fetchProblem();
         }
         catch (err) {
             console.log(err.message);
@@ -92,12 +104,12 @@ export default function Course(props) {
                       <Grid container>
                           <Grid item xs={6}>
                               <Typography variant="h5">
-                                Course name: CMPT 470
+                                Course: {course.name}
                               </Typography>
                           </Grid>
                           <Grid item xs={6}>
                               <Typography variant="h5" className={classes.textRight}>
-                                Administrator: Leo Abiguime
+                                Administrator: {user.name}
                               </Typography>
                           </Grid>
                       </Grid>
@@ -107,7 +119,7 @@ export default function Course(props) {
                       <Grid container>
                           <Grid item xs={12}>
                               <Typography variant="h6" className={classes.textCenter}>
-                                This course has always been about finding your true self through meditation and yoga. You will rediscover the joys of stretching your body through well thought exercises.
+                                {course.description}
                               </Typography>
                           </Grid>
                       </Grid>
