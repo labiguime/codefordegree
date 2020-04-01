@@ -92,16 +92,28 @@ export default function AllCourses(props){
     const [enrolledCoursesModalOpen, setEnrolledCoursesModalOpen] = useState(false);
     const [modalState, setModalState] = useState({});
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      // setOpen(true);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
     }
+
+    const handleOpenModalEnrolled = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setEnrolledCoursesModalOpen(true);
+    }
+
     const handleCloseModal = () => {
       setModalState({});
       setOpen(false);
     }
+
+    const handleCloseModalEnrolled = () => {
+      setModalState({});
+      setEnrolledCoursesModalOpen(false);
+    }
     const classes = useStyles();
     const [allCourses, setAllCourses] = useState([]);
+    const [coursesAvailable, setCoursesAvailable] = useState([]);
+    const [coursesEnrolled, setCoursesEnrolled] = useState([]);
     const [course, setCourse] = useState([]);
       useEffect(() => {
         const token = localStorage.getItem('token');
@@ -114,6 +126,34 @@ export default function AllCourses(props){
           console.log(res);
           const allCourses = res.data;
           setAllCourses(allCourses);
+          console.log(allCourses);
+        }).catch(err => {
+          console.log(err);
+        });
+
+        axios({
+          url: 'http://localhost:5000/api/courses/all',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesAvailable(c);
+          console.log(c);
+        }).catch(err => {
+          console.log(err);
+        });
+
+        axios({
+          url: 'http://localhost:5000/api/courses/enrolled',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesEnrolled(c);
         }).catch(err => {
           console.log(err);
         });
@@ -186,7 +226,7 @@ export default function AllCourses(props){
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
           <div className={classes.main}  >
-            <Modal onClose={handleCloseModal} open={open}>
+            <Modal onClose={handleCloseModalEnrolled} open={enrolledCoursesModalOpen}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h1 className={classes.modalTitle}> {modalState.title}</h1>
                    <EnrollmentModal
@@ -197,7 +237,7 @@ export default function AllCourses(props){
                    />
                 </div>
             </Modal>
-            <Modal onClose={handleCloseModal} open={enrolledCoursesModalOpen}>
+            <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h1 className={classes.modalTitle}> {modalState.title}</h1>
                    <CourseForm
@@ -288,7 +328,7 @@ export default function AllCourses(props){
                 <IconButton
                     color="primary"
                     className={classes.iconAlignRight}
-                    onClick={() => handleOpenModal("Enroll in a course", "Enroll", {},  handleEnrollCourse)}
+                    onClick={() => handleOpenModalEnrolled("Enroll in a course", "Enroll", (coursesAvailable),  handleEnrollCourse)}
                 >
                     <AddIcon />
                 </IconButton>
@@ -297,7 +337,7 @@ export default function AllCourses(props){
             <Divider />
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
-                {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
+                {coursesEnrolled.map(({admin_id, name, term, description, _id}, idx) => (
                   admin_id == auth.userInfo._id &&
                   <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
