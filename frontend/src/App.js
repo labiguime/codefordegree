@@ -20,11 +20,14 @@ function App() {
     return (
       <div className="App">
         <Router>
-          <Switch>
+          <Switch>  
             <Route path="/signup" component={SignUp} exact />
             <Route path="/login" component={Login} exact/>
+            
+            {/* TODO: These paths need to be private */}
             <Route path="/problem/:CourseId/:ProblemId" render={(props) => <Problem {...props}/>} exact/>
             <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
+
             {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
             <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
             <RequireAuthRoute exact path="/statistic" Component={Statistic}/>
