@@ -16,10 +16,15 @@ import Typography from '@material-ui/core/Typography';
 import ExpandedMoreIcon from '@material-ui/icons/ExpandMore';
 import CheckIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import CrossIcon from '@material-ui/icons/CancelRounded';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import "ace-builds/src-noconflict/theme-twilight";
 import "ace-builds/src-noconflict/theme-xcode";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/mode-c_cpp";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/mode-python";
+import {languageMap, languagePlaceHolder} from '../shared/constants';
 import Axios from 'axios';
 
 function ExpansibleTestCases(props){
@@ -28,6 +33,7 @@ function ExpansibleTestCases(props){
             stdin: "",
             stdout: "",
             expected_output: "",
+            hidden: True or False,
             result: True or False
         }]
     */
@@ -37,19 +43,19 @@ function ExpansibleTestCases(props){
         <React.Fragment>
             {testcases.map((testcase, index) => {
                 let icon;
-                if(testcase.result == true)
-                    icon = <CheckIcon style={{color: "green"}}/>
-                else if(testcase.result == false)
-                    icon = <CrossIcon style={{color: "red"}}/>
-                return (<ExpansionPanel>
+                if(!testcase.hidden){
+                    if(testcase.result == true)
+                        icon = <CheckIcon style={{color: "green"}}/>
+                    else if(testcase.result == false)
+                        icon = <CrossIcon style={{color: "red"}}/>
+                }
+                return (<ExpansionPanel disabled={testcase.hidden} style={{marginBottom: "10px"}}>
                     <ExpansionPanelSummary
                     expandIcon={<ExpandedMoreIcon />}
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                     >
-                       <Typography>
-                            Test case {index+1} {icon}    
-                        </Typography> 
+                            Test case {index+1} <span style={{marginLeft: "5px"}}>{icon}</span>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                     <Typography>
@@ -100,18 +106,27 @@ export default function Editor(props) {
         mode: "javascript",
         fontSize: 14,
         theme: "xcode",
-
     });
+    const [submitting, setSubmitting] = useState(false);
+    let source_code = languagePlaceHolder[editorState.mode];
     const {courseId, problemId} = props;
+
     function handleEditorStateChange(newState){
+        if(newState.mode == "c++")
+            newState.mode = "c_cpp";
         setEditorState({...editorState, ...newState});
     }
+
     function handleConsoleExpandClick(){
         setConsoleExpanded(!consoleExpanded);
     }
+
     function onChange(value) {
         // props.onCodeChange(value);
+        source_code = value;
+        console.log(source_code);
     }
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         axios({
@@ -126,10 +141,70 @@ export default function Editor(props) {
             console.log(error);
         })
     }, [])
+
     function handleSplitSizeChange(size){
         setSplitSize(size);
     }
-    console.log(splitSize);
+
+    function handleSubmitCode(){
+        const token = localStorage.getItem('token');
+        setSubmitting(true);
+        axios({
+            url: `http://localhost:5000/api/courses/${courseId}/problems/${problemId}/submissions`,
+            method: "post",
+            headers: {
+                'x-auth-token': token
+            },
+            data: {
+                source_code: source_code,
+                language_id: languageMap[editorState.mode]
+            }
+        }).then(res => {
+            let testcaseResults = res.data.testcase_results;
+            let newTestCasesState = testcases.map(testcase => {
+                let result = testcaseResults.find(e => e.testcase_id == testcase._id).result;
+                return {...testcase, result};
+            })
+            setSubmitting(false);
+            setConsoleExpanded(true);
+            setTestcases(newTestCasesState);
+        }).catch(error => {
+            console.log(error);
+            setSubmitting(false);
+        })
+    }
+
+    function handleRunCode(){
+        const token = localStorage.getItem('token');
+        setSubmitting(true);
+        axios({
+            url: `http://localhost:5000/api/courses/${courseId}/problems/${problemId}/submissions/test`,
+            method: "post",
+            headers: {
+                'x-auth-token': token
+            },
+            data: {
+                source_code: source_code,
+                language_id: languageMap[editorState.mode],
+            }
+        }).then(res => {
+            let testcaseResults = res.data.testcase_results;
+            let newTestCasesState = testcases.map(testcase => {
+                let updatedTestCase = testcaseResults.find(e => e.testcase_id == testcase._id);
+                if(updatedTestCase)
+                    return {...testcase, result: updatedTestCase.result};
+                return testcase;
+            })
+            setSubmitting(false);
+            setConsoleExpanded(true);
+            setTestcases(newTestCasesState);
+        }).catch(error => {
+            console.log(error);
+            setSubmitting(false);
+        })
+    }
+
+    console.log(testcases);
     return (
         <SplitPane 
             split="horizontal"
@@ -148,8 +223,8 @@ export default function Editor(props) {
                       onChange={(event) => handleEditorStateChange({mode: event.target.value})}
                     >
                       <MenuItem value={"javascript"}>javascript</MenuItem>
-                      <MenuItem value={"c++"}>c++</MenuItem>
-                      <MenuItem value={"java"}>java</MenuItem>
+                      <MenuItem value={"c_cpp"}>c++</MenuItem>
+                      <MenuItem value={"python"}>python 3</MenuItem>
                     </Select>
                 </FormControl>
                 <FormControl className={classes.formControl}>
@@ -167,12 +242,12 @@ export default function Editor(props) {
                 </FormControl>
                 <AceEditor
                     {...editorState}
-                    name="blah2"
+                    name="editor"
+                    value={source_code}
                     onChange={onChange}
                     showPrintMargin={true}
                     showGutter={true}
                     highlightActiveLine={true}
-                    value={props.value}
                     setOptions={{
                         enableBasicAutocompletion: false,
                         enableLiveAutocompletion: false,
@@ -181,9 +256,11 @@ export default function Editor(props) {
                         tabSize: 2,
                     }} 
                     height={splitSize - 50}
+                    width="100%"
                 />
             </Pane>
             <Pane >
+                {submitting && <LinearProgress color="secondary"/>}
                 <div className={classes.submitGroup}>
                     <div>
                         <Button onClick={handleConsoleExpandClick}
@@ -196,10 +273,14 @@ export default function Editor(props) {
                         </Button>
                     </div>
                     <div style={{marginLeft: 'auto'}}>
-                        <Button variant="contained" style={{marginRight: 10}}>Run code</Button>
+                        <Button variant="contained" style={{marginRight: 10}} onClick={handleRunCode}>
+                            Run code
+                        </Button>
                     </div>
                     <div>
-                        <Button variant="contained" color="primary">Submit</Button>
+                        <Button variant="contained" color="primary" onClick={handleSubmitCode}>
+                            Submit
+                        </Button>
                     </div>
                 </div>
                 {consoleExpanded && <TabWrapper 

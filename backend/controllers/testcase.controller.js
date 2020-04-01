@@ -51,10 +51,11 @@ module.exports = {
     },
 
     updateTestcase: (req, res, next) => {
-        const {stdin, expected_output} = req.body;
+        const {stdin, expected_output, hidden} = req.body;
         const updatedObj = {};
         if(stdin) updatedObj.stdin = stdin;
         if(expected_output) updatedObj.expected_output = expected_output;
+        if(hidden) updatedObj.hidden = hidden;
         const {testcaseId} = req.params;
         Testcase.updateOne({_id: testcaseId}, updatedObj, (err) => {
             if(err){
