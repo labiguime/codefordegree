@@ -256,6 +256,22 @@ export default function AllCourses(props){
         })
     }
 
+    let handleLeaveCourse = (id) => {
+        const token = localStorage.getItem('token');
+        axios({
+            url: 'http://localhost:5000/api/courses/leave/' + id,
+            method: "delete",
+            data: {userId: auth.userInfo._id},
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(res => {
+            retrieveEnrolledCourse();
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
@@ -398,7 +414,7 @@ export default function AllCourses(props){
                                     onClick={() => {
                                         let isOk = window.confirm("Do you really wish to remove this course from your list of enrolled courses?")
                                         if(isOk)
-                                            handleDeleteCourse(_id);
+                                            handleLeaveCourse(_id);
                                     }}
                                 >
                                     <DeleteIcon />

@@ -94,6 +94,26 @@ router.post('/join/:courseId', async (req, res, next) => {
     }
 });
 
+router.delete('/leave/:courseId',  verifyCourseAdminOrUser, async (req, res, next) => {
+    const {courseId} = req.params;
+    const {userId} = req.body;
+    try {
+        let course = await Course.findOne({_id: courseId});
+        if(!course) {
+            console.log("This course no longer exists.");
+            return res.status(400).json({error: "This course no longer exists."});
+        }
+        course.user_ids.splice( course.user_ids.indexOf(userId), 1);
+        const result = await course.save();
+        if(!result) {
+            return res.status(400).json({error: "The course has been deleted."});
+        }
+        return res.status(200).json();
+    } catch(e) {
+        return res.status(500).json({error: "Internal server error"});
+    }
+});
+
 /**
   * @route        DELETE api/courses/:id
   * @description  Delete a specific course
