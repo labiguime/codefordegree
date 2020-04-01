@@ -11,10 +11,9 @@ const {getProblemSubmissionStat} = require("../../controllers/statistic.controll
  */
 router.post("/", userController.createUser);
 
-
 /**
  * @route        GET api/user/me
- * @description  Retrive user Information
+ * @description  Retrieve user Information
  * @access       Private, requires log in
  * @return       JSON object
  */

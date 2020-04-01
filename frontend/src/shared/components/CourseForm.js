@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddCourseForm(props) {
   const classes = useStyles();
-  
+
   const defaultValueMap = props.defaultValueMap || {};
   const [courseInfo, setCourseInfo] = React.useState({...defaultValueMap});
   const handleTermChange = event => {
@@ -80,7 +80,7 @@ export default function AddCourseForm(props) {
       <TextField
           label="Course Description"
           id="course-description"
-          className={classes.boxField} 
+          className={classes.boxField}
           fullWidth
           multiline
           rowsMax="10"
