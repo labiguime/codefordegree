@@ -48,7 +48,8 @@ const problemSubmissionSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: 'Testcase'
         },
-        result: Boolean, //Passed(True) or Failed(False)
+        result: Boolean, //Passed(True) or Failed(False),
+        stdout: String
     }],
     status: statusSchema
 });

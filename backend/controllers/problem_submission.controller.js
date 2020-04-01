@@ -122,10 +122,11 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output} = response.data;
+                    const {memory, time, status, compile_output, stdout} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
+                    sub.stdout = stdout
                     if(status.id == 6){//Compile error status returned from judge0
                         problemSub.judge_submission_ids.push(sub._id);
                         problemSub.status = status;
@@ -153,6 +154,7 @@ module.exports = {
                     }
                     let test = problemSub.testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
+                        test.stdout = Buffer.from(judge.stdout, 'base64').toString('ascii');
                         if(judge.status.id == statusId.ACCEPTED){
                             acceptedSub++;
                             test.result = true;
@@ -237,7 +239,7 @@ module.exports = {
                                 language_id,
                                 expected_output,
                                 stdin,
-                                runtime_limit: problem.runtime_limit
+                                runtime_limit: problem.runtime_limit,
                             });
                 judgeSubmission.token = sub.data.token;
                 judgeSubmissions.push(judgeSubmission);
@@ -264,10 +266,11 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output} = response.data;
+                    const {memory, time, status, compile_output, stdout} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
+                    sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
                     if(status.id == 6){
                         return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
@@ -278,6 +281,7 @@ module.exports = {
                     let test = testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
                         test.result = judge.status.id == 3;
+                        test.stdout = judge.stdout;
                     }
                 }
                 return res.json({testcase_results});
