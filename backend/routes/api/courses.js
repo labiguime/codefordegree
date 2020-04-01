@@ -18,7 +18,7 @@ router.get('/', courseController.getCourses);
   * @description  Retrieve all the courses that exist in the database
   * @access       Public
   */
-  
+
 router.get('/all', async (req, res, next) => {
     try{
         let allCourses = await Course.find();
@@ -61,6 +61,31 @@ router.get('/:courseId', courseController.getCourse);
   */
 
 router.post('/', courseController.createCourse);
+
+/**
+  * @route        POST api/courses
+  * @description  Create a new course
+  * @access       Private
+  */
+
+router.post('/join/:courseId', async (req, res, next) => {
+    let {courseId} = req.params;
+    let {userId} = res.locals;
+    try{
+        const isAlreadyEnrolled = await Course.find({_id: courseId, user_ids: userId});
+        if(isAlreadyEnrolled) {
+            return res.status(400).json({error: "User already enrolled to this course."});
+        }
+        const result = Course.findOneAndUpdate({_id: courseId}, {"$push": { "user_ids": userId }});
+        if(!result) {
+            return res.status(400).json({error: "The course has been deleted."});
+        }
+        return res.status(200).json();
+    } catch(e) {
+        console.log(e);
+        return res.status(500).json({error: "Internal server error"});
+    }
+});
 
 /**
   * @route        DELETE api/courses/:id
