@@ -12,6 +12,10 @@ const testcaseSchema = new Schema({
     problem_id:{
         type: Schema.Types.ObjectId,
         ref: 'Problem'
+    },
+    hidden: {
+        type: Boolean,
+        default: true 
     }
 
 });
