@@ -38,6 +38,10 @@ function ExpansibleTestCases(props){
         }]
     */
     const {testcases = []} = props;
+    testcases.sort((a, b) => {
+        if(a.hidden) return 1;
+        return -1;
+    })
 
     return (
         <React.Fragment>
