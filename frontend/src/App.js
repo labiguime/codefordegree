@@ -5,6 +5,10 @@ import RequireAuthRoute from './shared/components/RequireAuthRoute';
 import AllCourses from './Course/pages/AllCourses';
 import Statistic from './User/pages/Statistic';
 
+
+import Problem from './Problem/pages/Problem'
+import Course from './Course/pages/Course'
+
 import {
   BrowserRouter as Router,
   Route,
@@ -19,6 +23,8 @@ function App() {
           <Switch>
             <Route path="/signup" component={SignUp} exact />
             <Route path="/login" component={Login} exact/>
+            <Route path="/problem/:CourseId/:ProblemId" render={(props) => <Problem {...props}/>} exact/>
+            <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
             {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
             <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
             <RequireAuthRoute exact path="/statistic" Component={Statistic}/>

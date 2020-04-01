@@ -15,7 +15,6 @@ import ExitToAppOutlinedIcon from '@material-ui/icons/ExitToAppOutlined';
 import { AuthContext } from '../../shared/context/auth-context';
 import { Link } from 'react-router-dom';
 
-
 export default function Dashboard(props){
 
   const auth = useContext(AuthContext);
@@ -39,7 +38,7 @@ export default function Dashboard(props){
               <ListItemText primary={section.title} />
             </ListItem>
         ))}
-        <ListItem 
+        <ListItem
         button
         onClick={auth.logout}>
             <ListItemIcon>
@@ -49,7 +48,7 @@ export default function Dashboard(props){
               Sign out
             </ListItemText>
         </ListItem>
-        
+
       </SideBar>
     </React.Fragment>
   );

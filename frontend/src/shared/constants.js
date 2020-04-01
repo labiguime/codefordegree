@@ -5,3 +5,19 @@ export const COURSE_URL = BASE_URL + "api/courses";
 export const STATISTIC_URL = BASE_URL + "api/statistic";
 export const PROBLEM_URL = BASE_URL + "api/courses/:courseId/problems";
 export const SUBMISSION_URL = BASE_URL + "api/courses/:courseId/problems/:problemId/submissions";
+export const languageMap = {
+        "javascript": 63,
+        "c++": 53,
+        "python": 71 //python 3
+};
+
+export const languagePlaceHolder = {
+    "javascript": `console.log("Hello world")`,
+    "c_cpp": `#include <iostream>
+using namespace std
+int main() {
+	// your code goes here
+	return 0;
+}`,
+    "python": `print("Hello world")`
+}
