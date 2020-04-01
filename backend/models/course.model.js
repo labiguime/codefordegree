@@ -21,8 +21,7 @@ var courseSchema = new Schema({
         ref: 'Problem'
     }],
     user_ids: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        type: String
     }]
 });
 
