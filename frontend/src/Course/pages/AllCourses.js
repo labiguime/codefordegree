@@ -161,6 +161,21 @@ export default function AllCourses(props){
 
       }, []);
 
+    let retrieveEnrolledCourse = () => {
+        const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses/enrolled',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesEnrolled(c);
+        }).catch(err => {
+          console.log(err);
+        });
+    }
     let handleCreateCourse = (data) => {
         const token = localStorage.getItem('token');
         axios({
@@ -173,13 +188,32 @@ export default function AllCourses(props){
         }).then(res => {
           const newCourse = res.data;
           setAllCourses([...allCourses, newCourse]);
+          setCoursesAvailable([...coursesAvailable, newCourse]);
           setOpen(false);
         }).catch(err => {
           console.log(err);
-        })
+          setOpen(false);
+      });
     }
 
-    let handleEnrollCourse = (updatedCourse) => {
+    let handleEnrollCourse = (c) => {
+        const token = localStorage.getItem('token');
+        console.log(c);
+        console.log(auth.userInfo._id);
+        axios({
+          url: 'http://localhost:5000/api/courses/join/'+c,
+          method: "post",
+          data: {userId: auth.userInfo._id},
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          setEnrolledCoursesModalOpen(false);
+          retrieveEnrolledCourse();
+        }).catch(err => {
+          console.log(err);
+          setEnrolledCoursesModalOpen(false);
+      });
     }
 
     let handleEditCourse = (updatedCourse) => {

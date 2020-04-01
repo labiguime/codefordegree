@@ -68,8 +68,6 @@ export default function EnrollmentModal(props) {
     const [courseList, setCourseList] = React.useState(defaultValueMap);
 	const [temporaryList, setTemporaryList] = React.useState(defaultValueMap);
 	const [chosenCourse, setChosenCourse] = React.useState();
-	console.log(courseList);
-	console.log(temporaryList[1].name);
     const handleListChange = (e) => {
 		let currentList = {};
 		let newList = {};

@@ -47,6 +47,7 @@ module.exports = {
 
         newCourse.save(err => {
             if(err){
+               console.log(err);
                return res.status(400).json({
                    error: "Cannot create course",
                 });

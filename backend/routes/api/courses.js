@@ -69,20 +69,27 @@ router.post('/', courseController.createCourse);
   */
 
 router.post('/join/:courseId', async (req, res, next) => {
-    let {courseId} = req.params;
-    let {userId} = res.locals;
-    try{
-        const isAlreadyEnrolled = await Course.find({_id: courseId, user_ids: userId});
-        if(isAlreadyEnrolled) {
-            return res.status(400).json({error: "User already enrolled to this course."});
+    const {courseId} = req.params;
+    const {userId} = req.body;
+    try {
+        let course = await Course.findOne({_id: courseId});
+        if(!course) {
+            console.log("This course no longer exists.");
+            return res.status(400).json({error: "This course no longer exists."});
         }
-        const result = Course.findOneAndUpdate({_id: courseId}, {"$push": { "user_ids": userId }});
+        if(course.user_ids) {
+            if(course.user_ids.includes(userId)) {
+                console.log("You are already in this course.");
+                return res.status(400).json({error: "You are already in this course."});
+            }
+        }
+        course.user_ids.push(userId);
+        const result = await course.save();
         if(!result) {
             return res.status(400).json({error: "The course has been deleted."});
         }
         return res.status(200).json();
     } catch(e) {
-        console.log(e);
         return res.status(500).json({error: "Internal server error"});
     }
 });
