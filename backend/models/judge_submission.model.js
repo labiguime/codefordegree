@@ -18,7 +18,8 @@ const judgeSubmissionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Testcase',
         required: true
-    }
+    },
+    stdout: String
 });
 
 
