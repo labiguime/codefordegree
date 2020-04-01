@@ -5,6 +5,7 @@ import axios from 'axios';
 import { AuthContext } from '../context/auth-context';
 
 export default function RequiredAuthRoute({Component, ...rest}){
+
       const [isLoading, setLoading] = useState(true);
       const [authInfo, setAuthInfo] = useState({isLoggedIn: false, userInfo: {}});
       useEffect(() => {
@@ -14,7 +15,7 @@ export default function RequiredAuthRoute({Component, ...rest}){
             url: USER_URL + "/me",
             headers: {
               'x-auth-token': token 
-            }
+            } 
           }).then(res => {
                   console.log(res);
                   setAuthInfo({token, userInfo: res.data, isLoggedIn: true});

@@ -12,24 +12,19 @@ import {
   Redirect,
 } from 'react-router-dom';
 
-
-
 function App() {
-    let routes = (
-      <Switch>
-        <Route path="/signup" component={SignUp} exact />
-        <Route path="/login" component={Login} exact/>
-        {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
-        <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
-        <RequireAuthRoute exact path="/statistic" Component={Statistic}/>
-        {/* <RequireAuthRoute exact path="/profile" Component={Profile}/> //Not done yet*/}
-        <Redirect to="/login"/>
-      </Switch>
-    )
     return (
       <div className="App">
         <Router>
-          {routes}
+          <Switch>
+            <Route path="/signup" component={SignUp} exact />
+            <Route path="/login" component={Login} exact/>
+            {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
+            <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
+            <RequireAuthRoute exact path="/statistic" Component={Statistic}/>
+            {/* <RequireAuthRoute exact path="/profile" Component={Profile}/> //Not done yet*/}
+            <Redirect to="/dashboard"/>
+          </Switch>
         </Router>
       </div>
   );
