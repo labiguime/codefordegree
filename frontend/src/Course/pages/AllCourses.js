@@ -275,7 +275,7 @@ export default function AllCourses(props){
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
-          <div className={classes.main}  >
+          <div className={classes.main}>
             <Modal onClose={handleCloseModalEnrolled} open={enrolledCoursesModalOpen}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h1 className={classes.modalTitle}> {modalState.title}</h1>
@@ -299,7 +299,65 @@ export default function AllCourses(props){
             </Modal>
             <div className={classes.courseGroupHeader}  >
               <Typography variant="h4" >
-                Administrative Courses
+                Enrolled Course
+              </Typography>
+              <ToolTip title="Enroll Course" placement="top">
+                <IconButton
+                    color="primary"
+                    className={classes.iconAlignRight}
+                    onClick={() => handleOpenModalEnrolled("Select for Available Course", "Enroll", (coursesAvailable),  handleEnrollCourse)}
+                >
+                    <AddIcon />
+                </IconButton>
+              </ToolTip>
+            </div>
+            <Divider />
+            <div className={classes.courseGroup}>
+              <Grid container spacing={4}>
+                {coursesEnrolled.map(({admin_id, name, term, description, _id}, idx) => (
+                  <Grid item key={idx} xs={12} sm={6} md={4}>
+                    <Card className={classes.card}>
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {name}
+                        </Typography>
+                        <Typography>
+                          {(description && description.length > 100) && (description.substring(0, 100).trim() + '....')}
+                          {description && description.length <=100 && description}
+                        </Typography>
+                        <Typography>
+                          Term: {term.toUpperCase()}
+                        </Typography>
+                      </CardContent>
+                      <CardActions disableSpacing >
+                        <Button size="small" color="primary">
+                          View
+                        </Button>
+                            <section className={classes.iconAlignRight}>
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => {
+                                        let isOk = window.confirm("Are you sure for Dropping selected course?")
+                                        if(isOk)
+                                            handleLeaveCourse(_id);
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+
+                            </section>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+            </Grid>
+            <br />
+            <br />
+            <br />
+            <div className={classes.courseGroupHeader}  >
+              <Typography variant="h4" >
+                Teaching Course
               </Typography>
               <ToolTip title="Create course" placement="top">
                 <IconButton
@@ -367,65 +425,6 @@ export default function AllCourses(props){
                 ))}
             </Grid>
             </div>
-            <br />
-            <br />
-            <br />
-            <div className={classes.courseGroupHeader}  >
-              <Typography variant="h4" >
-                Enrolled Courses
-              </Typography>
-              <ToolTip title="Enroll in a course" placement="top">
-                <IconButton
-                    color="primary"
-                    className={classes.iconAlignRight}
-                    onClick={() => handleOpenModalEnrolled("Enroll in a course", "Enroll", (coursesAvailable),  handleEnrollCourse)}
-                >
-                    <AddIcon />
-                </IconButton>
-              </ToolTip>
-            </div>
-            <Divider />
-            <div className={classes.courseGroup}>
-              <Grid container spacing={4}>
-                {coursesEnrolled.map(({admin_id, name, term, description, _id}, idx) => (
-                  admin_id == auth.userInfo._id &&
-                  <Grid item key={idx} xs={12} sm={6} md={4}>
-                    <Card className={classes.card}>
-                      <CardContent className={classes.cardContent}>
-                        <Typography gutterBottom variant="h5" component="h2">
-                          {name}
-                        </Typography>
-                        <Typography>
-                          {(description && description.length > 100) && (description.substring(0, 100).trim() + '....')}
-                          {description && description.length <=100 && description}
-                        </Typography>
-                        <Typography>
-                          Term: {term.toUpperCase()}
-                        </Typography>
-                      </CardContent>
-                      <CardActions disableSpacing >
-                        <Button size="small" color="primary">
-                          View
-                        </Button>
-                            <section className={classes.iconAlignRight}>
-                                <IconButton
-                                    size="small"
-                                    color="primary"
-                                    onClick={() => {
-                                        let isOk = window.confirm("Do you really wish to remove this course from your list of enrolled courses?")
-                                        if(isOk)
-                                            handleLeaveCourse(_id);
-                                    }}
-                                >
-                                    <DeleteIcon />
-                                </IconButton>
-
-                            </section>
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                ))}
-            </Grid>
             </div>
           </div>
         </Container>

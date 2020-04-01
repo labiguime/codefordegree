@@ -88,7 +88,7 @@ export default function EnrollmentModal(props) {
 			<Grid item xs={12}>
 					<Grid container justify = "center">
 					<TextField
-					  label="Search..."
+					  label="Search for Course"
 					  color='secondary'
 					  className={classes.searchFieldAppearance}
 					  onChange={handleListChange}
@@ -97,10 +97,11 @@ export default function EnrollmentModal(props) {
 					<br />
 					<Grid container justify = "center">
 					<FormControl className={classes.selectFieldAppearance}>
+						<InputLabel id="add-course-model">Available Course</InputLabel>
 			          <Select
-					  	id="Chosen"
+					  	id='Chosen'
 			            color='secondary'
-						defaultValue={temporaryList[0].name}
+          				defaultValue={defaultValueMap}
 						onChange={handleCourseChanged}
 			          >
 					  {temporaryList.map(item => (
