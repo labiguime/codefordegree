@@ -18,6 +18,7 @@ import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import CourseForm from '../../shared/components/CourseForm';
 import {COURSE_URL} from '../../shared/constants';
+import Dashboard from '../../User/components/Dashboard';
 
 function getModalStyle() {
   const top = 50;
@@ -175,6 +176,7 @@ export default function AllCourses(props){
     }
     return(
     <main>
+        <Dashboard title="Courses"/>
         <Container className={classes.cardGrid} maxWidth="md">
           <div className={classes.main}  >
             <Modal onClose={handleCloseModal} open={open}>

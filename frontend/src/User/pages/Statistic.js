@@ -11,6 +11,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import Moment from 'react-moment';
+import Dashboard from '../../User/components/Dashboard'
 
 const statisticUrl = (process.env.REACT_APP_BASE_URL || "http://localhost:5000/") + "api/user/statistic";
 
@@ -133,6 +134,7 @@ export default function Statistic(){
         }
     })
     return (<React.Fragment >
+            <Dashboard title='Statistic'/>
             <div className={classes.root}>
                 <Grid container >
                     <Grid item xs={6}>
