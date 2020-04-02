@@ -36,14 +36,14 @@ export default function RequiredAuthRoute({Component, ...rest}){
       return (
         <Route 
           {...rest}
-          render={ ({location, history}) => {
+          render={ ({location, history, ...rest}) => {
                     const logout = () => {
                       localStorage.setItem('token', '');
                       history.push("/login");
                     }
 
                     return authInfo.isLoggedIn ? <AuthContext.Provider value={{isLoggedIn: authInfo.isLoggedIn, userInfo: authInfo.userInfo, logout}}>
-                                            <Component/>
+                                            <Component {...rest}/>
                                           </AuthContext.Provider>
                                         : <Redirect to={{pathname: "/login", state: {from: location}}}/>
           }}

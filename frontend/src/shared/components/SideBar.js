@@ -116,8 +116,6 @@ export default function PersistentDrawerLeft(props) {
           <Typography variant="h6" noWrap className={classes.title}>
               {props.title}
           </Typography>
-          <Button color="inherit"><Link className={classes.linkStyle} to="/editor">Try Editor</Link></Button>
-          <Button color="inherit"><Link className={classes.linkStyle} to="/problem/5e7a9feccdfef025d3609117/5e7c26039385aa4606ca3cde">Problem Page</Link></Button>
         </Toolbar>
       </AppBar>
       <Drawer

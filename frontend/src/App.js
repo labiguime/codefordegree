@@ -24,9 +24,12 @@ function App() {
             <Route path="/signup" component={SignUp} exact />
             <Route path="/login" component={Login} exact/>
             
-            {/* TODO: These paths need to be private */}
-            <Route path="/problem/:CourseId/:ProblemId" render={(props) => <Problem {...props}/>} exact/>
-            <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
+            <RequireAuthRoute path="/problem/:CourseId/:ProblemId"
+                Component={Problem}
+            />
+            <RequireAuthRoute path="/course/:CourseId"
+                Component={Course} 
+            />
 
             {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
             <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
