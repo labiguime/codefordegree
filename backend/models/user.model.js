@@ -21,10 +21,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 5,
     maxlength: 1024
-  },
-  studentNumber: Number,
-
-  gitRepo: String
+  }
 });
 
 userSchema.methods.generateAuthToken = function() {
@@ -50,7 +47,10 @@ function validateUser(user) {
     password: Joi.string()
       .min(5)
       .max(50)
-      .required()
+      .required(),
+    studentNumber: Joi.number()      
+    .min(8)
+    .max(10)
   };
   return Joi.validate(user, schema);
 }
