@@ -25,7 +25,7 @@ router.get("/me", auth, userController.getCurrentUser);
  * @description  UPDATE user Information
  * @access       Private, requires log in
  */
-router.put("/:me", auth, userController.updateProfile);
+router.put("/me", auth, userController.updateProfile);
 
 router.get("/statistic", auth, getProblemSubmissionStat);
 

@@ -54,7 +54,7 @@ export default function ProfileForm(props) {
         id="User-Name"
         className={classes.textField}
         color='secondary'
-        onBlur={handleNameChange}
+        onClick={handleNameChange}
         defaultValue={defaultValueMap && defaultValueMap["name"]}
       />
       <TextField
@@ -62,15 +62,16 @@ export default function ProfileForm(props) {
         id="User-Email"
         className={classes.textField}
         color='secondary'
-        onBlur={handleEmailChange}
+        onClick={handleEmailChange}
         defaultValue={defaultValueMap && defaultValueMap["email"]}
       />
+
         <TextField
         label="Student Number"
         id="Student-Number"
         className={classes.textField}
         color='secondary'
-        onBlur={handleStudnetNumberChange}
+        onClick={handleStudnetNumberChange}
         defaultValue={defaultValueMap && defaultValueMap["studentNumber"]}
       />
       </div>

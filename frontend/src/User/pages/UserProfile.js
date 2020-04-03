@@ -95,6 +95,7 @@ export default function UserProfile(){
             "x-auth-token": token
           }
         }).then(res => {
+            console.log(userInfo)
             console.log(updatedProfile);
           setUserInfo(updatedProfile);
           setOpen(false);

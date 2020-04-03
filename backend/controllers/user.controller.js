@@ -51,13 +51,13 @@ userController.updateProfile = async function(req, res) {
   if(studentNumber) updatedProfile.studentNumber = studentNumber;
 
 try {
-  const updatedProfile = await User.updateOne({_id: req.user_id}, 
+  const newProfile = await User.updateOne({_id: req.user_id}, 
                 updatedProfile,
                 {runValidators: true});
-  if (!updatedProfile) {
+  if (!newProfile) {
     throw Error('Cannot update user profile.');
   }
-  res.status(200).json({updatedProfile});   
+  res.status(200).json({newProfile});   
   
 } catch (err) {
   return res.status(400).json({error: err.message});
