@@ -11,12 +11,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Modal from '@material-ui/core/Modal';
 import ProfileForm from '../../shared/components/ProfileForm';
 
-
-
-
-
-
-
  
 // import UserProfile from 'react-user-profile'
 function getModalStyle() {
@@ -56,8 +50,6 @@ const useStyles = makeStyles(theme => ({
       }
 }));
 
-
-
 export default function UserProfile(){
     const modalStyle = getModalStyle();
 
@@ -83,7 +75,7 @@ export default function UserProfile(){
             "x-auth-token": token
           }
         }).then((res) => {
-          console.log(res);
+        //   console.log(token);
             // console.log('testing!');
           const userInfo = res.data;
           setUserInfo(userInfo);
@@ -95,25 +87,21 @@ export default function UserProfile(){
     let handleEditProfile = (updatedProfile) => {
         const token = localStorage.getItem('token');
         axios({
-          url: 'http://localhost:5000/api/user/' + updatedProfile._id,
+        //   url: 'http://localhost:5000/api/user/' + updatedProfile._id,
+        url: 'http://localhost:5000/api/user/me',
           method: "put",
           data: updatedProfile,
           headers: {
             "x-auth-token": token
           }
         }).then(res => {
-          const newCourses = userInfo.map(e => {
-            if(e._id == updatedProfile._id)
-              return updatedProfile;
-            return e;
-          })
-          setUserInfo(newCourses);
+            console.log(updatedProfile);
+          setUserInfo(updatedProfile);
           setOpen(false);
         }).catch(err => {
           console.log(err);
         })
     } 
-
 
     return (<React.Fragment>
         <Container className={classes.cardGrid} maxWidth="md">
