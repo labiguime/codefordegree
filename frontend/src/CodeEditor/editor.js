@@ -38,6 +38,10 @@ function ExpansibleTestCases(props){
         }]
     */
     const {testcases = []} = props;
+    testcases.sort((a, b) => {
+        if(a.hidden) return 1;
+        return -1;
+    })
 
     return (
         <React.Fragment>
@@ -106,9 +110,9 @@ export default function Editor(props) {
         mode: "javascript",
         fontSize: 14,
         theme: "xcode",
+        value: languagePlaceHolder["javascript"]
     });
     const [submitting, setSubmitting] = useState(false);
-    let source_code = languagePlaceHolder[editorState.mode];
     const {courseId, problemId} = props;
 
     function handleEditorStateChange(newState){
@@ -121,10 +125,9 @@ export default function Editor(props) {
         setConsoleExpanded(!consoleExpanded);
     }
 
-    function onChange(value) {
-        // props.onCodeChange(value);
-        source_code = value;
-        console.log(source_code);
+
+    function onEditorBlur(event, editor) {
+        setEditorState({...editorState, value: editor.getValue()});
     }
 
     useEffect(() => {
@@ -156,14 +159,17 @@ export default function Editor(props) {
                 'x-auth-token': token
             },
             data: {
-                source_code: source_code,
+                source_code: editorState.value,
                 language_id: languageMap[editorState.mode]
             }
         }).then(res => {
             let testcaseResults = res.data.testcase_results;
             let newTestCasesState = testcases.map(testcase => {
-                let result = testcaseResults.find(e => e.testcase_id == testcase._id).result;
-                return {...testcase, result};
+                let updatedTestCase = testcaseResults.find(e => e.testcase_id == testcase._id);
+                if(updatedTestCase){
+                    let {result, stdout} = updatedTestCase;
+                    return {...testcase, result, stdout};
+                }
             })
             setSubmitting(false);
             setConsoleExpanded(true);
@@ -184,15 +190,17 @@ export default function Editor(props) {
                 'x-auth-token': token
             },
             data: {
-                source_code: source_code,
+                source_code: editorState.value,
                 language_id: languageMap[editorState.mode],
             }
         }).then(res => {
             let testcaseResults = res.data.testcase_results;
             let newTestCasesState = testcases.map(testcase => {
                 let updatedTestCase = testcaseResults.find(e => e.testcase_id == testcase._id);
-                if(updatedTestCase)
-                    return {...testcase, result: updatedTestCase.result};
+                if(updatedTestCase){
+                    let {result, stdout} = updatedTestCase;
+                    return {...testcase, result, stdout};
+                }
                 return testcase;
             })
             setSubmitting(false);
@@ -204,7 +212,6 @@ export default function Editor(props) {
         })
     }
 
-    console.log(testcases);
     return (
         <SplitPane 
             split="horizontal"
@@ -243,8 +250,7 @@ export default function Editor(props) {
                 <AceEditor
                     {...editorState}
                     name="editor"
-                    value={source_code}
-                    onChange={onChange}
+                    onBlur={onEditorBlur}
                     showPrintMargin={true}
                     showGutter={true}
                     highlightActiveLine={true}
