@@ -113,6 +113,7 @@ export default function Course(props) {
 
     const handleCloseModal = () => {
       setModalState({});
+      fetchProblems();
       setOpen(false);
     }
 
@@ -207,6 +208,19 @@ export default function Course(props) {
             console.log(err.message);
         }
     }, []);
+
+    let fetchProblems = async () => {
+        const token = localStorage.getItem('token');
+        const problemsData = await axios({
+            url: 'http://localhost:5000/api/courses/'+CourseId+'/problems',
+            method: "get",
+            headers: {
+                "x-auth-token": token
+            }
+        });
+        const myProblems = problemsData.data;
+        setAllProblems(myProblems);
+    };
 
 
     return (
