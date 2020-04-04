@@ -306,7 +306,7 @@ export default function AllCourses(props){
                 <IconButton
                     color="primary"
                     className={classes.iconAlignRight}
-                    onClick={() => handleOpenModalEnrolled("Select for Available Course", "Enroll", (coursesAvailable),  handleEnrollCourse)}
+                    onClick={() => handleOpenModalEnrolled("Enrollment module", "Enroll", (coursesAvailable),  handleEnrollCourse)}
                 >
                     <AddIcon />
                 </IconButton>
