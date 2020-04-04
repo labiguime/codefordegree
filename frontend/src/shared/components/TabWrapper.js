@@ -57,7 +57,7 @@ export default function TabWrapper(props) {
         >
             {tabHeaders.map((header, index) => {
                 return (
-                    <Tab label={header} />
+                    <Tab label={header.label} icon={header.icon}/>
                 )
             })}
         </Tabs>
