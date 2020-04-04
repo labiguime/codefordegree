@@ -133,9 +133,9 @@ export default function Statistic(){
             statusTextColor
         }
     })
-    return (<React.Fragment >
-            <Dashboard title='Statistic'/>
-            <div className={classes.root}>
+    let content = (
+        <div className={classes.root}>
+            <div>
                 <Grid container >
                     <Grid item xs={6}>
                         <Doughnut width={500} 
@@ -200,6 +200,11 @@ export default function Statistic(){
                     </Table>
                 </TableContainer> 
             </div>
+        </div>
+    )
+    return (<React.Fragment >
+            <Dashboard title='Statistic' content={content}/>
+            
         </React.Fragment>
     )
 }
