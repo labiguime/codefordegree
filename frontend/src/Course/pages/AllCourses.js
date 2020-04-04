@@ -23,13 +23,13 @@ import EnrollmentModal from '../../shared/components/EnrollmentModal';
 function getModalStyle() {
   const top = 50;
   const left = 50;
-
   return {
     top: `${top}%`,
     left: `${left}%`,
     transform: `translate(-${top}%, -${left}%)`,
   };
 }
+
 const useStyles = makeStyles(theme => ({
       modalTitle: {
       textAlign: "center"
@@ -86,35 +86,20 @@ export default function AllCourses(props){
     //Context
     const auth = useContext(AuthContext);
 
-    //Modal
+    //Styles
+    const classes = useStyles();
     const modalStyle = getModalStyle();
+
     const [open, setOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalAdminModal, setIsModalAdminModal] = useState(false);
     const [enrolledCoursesModalOpen, setEnrolledCoursesModalOpen] = useState(false);
     const [modalState, setModalState] = useState({});
-    const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
-      setOpen(true);
-    }
-
-    const handleOpenModalEnrolled = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
-      setEnrolledCoursesModalOpen(true);
-    }
-
-    const handleCloseModal = () => {
-      setModalState({});
-      setOpen(false);
-    }
-
-    const handleCloseModalEnrolled = () => {
-      setModalState({});
-      setEnrolledCoursesModalOpen(false);
-    }
-    const classes = useStyles();
     const [allCourses, setAllCourses] = useState([]);
     const [coursesAvailable, setCoursesAvailable] = useState([]);
     const [coursesEnrolled, setCoursesEnrolled] = useState([]);
     const [course, setCourse] = useState([]);
+
       useEffect(() => {
         const token = localStorage.getItem('token');
         axios({
@@ -208,6 +193,7 @@ export default function AllCourses(props){
             "x-auth-token": token
           }
         }).then(res => {
+          setIsModalOpen(false);
           setEnrolledCoursesModalOpen(false);
           retrieveEnrolledCourse();
         }).catch(err => {
@@ -273,31 +259,37 @@ export default function AllCourses(props){
         })
     }
 
+    const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit, isAdminCoursesModal) => {
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setIsModalOpen(true);
+      (isAdminCoursesModal) ? setIsModalAdminModal(true) : setIsModalAdminModal(false);
+    }
+
+    const handleCloseModal = (isAdminCoursesModal) => {
+      setModalState({});
+      setIsModalOpen(false);
+    }
+    
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
-          <div className={classes.main}>
-            <Modal onClose={handleCloseModalEnrolled} open={enrolledCoursesModalOpen}>
-                <div style={modalStyle} className={classes.modalBox}>
-                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
-                   <EnrollmentModal
-                      buttonTitle={modalState.buttonTitle}
-                      defaultValueMap={modalState.defaultValueMap}
-                      //onSubmit={(data) => handleCreateCourse(data)}
-                      onSubmit={modalState.onSubmit}
-                   />
-                </div>
-            </Modal>
-            <Modal onClose={handleCloseModal} open={open}>
-                <div style={modalStyle} className={classes.modalBox}>
-                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
-                   <CourseForm
-                      buttonTitle={modalState.buttonTitle}
-                      defaultValueMap={modalState.defaultValueMap}
-                      onSubmit={modalState.onSubmit}
-                   />
-                </div>
-            </Modal>
+            <div className={classes.main}>
+                <Modal onClose={() => handleCloseModal(isModalAdminModal)} open={isModalOpen}>
+                    <div style={modalStyle} className={classes.modalBox}>
+                        <h1 className={classes.modalTitle}> {modalState.title} </h1>
+                        {
+                            (isModalAdminModal) ? <CourseForm
+                            buttonTitle={modalState.buttonTitle}
+                            defaultValueMap={modalState.defaultValueMap}
+                            onSubmit={modalState.onSubmit}
+                            /> : <EnrollmentModal
+                                buttonTitle={modalState.buttonTitle}
+                                defaultValueMap={modalState.defaultValueMap}
+                                onSubmit={modalState.onSubmit}
+                            />
+                        }
+                    </div>
+                </Modal>
             <div className={classes.courseGroupHeader}  >
               <Typography variant="h4" >
                 Enrolled Course
@@ -306,7 +298,7 @@ export default function AllCourses(props){
                 <IconButton
                     color="primary"
                     className={classes.iconAlignRight}
-                    onClick={() => handleOpenModalEnrolled("Enrollment module", "Enroll", (coursesAvailable),  handleEnrollCourse)}
+                    onClick={() => handleOpenModal("Enrollment module", "Enroll", (coursesAvailable),  handleEnrollCourse, false)}
                 >
                     <AddIcon />
                 </IconButton>
@@ -365,7 +357,7 @@ export default function AllCourses(props){
                 <IconButton
                     color="primary"
                     className={classes.iconAlignRight}
-                    onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse)}
+                    onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse, true)}
                 >
                     <AddIcon />
                 </IconButton>
@@ -403,7 +395,7 @@ export default function AllCourses(props){
                                                                 "Edit course",
                                                                 "Save",
                                                                 allCourses[idx],
-                                                                ((data) => handleEditCourse(data)))}
+                                                                ((data) => handleEditCourse(data)), true)}
                                 >
                                     <EditIcon/>
                                 </IconButton>
