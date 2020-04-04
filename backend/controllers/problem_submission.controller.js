@@ -122,12 +122,13 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output, stdout} = response.data;
+                    const {memory, time, status, compile_output, stdout, stderr} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
-                    sub.stdout = stdout
-                    if(status.id == 6){//Compile error status returned from judge0
+                    if(stdout)
+                        sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
+                    if(statusId.RUNTIME_ERRORS.includes(status.id) || status.id == 6){
                         problemSub.judge_submission_ids.push(sub._id);
                         problemSub.status = status;
                         try{
@@ -136,9 +137,14 @@ module.exports = {
                             console.log(e);
                             res.status(500).json({error: "Internal server error"});
                         }
-                        return res.status(404).json({
+                        if(status.id == 6){
+                            return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
-                            compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
+                            compile_error: Buffer.from(compile_output, 'base64').toString('utf8')}) ;
+                        }
+                        return res.status(404).json({
+                            runtime_error: Buffer.from(stderr, 'base64').toString('ascii')
+                        });
                     }
                 };
                 let acceptedSub = 0;
@@ -266,15 +272,21 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output, stdout} = response.data;
+                    const {memory, time, status, compile_output, stdout, stderr} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
-                    sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
+                    if(stdout)
+                        sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
+                    if(statusId.RUNTIME_ERRORS.includes(status.id)){
+                        return res.status(404).json({
+                            runtime_error: Buffer.from(stderr, 'base64').toString('ascii')
+                        });
+                    }
                     if(status.id == 6){
                         return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
-                            compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
+                            compile_error: Buffer.from(compile_output, 'base64').toString('utf8')                        }) ;
                     }
                 }
                 for(judge of judgeSubmissions){
