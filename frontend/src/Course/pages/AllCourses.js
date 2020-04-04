@@ -331,8 +331,9 @@ export default function AllCourses(props){
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
-                        <Button size="small" color="primary">
-                          View
+                        <Button size="small" color="primary"
+                        >
+                          <Link className={classes.linkStyle} to={ "/course/"+_id}>View</Link>
                         </Button>
                             <section className={classes.iconAlignRight}>
                                 <IconButton
@@ -390,7 +391,9 @@ export default function AllCourses(props){
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
-                        <Button size="small" color="primary" color="inherit"><Link className={classes.linkStyle} to={ "/course/"+allCourses[idx]._id}>View</Link></Button>
+                        <Button size="small" color="primary" color="inherit">
+                          <Link className={classes.linkStyle} to={ "/course/"+allCourses[idx]._id}>View</Link>
+                        </Button>
                         {admin_id == auth.userInfo._id &&
                             <section className={classes.iconAlignRight}>
                                 <IconButton size="small"

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const {getProblemSubmission, 
       getProblemSubmissions,
-      createProblemSubmission} = require('../../controllers/problem_submission.controller');
+      createProblemSubmission,
+      testCodeSubmission} = require('../../controllers/problem_submission.controller');
 const {verifyProblem, verifyCourseAdminOrUser} = require("../../middlewares/verifyEntity.middleware");
 
 router.use(verifyCourseAdminOrUser);
@@ -29,5 +30,7 @@ router.get('/:submissionId', getProblemSubmission);
   * @access       Private
   */
 router.post('/', createProblemSubmission);
+
+router.post('/test', testCodeSubmission);
 
 module.exports = router;
