@@ -226,6 +226,7 @@ export default function AllCourses(props){
           "x-auth-token": token
         }
       }).then(res => {
+
         const newCourses = allCourses.map(e => {
           if(e._id == updatedCourse._id)
             return updatedCourse;
