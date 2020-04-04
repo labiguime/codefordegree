@@ -251,6 +251,7 @@ export default function AllCourses(props){
             });
             console.log(newCourses);
             setAllCourses(newCourses);
+            retrieveEnrolledCourse();
         }).catch(err => {
             console.log(err);
         })
