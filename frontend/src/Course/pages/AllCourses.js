@@ -100,164 +100,172 @@ export default function AllCourses(props){
     const [coursesEnrolled, setCoursesEnrolled] = useState([]);
     const [course, setCourse] = useState([]);
 
-      useEffect(() => {
+    useEffect(async () => {
+       try {
+           await retrieveAllCourses();
+           await retrieveEnrollableCourses();
+           await retrieveEnrolledCourses();
+       } catch (e) {
+           console.log(e);
+       }
+    }, []);
+
+    const retrieveEnrolledCourses = async () => {
         const token = localStorage.getItem('token');
-        axios({
-          url: 'http://localhost:5000/api/courses',
-          headers: {
-            "x-auth-token": token
-          }
-        }).then((res) => {
-          console.log(res);
-          const allCourses = res.data;
-          setAllCourses(allCourses);
-          console.log(allCourses);
-        }).catch(err => {
-          console.log(err);
-        });
-
-        axios({
-          url: 'http://localhost:5000/api/courses/all',
-          headers: {
-            "x-auth-token": token
-          }
-        }).then((res) => {
-          console.log(res);
-          const c = res.data;
-          setCoursesAvailable(c);
-          console.log(c);
-        }).catch(err => {
-          console.log(err);
-        });
-
-        axios({
-          url: 'http://localhost:5000/api/courses/enrolled',
-          headers: {
-            "x-auth-token": token
-          }
-        }).then((res) => {
-          console.log(res);
-          const c = res.data;
-          setCoursesEnrolled(c);
-        }).catch(err => {
-          console.log(err);
-        });
-
-
-      }, []);
-
-    let retrieveEnrolledCourse = () => {
-        const token = localStorage.getItem('token');
-        axios({
-          url: 'http://localhost:5000/api/courses/enrolled',
-          headers: {
-            "x-auth-token": token
-          }
-        }).then((res) => {
-          console.log(res);
-          const c = res.data;
-          setCoursesEnrolled(c);
-        }).catch(err => {
-          console.log(err);
-        });
-    }
-    let handleCreateCourse = (data) => {
-        const token = localStorage.getItem('token');
-        axios({
-          url: 'http://localhost:5000/api/courses',
-          method: "post",
-          data: data,
-          headers: {
-            "x-auth-token": token
-          }
-        }).then(res => {
-          const newCourse = res.data;
-          setAllCourses([...allCourses, newCourse]);
-          setCoursesAvailable([...coursesAvailable, newCourse]);
-          setOpen(false);
-        }).catch(err => {
-          console.log(err);
-          setOpen(false);
-      });
-    }
-
-    let handleEnrollCourse = (c) => {
-        const token = localStorage.getItem('token');
-        console.log(c);
-        console.log(auth.userInfo._id);
-        axios({
-          url: 'http://localhost:5000/api/courses/join/'+c,
-          method: "post",
-          data: {userId: auth.userInfo._id},
-          headers: {
-            "x-auth-token": token
-          }
-        }).then(res => {
-          setIsModalOpen(false);
-          setEnrolledCoursesModalOpen(false);
-          retrieveEnrolledCourse();
-        }).catch(err => {
-          console.log(err);
-          setEnrolledCoursesModalOpen(false);
-      });
-    }
-
-    let handleEditCourse = (updatedCourse) => {
-      const token = localStorage.getItem('token');
-      axios({
-        url: 'http://localhost:5000/api/courses/' + updatedCourse._id,
-        method: "put",
-        data: updatedCourse,
-        headers: {
-          "x-auth-token": token
-        }
-      }).then(res => {
-        const newCourses = allCourses.map(e => {
-          if(e._id == updatedCourse._id)
-            return updatedCourse;
-          return e;
-        })
-        setAllCourses(newCourses);
-        setOpen(false);
-      }).catch(err => {
-        console.log(err);
-      })
-  }
-    let handleDeleteCourse = (id) => {
-        const token = localStorage.getItem('token');
-        axios({
-            url: 'http://localhost:5000/api/courses/' + id,
-            method: "delete",
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(res => {
-            const newCourses = allCourses.filter(e => {
-              return e._id != id;
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses/enrolled',
+                headers: {
+                    "x-auth-token": token
+                }
             });
-            console.log(newCourses);
-            setAllCourses(newCourses);
-            retrieveEnrolledCourse();
-        }).catch(err => {
-            console.log(err);
-        })
-    }
+            const data = result.data;
+            setCoursesEnrolled(data);
+            return data;
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
-    let handleLeaveCourse = (id) => {
+    const retrieveAllCourses = async () => {
+       const token = localStorage.getItem('token');
+       try {
+           const result = await axios({
+               url: 'http://localhost:5000/api/courses',
+               headers: {
+                   "x-auth-token": token
+               }
+           });
+           const data = result.data;
+           setAllCourses(data);
+           return data;
+       } catch (e) {
+           console.log(e);
+       }
+    };
+
+    const retrieveEnrollableCourses = async () => {
+       const token = localStorage.getItem('token');
+       try {
+           const result = await axios({
+               url: 'http://localhost:5000/api/courses/all',
+               headers: {
+                   "x-auth-token": token
+               }
+           });
+           const data = result.data;
+           setCoursesAvailable(data);
+           return data;
+       } catch (e) {
+           console.log(e);
+       }
+    };
+
+    const handleCreateCourse = async (data) => {
         const token = localStorage.getItem('token');
-        axios({
-            url: 'http://localhost:5000/api/courses/leave/' + id,
-            method: "delete",
-            data: {userId: auth.userInfo._id},
-            headers: {
-                "x-auth-token": token
-            }
-        }).then(res => {
-            retrieveEnrolledCourse();
-        }).catch(err => {
-            console.log(err);
-        })
-    }
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses',
+                method: "post",
+                data: data,
+                headers: {
+                    "x-auth-token": token
+                }
+            });
+            const createdCourse = result.data;
+            setAllCourses([...allCourses, createdCourse]);
+            setCoursesAvailable([...coursesAvailable, createdCourse]);
+            setIsModalOpen(false);
+        } catch (e) {
+            console.log(e);
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleEnrollCourse = async (c) => {
+        const token = localStorage.getItem('token');
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses/join/'+c,
+                method: "post",
+                data: {userId: auth.userInfo._id},
+                headers: {
+                    "x-auth-token": token
+                }
+            });
+            await retrieveEnrolledCourses();
+            setIsModalOpen(false);
+        } catch (e) {
+            console.log(e);
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleEditCourse = async (updatedCourse) => {
+        const token = localStorage.getItem('token');
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses/' + updatedCourse._id,
+                method: "put",
+                data: updatedCourse,
+                headers: {
+                    "x-auth-token": token
+                }
+            });
+            const updatedAllCoursesList = allCourses.map(e => {
+                if(e._id == updatedCourse._id) {
+                    return updatedCourse;
+                }
+                return e;
+            });
+            setAllCourses(updatedAllCoursesList);
+            setIsModalOpen(false);
+        } catch (e) {
+            console.log(e);
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleDeleteCourse = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses/' + id,
+                method: "delete",
+                headers: {
+                    "x-auth-token": token
+                }
+            });
+            const updatedAllCoursesList = allCourses.filter(e => {
+                return e._id != id;
+            });
+            await retrieveEnrolledCourses();
+            setAllCourses(updatedAllCoursesList);
+            setIsModalOpen(false);
+        } catch (e) {
+            console.log(e);
+            setIsModalOpen(false);
+        }
+    };
+
+    const handleLeaveCourse = async (id) => {
+        const token = localStorage.getItem('token');
+        try {
+            const result = await axios({
+                url: 'http://localhost:5000/api/courses/leave/' + id,
+                method: "delete",
+                data: {userId: auth.userInfo._id},
+                headers: {
+                    "x-auth-token": token
+                }
+            });
+            await retrieveEnrolledCourses();
+            setIsModalOpen(false);
+        } catch (e) {
+            console.log(e);
+            setIsModalOpen(false);
+        }
+    };
 
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit, isAdminCoursesModal) => {
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
@@ -269,7 +277,7 @@ export default function AllCourses(props){
       setModalState({});
       setIsModalOpen(false);
     }
-    
+
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
