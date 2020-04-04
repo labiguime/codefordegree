@@ -38,13 +38,13 @@ export default function ProfileForm(props) {
   const [userInfo, setUserInfo] = React.useState(defaultValueMap);
 
   const handleNameChange = event => {
-    setUserInfo({name: event.target.value});
+    setUserInfo({...userInfo, name: event.target.value});
   }
   const handleEmailChange = event => {
-    setUserInfo({email: event.target.value})
+    setUserInfo({...userInfo, email: event.target.value})
   }
   const handleStudnetNumberChange = event => {
-    setUserInfo({studentNumber: event.target.value});
+    setUserInfo({...userInfo, studentNumber: event.target.value});
   };
   return (
     <div >
@@ -54,16 +54,16 @@ export default function ProfileForm(props) {
         id="User-Name"
         className={classes.textField}
         color='secondary'
-        onClick={handleNameChange}
-        defaultValue={defaultValueMap && defaultValueMap["name"]}
+        onBlur={handleNameChange}
+        defaultValue={defaultValueMap["name"]}
       />
       <TextField
         label="Email"
         id="User-Email"
         className={classes.textField}
         color='secondary'
-        onClick={handleEmailChange}
-        defaultValue={defaultValueMap && defaultValueMap["email"]}
+        onBlur={handleEmailChange}
+        defaultValue={defaultValueMap["email"]}
       />
 
         <TextField
@@ -71,8 +71,8 @@ export default function ProfileForm(props) {
         id="Student-Number"
         className={classes.textField}
         color='secondary'
-        onClick={handleStudnetNumberChange}
-        defaultValue={defaultValueMap && defaultValueMap["studentNumber"]}
+        onBlur={handleStudnetNumberChange}
+        defaultValue={defaultValueMap["studentNumber"]}
       />
       </div>
       <Button

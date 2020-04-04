@@ -59,7 +59,7 @@ export default function UserProfile(){
     const [userInfo, setUserInfo] = useState([]); // setUserInfo update
     const handleOpenModal = (name, email, studentNumber, onSubmit) => {
         // setOpen(true);
-        setUserInfo({name, email, studentNumber, onSubmit});
+        setModalState({name, email, studentNumber, onSubmit});
         setOpen(true);
       }
       const handleCloseModal = () => {
@@ -75,9 +75,8 @@ export default function UserProfile(){
             "x-auth-token": token
           }
         }).then((res) => {
-        //   console.log(token);
-            // console.log('testing!');
           const userInfo = res.data;
+          console.log(userInfo)
           setUserInfo(userInfo);
         }).catch(err => {
           console.log(err);
@@ -87,16 +86,15 @@ export default function UserProfile(){
     let handleEditProfile = (updatedProfile) => {
         const token = localStorage.getItem('token');
         axios({
-        //   url: 'http://localhost:5000/api/user/' + updatedProfile._id,
         url: 'http://localhost:5000/api/user/me',
           method: "put",
           data: updatedProfile,
           headers: {
             "x-auth-token": token
           }
-        }).then(res => {
-            console.log(userInfo)
-            console.log(updatedProfile);
+        }).then((res) => {
+            // console.log(userInfo);
+            // console.log(updatedProfile);
           setUserInfo(updatedProfile);
           setOpen(false);
         }).catch(err => {
