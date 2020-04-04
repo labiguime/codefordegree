@@ -1,17 +1,25 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import moment from 'moment'
 import DatePicker from "react-datepicker";
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import AddIcon from '@material-ui/icons/Add';
+import Checkbox from '@material-ui/core/Checkbox';
+import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 import "react-datepicker/dist/react-datepicker.css";
 
 
@@ -61,7 +69,7 @@ export default function AddProblemForm(props) {
 
   const defaultValueMap = props.defaultValueMap || {};
   const [problemInfo, setProblemInfo] = React.useState({...defaultValueMap});
-
+  let testcases = problemInfo.testcases || [];
   const handleNameChange = event => {
     setProblemInfo({...problemInfo, name: event.target.value});
   }
@@ -82,6 +90,39 @@ export default function AddProblemForm(props) {
     setProblemInfo({...problemInfo, runtime_limit: event.target.value})
   }
 
+  const handleAddTestCase = () => {
+    setProblemInfo({
+      ...problemInfo, 
+      testcases: [...testcases, {stdin:"", expected_output: "", hidden: false}]
+    });
+  }
+
+  const handleDeleteTestCase = () => {
+    let deletedTestcases = testcases.filter(e => e.checked);
+    let newTestcases = testcases.filter(e => !e.checked);
+    testcases = [...newTestcases];
+    setProblemInfo({
+      ...problemInfo,
+      testcases,
+      deletedTestcases
+    })
+  }
+
+  const handleCheckTestCase = (idx) => {
+    testcases[idx].checked = !testcases[idx].checked;
+    setProblemInfo({
+      ...problemInfo,
+      testcases: [...testcases]
+    });
+  }
+
+  const handleUpdateTestCase = (value, idx) => {
+    testcases[idx] = {...testcases[idx], ...value};
+    setProblemInfo({
+      ...problemInfo,
+      testcases: [...testcases]
+    });
+  }
   return (
     <div >
 	  <div className={classes.root}>
@@ -105,7 +146,7 @@ export default function AddProblemForm(props) {
 		  />
 
 		  <TextField
-			  label="Marks allocated"
+			  label="Marks"
 			  id="problem-mark"
 			  className={classes.marksField}
 			  color='secondary'
@@ -119,8 +160,8 @@ export default function AddProblemForm(props) {
 		&nbsp; Deadline: &ensp;
 		<DatePicker
 	  	  id="problem-deadline"
-		  dateFormat="MM-dd-yyyy"
-		  selected={moment(problemInfo.deadline).toDate()}
+		    dateFormat="MM-dd-yyyy"
+		    selected={moment(problemInfo.deadline).toDate()}
 	  	  value={problemInfo.deadline}
 	  	  onChange={handleDeadlineChange}
 	  	  color='secondary'
@@ -128,7 +169,7 @@ export default function AddProblemForm(props) {
   	  	/>
 	  </Typography>
 
-	  <div>
+	  <div style={{marginTop: "10px"}}>
 		<TextField
 			label="Problem Description"
 			id="problem-description"
@@ -143,6 +184,66 @@ export default function AddProblemForm(props) {
 		/>
 	  </div>
 
+    <div style={{marginLeft: "6px"}}>
+        <Typography>
+          Test cases 
+          <IconButton color="primary" aria-label="add" onClick={handleAddTestCase}>
+            <AddIcon />
+          </IconButton>
+          <IconButton color="primary" onClick={handleDeleteTestCase}>
+            <DeleteIcon />
+          </IconButton>
+        </Typography>
+        {testcases.map((e, index) => {
+          return (<div style={{paddingTop: "5px"}}>
+          <ExpansionPanel>
+            <ExpansionPanelSummary
+              expandIcon={<ExpandMoreIcon />}
+            >
+              <FormControlLabel
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleCheckTestCase(index);
+                }}
+                onFocus={(event) => event.stopPropagation()}
+                control={<Checkbox checked={!!e.checked}/>}
+                label={`Test case ${index+1}`}
+              />
+            </ExpansionPanelSummary>
+            <ExpansionPanelDetails>
+            <Grid container spacing={4}>
+              <Grid item xs={6}>
+                    <TextField 
+                      style={{marginLeft: '5px'}}
+                      label="Stdin"
+                      onBlur={event => handleUpdateTestCase({stdin: event.target.value}, index)}
+                      multiline
+                      defaultValue={e.stdin}
+                    />
+                    <TextField 
+                      style={{marginLeft: '5px'}}
+                      label="Expected output"
+                      onBlur={event => handleUpdateTestCase({expected_output: event.target.value}, index)}
+                      multiline
+                      defaultValue={e.expected_output}
+                    />
+              </Grid>
+              <Grid item xs={6}>
+              <FormControl >
+                <FormLabel >Type</FormLabel>
+                <RadioGroup name="type" value={e.hidden ? "hidden" : "visible"} onChange={(event) => {handleUpdateTestCase({hidden: event.target.value == "hidden"}, index);}}>
+                  <FormControlLabel value={"hidden"} control={<Radio />} label="hidden" />
+                  <FormControlLabel value={"visible"} control={<Radio />} label="visible" />
+                </RadioGroup>
+              </FormControl>
+              </Grid>
+            </Grid>
+            </ExpansionPanelDetails>
+          </ExpansionPanel>
+          </div>)
+        })}
+        
+    </div>
 
       <Button
           type="submit"
@@ -154,6 +255,7 @@ export default function AddProblemForm(props) {
       >
         {props.buttonTitle}
       </Button>
+
     </div>
 	);
 }
