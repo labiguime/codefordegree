@@ -17,7 +17,8 @@ import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import CourseForm from '../../shared/components/CourseForm';
-
+import {Link} from 'react-router-dom';
+import EnrollmentModal from '../../shared/components/EnrollmentModal';
 
 function getModalStyle() {
   const top = 50;
@@ -30,7 +31,7 @@ function getModalStyle() {
   };
 }
 const useStyles = makeStyles(theme => ({
-      modalTitle: {  
+      modalTitle: {
       textAlign: "center"
       },
       icon: {
@@ -63,7 +64,7 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(6),
       },
       iconAlignRight: {
-          marginLeft:'auto' 
+          marginLeft:'auto'
       },
       courseGroupHeader: {
         display: 'flex'
@@ -81,25 +82,38 @@ const useStyles = makeStyles(theme => ({
       }
 }));
 export default function AllCourses(props){
-    
+
     //Context
     const auth = useContext(AuthContext);
 
     //Modal
     const modalStyle = getModalStyle();
     const [open, setOpen] = useState(false);
+    const [enrolledCoursesModalOpen, setEnrolledCoursesModalOpen] = useState(false);
     const [modalState, setModalState] = useState({});
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      // setOpen(true);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
     }
+
+    const handleOpenModalEnrolled = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setEnrolledCoursesModalOpen(true);
+    }
+
     const handleCloseModal = () => {
       setModalState({});
       setOpen(false);
     }
+
+    const handleCloseModalEnrolled = () => {
+      setModalState({});
+      setEnrolledCoursesModalOpen(false);
+    }
     const classes = useStyles();
     const [allCourses, setAllCourses] = useState([]);
+    const [coursesAvailable, setCoursesAvailable] = useState([]);
+    const [coursesEnrolled, setCoursesEnrolled] = useState([]);
     const [course, setCourse] = useState([]);
       useEffect(() => {
         const token = localStorage.getItem('token');
@@ -112,11 +126,56 @@ export default function AllCourses(props){
           console.log(res);
           const allCourses = res.data;
           setAllCourses(allCourses);
+          console.log(allCourses);
         }).catch(err => {
           console.log(err);
         });
+
+        axios({
+          url: 'http://localhost:5000/api/courses/all',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesAvailable(c);
+          console.log(c);
+        }).catch(err => {
+          console.log(err);
+        });
+
+        axios({
+          url: 'http://localhost:5000/api/courses/enrolled',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesEnrolled(c);
+        }).catch(err => {
+          console.log(err);
+        });
+
+
       }, []);
 
+    let retrieveEnrolledCourse = () => {
+        const token = localStorage.getItem('token');
+        axios({
+          url: 'http://localhost:5000/api/courses/enrolled',
+          headers: {
+            "x-auth-token": token
+          }
+        }).then((res) => {
+          console.log(res);
+          const c = res.data;
+          setCoursesEnrolled(c);
+        }).catch(err => {
+          console.log(err);
+        });
+    }
     let handleCreateCourse = (data) => {
         const token = localStorage.getItem('token');
         axios({
@@ -129,10 +188,32 @@ export default function AllCourses(props){
         }).then(res => {
           const newCourse = res.data;
           setAllCourses([...allCourses, newCourse]);
+          setCoursesAvailable([...coursesAvailable, newCourse]);
           setOpen(false);
         }).catch(err => {
           console.log(err);
-        })
+          setOpen(false);
+      });
+    }
+
+    let handleEnrollCourse = (c) => {
+        const token = localStorage.getItem('token');
+        console.log(c);
+        console.log(auth.userInfo._id);
+        axios({
+          url: 'http://localhost:5000/api/courses/join/'+c,
+          method: "post",
+          data: {userId: auth.userInfo._id},
+          headers: {
+            "x-auth-token": token
+          }
+        }).then(res => {
+          setEnrolledCoursesModalOpen(false);
+          retrieveEnrolledCourse();
+        }).catch(err => {
+          console.log(err);
+          setEnrolledCoursesModalOpen(false);
+      });
     }
 
     let handleEditCourse = (updatedCourse) => {
@@ -156,7 +237,7 @@ export default function AllCourses(props){
       }).catch(err => {
         console.log(err);
       })
-  } 
+  }
     let handleDeleteCourse = (id) => {
         const token = localStorage.getItem('token');
         axios({
@@ -176,14 +257,30 @@ export default function AllCourses(props){
         })
     }
 
+    let handleLeaveCourse = (id) => {
+        const token = localStorage.getItem('token');
+        axios({
+            url: 'http://localhost:5000/api/courses/leave/' + id,
+            method: "delete",
+            data: {userId: auth.userInfo._id},
+            headers: {
+                "x-auth-token": token
+            }
+        }).then(res => {
+            retrieveEnrolledCourse();
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+
     return(
     <main>
         <Container className={classes.cardGrid} maxWidth="md">
-          <div className={classes.main}  >
-            <Modal onClose={handleCloseModal} open={open}>
+          <div className={classes.main}>
+            <Modal onClose={handleCloseModalEnrolled} open={enrolledCoursesModalOpen}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h1 className={classes.modalTitle}> {modalState.title}</h1>
-                   <CourseForm
+                   <EnrollmentModal
                       buttonTitle={modalState.buttonTitle}
                       defaultValueMap={modalState.defaultValueMap}
                       //onSubmit={(data) => handleCreateCourse(data)}
@@ -191,15 +288,25 @@ export default function AllCourses(props){
                    />
                 </div>
             </Modal>
+            <Modal onClose={handleCloseModal} open={open}>
+                <div style={modalStyle} className={classes.modalBox}>
+                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
+                   <CourseForm
+                      buttonTitle={modalState.buttonTitle}
+                      defaultValueMap={modalState.defaultValueMap}
+                      onSubmit={modalState.onSubmit}
+                   />
+                </div>
+            </Modal>
             <div className={classes.courseGroupHeader}  >
-              <Typography variant="h4" > 
-                Administrative Courses
+              <Typography variant="h4" >
+                Enrolled Course
               </Typography>
-              <ToolTip title="Create course" placement="top">
-                <IconButton 
-                    color="primary" 
-                    className={classes.iconAlignRight} 
-                    onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse)}
+              <ToolTip title="Enroll Course" placement="top">
+                <IconButton
+                    color="primary"
+                    className={classes.iconAlignRight}
+                    onClick={() => handleOpenModalEnrolled("Select for Available Course", "Enroll", (coursesAvailable),  handleEnrollCourse)}
                 >
                     <AddIcon />
                 </IconButton>
@@ -208,8 +315,7 @@ export default function AllCourses(props){
             <Divider />
             <div className={classes.courseGroup}>
               <Grid container spacing={4}>
-                {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
-                  admin_id == auth.userInfo._id && 
+                {coursesEnrolled.map(({admin_id, name, term, description, _id}, idx) => (
                   <Grid item key={idx} xs={12} sm={6} md={4}>
                     <Card className={classes.card}>
                       <CardContent className={classes.cardContent}>
@@ -225,32 +331,92 @@ export default function AllCourses(props){
                         </Typography>
                       </CardContent>
                       <CardActions disableSpacing >
-                        <Button size="small" color="primary">
-                          View
+                        <Button size="small" color="primary"
+                        >
+                          <Link className={classes.linkStyle} to={ "/course/"+_id}>View</Link>
                         </Button>
-                        {admin_id == auth.userInfo._id && 
                             <section className={classes.iconAlignRight}>
-                                <IconButton size="small" 
-                                  color="primary" 
+                                <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => {
+                                        let isOk = window.confirm("Are you sure for Dropping selected course?")
+                                        if(isOk)
+                                            handleLeaveCourse(_id);
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+
+                            </section>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+            </Grid>
+            <br />
+            <br />
+            <br />
+            <div className={classes.courseGroupHeader}  >
+              <Typography variant="h4" >
+                Teaching Course
+              </Typography>
+              <ToolTip title="Create course" placement="top">
+                <IconButton
+                    color="primary"
+                    className={classes.iconAlignRight}
+                    onClick={() => handleOpenModal("Adding new course", "Create course", {},  handleCreateCourse)}
+                >
+                    <AddIcon />
+                </IconButton>
+              </ToolTip>
+            </div>
+            <Divider />
+            <div className={classes.courseGroup}>
+              <Grid container spacing={4}>
+                {allCourses.map(({admin_id, name, term, description, _id}, idx) => (
+                  admin_id == auth.userInfo._id &&
+                  <Grid item key={idx} xs={12} sm={6} md={4}>
+                    <Card className={classes.card}>
+                      <CardContent className={classes.cardContent}>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {name}
+                        </Typography>
+                        <Typography>
+                          {(description && description.length > 100) && (description.substring(0, 100).trim() + '....')}
+                          {description && description.length <=100 && description}
+                        </Typography>
+                        <Typography>
+                          Term: {term.toUpperCase()}
+                        </Typography>
+                      </CardContent>
+                      <CardActions disableSpacing >
+                        <Button size="small" color="primary" color="inherit">
+                          <Link className={classes.linkStyle} to={ "/course/"+allCourses[idx]._id}>View</Link>
+                        </Button>
+                        {admin_id == auth.userInfo._id &&
+                            <section className={classes.iconAlignRight}>
+                                <IconButton size="small"
+                                  color="primary"
                                   // onClick={() => handleOpenModal("Edit course", "Save", {name, term, description}, () => {console.log("EDit")})}
                                   onClick={() => handleOpenModal(
                                                                 "Edit course",
-                                                                "Save", 
+                                                                "Save",
                                                                 allCourses[idx],
                                                                 ((data) => handleEditCourse(data)))}
                                 >
-                                    <EditIcon/> 
+                                    <EditIcon/>
                                 </IconButton>
-                                <IconButton  
-                                    size="small" 
-                                    color="primary" 
+                                <IconButton
+                                    size="small"
+                                    color="primary"
                                     onClick={() => {
                                         let isOk = window.confirm("Are you sure to delete this course")
                                         if(isOk)
                                             handleDeleteCourse(_id);
                                     }}
                                 >
-                                    <DeleteIcon /> 
+                                    <DeleteIcon />
                                 </IconButton>
 
                             </section>
@@ -260,6 +426,7 @@ export default function AllCourses(props){
                   </Grid>
                 ))}
             </Grid>
+            </div>
             </div>
           </div>
         </Container>

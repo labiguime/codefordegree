@@ -12,10 +12,12 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Logo from '../../shared/static/code4degree.png';
-
+import Button from '@material-ui/core/Button';
+import {Link} from 'react-router-dom';
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
+
   root: {
     display: 'flex',
   },
@@ -70,6 +72,13 @@ const useStyles = makeStyles(theme => ({
     }),
     marginLeft: 0,
   },
+  title: {
+    flexGrow: 1
+  },
+  linkStyle: {
+    textDecoration: "none",
+    color: "inherit"
+  }
 }));
 
 export default function PersistentDrawerLeft(props) {
@@ -104,9 +113,11 @@ export default function PersistentDrawerLeft(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap className={classes.title}>
               {props.title}
           </Typography>
+          <Button color="inherit"><Link className={classes.linkStyle} to="/editor">Try Editor</Link></Button>
+          <Button color="inherit"><Link className={classes.linkStyle} to="/problem/5e7a9feccdfef025d3609117/5e7c26039385aa4606ca3cde">Problem Page</Link></Button>
         </Toolbar>
       </AppBar>
       <Drawer

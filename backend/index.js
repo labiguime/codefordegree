@@ -24,6 +24,7 @@ mongoose.connect(mongoDBUrl, {
   useUnifiedTopology: true,
   useCreateIndex: true
 });
+mongoose.set('useFindAndModify', false);
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", function() {
@@ -54,12 +55,12 @@ app.use('/api/login', auth);
 app.use('/api/user', user);
 
 app.use('/api/courses', authMiddleware, courses);
-/*
-app.use('/api/course/:courseId/problems', (req, res, next) => {
-  res.locals.userId = req.params.userId;
-  res.locals.courseId = req.params.courseId;
-  next();
-}, problems);
-*/
+
+// Delete this, router transferred in Course router
+// app.use('/api/course/:courseId/problems', (req, res, next) => {
+//   res.locals.userId = req.params.userId;
+//   res.locals.courseId = req.params.courseId;
+//   next();
+// }, problems);
 
 app.listen(port, () => console.log(`${env} server listening on port ${port}!`));
