@@ -81,13 +81,16 @@ const useStyles = makeStyles(theme => ({
       border: '1px solid black',
       boxShadow: theme.shadows[5],
       padding: theme.spacing(2, 4, 3),
+      height: "600px",
+      overflow: 'auto'
     }
 }));
 
 export default function Course(props) {
 
-    const [course, setCourse] = useState([]);
-    const [user, setUser] = useState([]);
+    const [course, setCourse] = useState({});
+    const [admin, setAdmin] = useState({});
+    const [user, setUser] = useState({});
     const [allProblems, setAllProblems] = useState([]);
     const {CourseId} = props.match.params;
 
@@ -116,35 +119,55 @@ export default function Course(props) {
       setOpen(false);
     }
 
-    let handleCreateProblem = (data) => {
-        const token = localStorage.getItem('token');
-        axios({
+    let handleCreateProblem = async (data) => {
+      const token = localStorage.getItem('token');
+      try{
+        let res = await axios({
           url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/',
           method: "post",
           data: data,
           headers: {
             "x-auth-token": token
           }
-        }).then(res => {
-          const newProblem = res.data;
-          console.log(newProblem);
-          setAllProblems([...allProblems, newProblem]);
-          setOpen(false);
-        }).catch(err => {
-          console.log(err);
-        })
-    }
-
-    let handleEditProblem = (data) => {
-        const token = localStorage.getItem('token');
-        axios({
-          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data._id,
-          method: "put",
-          data: data,
+        });
+        const newProblem = res.data;
+        res = await axios({
+          url: `http://localhost:5000/api/courses/${CourseId}/problems/${newProblem._id}/testcases/batch`,
+          method: 'post',
+          data: {testcases: data.testcases},
           headers: {
             "x-auth-token": token
           }
-        }).then(res => {
+        }) 
+        const newTestcases = res.data;
+        newProblem.testcases = newTestcases;
+        setAllProblems([...allProblems, newProblem]);
+        setOpen(false);
+      }catch(e){
+        console.log(e.message);
+      }
+    }
+
+    let handleEditProblem = async (data) => {
+        const token = localStorage.getItem('token');
+        try{
+          let res = await axios({
+            url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data._id,
+            method: "put",
+            data: data,
+            headers: {
+              "x-auth-token": token
+            }
+          });
+          res = await axios({
+            url: `http://localhost:5000/api/courses/${CourseId}/problems/${data._id}/testcases/batch`,
+            method: "post",
+            data: {testcases: data.testcases, deletedTestcases: data.deletedTestcases},
+            headers: {
+              "x-auth-token": token
+            }
+          });
+          data.testcases = res.data;
           const newProblems = allProblems.map(e => {
             if(e._id == data._id)
               return data;
@@ -152,9 +175,9 @@ export default function Course(props) {
           });
           setAllProblems(newProblems);
           setOpen(false);
-        }).catch(err => {
-          console.log(err);
-        })
+        }catch(e){
+          console.log(e.message);
+        }
     }
 
     let handleDeleteProblem = (data) => {
@@ -190,9 +213,9 @@ export default function Course(props) {
                     }
                 });
                 setCourse(res.data);
-                setUser(res.data.admin_id);
+                setAdmin(res.data.admin_id);
                 const problemsData = await axios({
-                    url: 'http://localhost:5000/api/courses/'+CourseId+'/problems',
+                    url: 'http://localhost:5000/api/courses/'+CourseId+'/problems?testcases=true',
                     method: "get",
                     headers: {
                         "x-auth-token": token
@@ -200,6 +223,14 @@ export default function Course(props) {
                 });
                 const myProblems = problemsData.data;
                 setAllProblems(myProblems);
+                const userData = await axios({
+                  url: 'http://localhost:5000/api/user/me',
+                  method: 'get',
+                  headers: {
+                        "x-auth-token": token
+                  }
+                });
+                setUser(userData.data);
             }
             fetchData();
         }
@@ -208,7 +239,7 @@ export default function Course(props) {
         }
     }, []);
 
-
+    allProblems.sort((problem1, problem2) => new Date(problem2.deadline) - new Date(problem1.deadline))
     return (
         <div>
             <Modal onClose={handleCloseModal} open={open}>
@@ -233,7 +264,7 @@ export default function Course(props) {
                           </Grid>
                           <Grid item xs={6}>
                               <Typography variant="h5" className={classes.textRight}>
-                                Administrator: {user.name}
+                                Administrator: {admin.name}
                               </Typography>
                           </Grid>
                       </Grid>
@@ -257,7 +288,7 @@ export default function Course(props) {
                     List of problems
                   </Typography>
                   <ToolTip title="Create problem" placement="top">
-                    <IconButton color="primary" className={classes.iconAlignRight}
+                    <IconButton color="primary" className={classes.iconAlignRight} disabled={user._id != admin._id}
                     onClick={() => handleOpenModal("Creating new problem", "Create problem", {},  handleCreateProblem)}>
                         <AddIcon />
                     </IconButton>
@@ -289,6 +320,7 @@ export default function Course(props) {
 
                                  <IconButton size="small"
                                    color="primary"
+                                   disabled={user._id != admin._id}
                                    onClick={() => handleOpenModalEx(
                                                                  "Edit problem",
                                                                  "Save changes",
@@ -301,6 +333,7 @@ export default function Course(props) {
                                  <IconButton
                                      size="small"
                                      color="primary"
+                                     disabled={user._id != admin._id}
                                      onClick={() => {
                                          let isOk = window.confirm("Are you sure that you want to delete this problem?")
                                          if(isOk)

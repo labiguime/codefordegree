@@ -53,7 +53,7 @@ module.exports = {
     createProblemSubmission: async (req, res, next) => {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
-        const {source_code, language_id} = req.body;
+        const {source_code, language_id, created_at = new Date()} = req.body;
         if(!language_id){
             return res.status(404).json({error: "Submission needs a language_id value"})
         }
@@ -65,6 +65,8 @@ module.exports = {
             problem = await Problem.findById(problemId);
             if(!problem)
                 return res.status(404).json({error: "Problem not found"});
+            if(new Date(created_at) - new Date(problem.created_at) > 0)
+                return res.status(400).json({error: "Submission is not accepted because of overdue"});
         }catch(e){
             console.log(e);
             return res.status(500).json({error: "Internal server error"});
@@ -72,7 +74,8 @@ module.exports = {
         const problemSub = new ProblemSubmission({source_code, 
                                                   language, 
                                                   problem_id: problemId,
-                                                  user_id: userId});
+                                                  user_id: userId,
+                                                  created_at});
         //Query for all test cases of problem
         let testcases = [];
         try{

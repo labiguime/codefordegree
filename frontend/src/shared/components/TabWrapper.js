@@ -50,14 +50,14 @@ export default function TabWrapper(props) {
         <Tabs
           value={value}
           onChange={handleChange}
-          indicatorColor="primary"
+          indicatorColor="secondary"
           textColor="primary"
           variant="fullWidth"
           aria-label="full width tabs example"
         >
             {tabHeaders.map((header, index) => {
                 return (
-                    <Tab label={header.label} icon={header.icon}/>
+                    <Tab key={index} label={header.label} icon={header.icon} disabled={header.disabled}/>
                 )
             })}
         </Tabs>

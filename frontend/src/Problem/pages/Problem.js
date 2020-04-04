@@ -2,6 +2,8 @@ import React ,{useState, useEffect, useContext} from 'react';
 import axios from 'axios';
 import Editor from '../../CodeEditor/editor'
 import SplitPane, {Pane}from 'react-split-pane';
+import Moment from 'react-moment';
+import moment from 'moment';
 import TabWrapper from '../../shared/components/TabWrapper';
 import './problem.css';
 
@@ -12,7 +14,7 @@ function ProblemDescription(props){
         <p> Description: {problem.description} </p>
         <p> Mark : {problem.mark} </p>
         <p> Runtime : {problem.runtime_limit} ms</p>
-        <p> Deadline : {problem.deadline} </p>
+        <p> Deadline : <Moment format="HH:mm on MMM D, YYYY ">{problem.deadline}</Moment></p>
     </React.Fragment>
 }
 
@@ -40,7 +42,6 @@ export default function Problem(props) {
             console.log(err.message);
         }
     }, []);
-
     return (
         <SplitPane 
             split="vertical"
@@ -52,7 +53,7 @@ export default function Problem(props) {
             <Pane>
                 <ProblemDescription problem={problem}/>
             </Pane>
-            <Editor courseId={CourseId} problemId={ProblemId}/>
+            <Editor submitDeadline={problem.deadline} courseId={CourseId} problemId={ProblemId}/>
         </SplitPane>
         
     );

@@ -29,7 +29,7 @@ import "ace-builds/src-noconflict/mode-python";
 import {languageMap, languagePlaceHolder} from '../shared/constants';
 
 function ExpansibleRunCodeResult(props){
-    const {compile_error, runtime_error, wrong_answer, testcases=[]} = props || {};
+    const {compile_error, runtime_error, wrong_answer, accepted, testcases=[]} = props || {};
     if(compile_error){
         return(
             <Typography>
@@ -147,6 +147,7 @@ export default function Editor(props) {
         runtime_error: "",
         wrong_answer: false
     });
+    const [isCodeRunOrSubmitted, setIsCodeRunOrSubmitted] = useState(false);
     const [editorState, setEditorState] = useState({
         mode: "javascript",
         fontSize: 14,
@@ -154,7 +155,7 @@ export default function Editor(props) {
         value: languagePlaceHolder["javascript"]
     });
     const [submitting, setSubmitting] = useState(false);
-    const {courseId, problemId} = props;
+    const {courseId, problemId, submitDeadline} = props;
 
     function handleEditorStateChange(newState){
         if(newState.mode){
@@ -204,7 +205,8 @@ export default function Editor(props) {
             },
             data: {
                 source_code: editorState.value,
-                language_id: languageMap[editorState.mode]
+                language_id: languageMap[editorState.mode],
+                created_at: new Date()
             }
         }).then(res => {
             let testcaseResults = res.data.testcase_results;
@@ -223,10 +225,12 @@ export default function Editor(props) {
             setConsoleExpanded(true);
             setTestcases(newTestCasesState);
             setSubmissionError(newSubmissionError);
+            setIsCodeRunOrSubmitted(true);
         }).catch(error => {
             setSubmissionError(error.response.data);
             setConsoleExpanded(true);
             setSubmitting(false);
+            setIsCodeRunOrSubmitted(true);
         })
     }
 
@@ -261,10 +265,12 @@ export default function Editor(props) {
             setConsoleExpanded(true);
             setTestcases(newTestCasesState);
             setSubmissionError(newSubmissionError);
+            setIsCodeRunOrSubmitted(true);
         }).catch(error => {
             setSubmissionError(error.response.data)
             setConsoleExpanded(true);
             setSubmitting(false);
+            setIsCodeRunOrSubmitted(true);
         })
     }
     const {runtime_error, compile_error, wrong_answer} = submissionError;
@@ -340,7 +346,8 @@ export default function Editor(props) {
                         </Button>
                     </div>
                     <div>
-                        <Button variant="contained" color="primary" onClick={handleSubmitCode}>
+                        <Button variant="contained" disabled={new Date() - new Date(submitDeadline) >= 0}
+                        color="primary" onClick={handleSubmitCode}>
                             Submit
                         </Button>
                     </div>
@@ -348,7 +355,9 @@ export default function Editor(props) {
                 {consoleExpanded && <TabWrapper 
                         tabHeaders={[
                             {label: "Test cases"},
-                            {label: "Run code result", icon: (runtime_error || compile_error || wrong_answer) ? <ErrorIcon style={{color: "red"}}/> : undefined}
+                            {label: "Run code result", 
+                             icon: (runtime_error || compile_error || wrong_answer) ? <ErrorIcon style={{color: "red"}}/> : undefined,
+                             disabled: !isCodeRunOrSubmitted}
                         ]}
                         tabBodies={[
                             () => <ExpansibleTestCases testcases={testcases}/>,
