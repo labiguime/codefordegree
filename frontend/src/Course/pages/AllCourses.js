@@ -275,10 +275,7 @@ export default function AllCourses(props){
             console.log(err);
         })
     }
-
-    return(
-    <main>
-        <Dashboard title="Courses"/>
+    let content = (
         <Container className={classes.cardGrid} maxWidth="md">
           <div className={classes.main}>
             <Modal onClose={handleCloseModalEnrolled} open={enrolledCoursesModalOpen}>
@@ -434,6 +431,9 @@ export default function AllCourses(props){
             </div>
           </div>
         </Container>
-      </main>
+    )
+    return(
+        <Dashboard title="Courses" content={content}/>
+        
     );
 }
