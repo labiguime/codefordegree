@@ -219,6 +219,7 @@ export default function AddProblemForm(props) {
                       onBlur={event => handleUpdateTestCase({stdin: event.target.value}, index)}
                       multiline
                       defaultValue={e.stdin}
+                      required
                     />
                     <TextField 
                       style={{marginLeft: '5px'}}
@@ -226,6 +227,7 @@ export default function AddProblemForm(props) {
                       onBlur={event => handleUpdateTestCase({expected_output: event.target.value}, index)}
                       multiline
                       defaultValue={e.expected_output}
+                      required
                     />
               </Grid>
               <Grid item xs={6}>
