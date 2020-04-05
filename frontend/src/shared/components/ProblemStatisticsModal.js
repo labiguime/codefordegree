@@ -152,13 +152,13 @@ export default function ProblemStatisticsModal(props) {
 					          		<Stack />
 					        	</Chart>
 							</Grid>
-							<Grid container xs={12}>
-								<Grid container alignItems="center" justify="center" direction="column" spacing={2}>
+							<Grid item xs={12}>
+								<Grid container alignItems="center" justify="center" spacing={2}>
 									<Grid item xs={6}>
 										<Typography className={classes.typographyStyle} align="center">
 											{(totalStudents == 0) ? 0 : (totalSubmissions/totalStudents).toPrecision(3)}
 										</Typography>
-										<Typography variant="h7">
+										<Typography align="center">
 											Attempts per student
 										</Typography>
 									</Grid>
@@ -166,7 +166,7 @@ export default function ProblemStatisticsModal(props) {
 										<Typography className={classes.typographyStyle} align="center">
 											{(totalSubmissions == 0) ? 0 : ((totalPassed/totalSubmissions)*100).toPrecision(3)}%
 										</Typography>
-										<Typography variant="h7">
+										<Typography align="center">
 										Submission success rate
 										</Typography>
 									</Grid>
