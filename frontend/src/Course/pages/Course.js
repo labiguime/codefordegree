@@ -25,7 +25,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import Dashboard from '../../User/components/Dashboard';
 import axios from 'axios';
-import moment from 'moment'
+import moment from 'moment';
+import {COURSE_URL, USER_URL} from '../../shared/constants';
 
 function getModalStyle() {
   const top = 50;
@@ -107,7 +108,7 @@ export default function Course(props) {
     const fetchProblems = async () => {
         const token = localStorage.getItem('token');
         const problemsData = await axios({
-            url: 'http://localhost:5000/api/courses/'+CourseId+'/problems',
+            url: `${COURSE_URL}/${CourseId}/problems`,
             method: "get",
             headers: {
                 "x-auth-token": token
@@ -138,7 +139,7 @@ export default function Course(props) {
       const token = localStorage.getItem('token');
       try{
         let res = await axios({
-          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/',
+          url: `${COURSE_URL}/${CourseId}/problems`,
           method: "post",
           data: data,
           headers: {
@@ -147,7 +148,7 @@ export default function Course(props) {
         });
         const newProblem = res.data;
         res = await axios({
-          url: `http://localhost:5000/api/courses/${CourseId}/problems/${newProblem._id}/testcases/batch`,
+          url: `${COURSE_URL}/${CourseId}/problems/${newProblem._id}/testcases/batch`,
           method: 'post',
           data: {testcases: data.testcases},
           headers: {
@@ -167,7 +168,7 @@ export default function Course(props) {
         const token = localStorage.getItem('token');
         try{
           let res = await axios({
-            url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data._id,
+            url: `${COURSE_URL}/${CourseId}/problems/${data._id}`,
             method: "put",
             data: data,
             headers: {
@@ -175,7 +176,7 @@ export default function Course(props) {
             }
           });
           res = await axios({
-            url: `http://localhost:5000/api/courses/${CourseId}/problems/${data._id}/testcases/batch`,
+            url: `${COURSE_URL}/${CourseId}/problems/${data._id}/testcases/batch`,
             method: "post",
             data: {testcases: data.testcases, deletedTestcases: data.deletedTestcases},
             headers: {
@@ -198,7 +199,7 @@ export default function Course(props) {
     let handleDeleteProblem = (data) => {
         const token = localStorage.getItem('token');
         axios({
-          url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+data,
+          url: `${COURSE_URL}/${CourseId}/problems/${data}`,
           method: "delete",
           headers: {
             "x-auth-token": token
@@ -221,7 +222,7 @@ export default function Course(props) {
         try {
             const fetchData = async () => {
                 const res = await axios({
-                    url: 'http://localhost:5000/api/courses/'+CourseId,
+                    url: `${COURSE_URL}/${CourseId}`,
                     method: "get",
                     headers: {
                         "x-auth-token": token
@@ -229,7 +230,7 @@ export default function Course(props) {
                 });
                 
                 const problemsData = await axios({
-                    url: 'http://localhost:5000/api/courses/'+CourseId+'/problems?testcases=true',
+                    url: `${COURSE_URL}/${CourseId}/problems?testcases=true`,
                     method: "get",
                     headers: {
                         "x-auth-token": token
@@ -237,7 +238,7 @@ export default function Course(props) {
                 });
                 const myProblems = problemsData.data;
                 const userData = await axios({
-                  url: 'http://localhost:5000/api/user/me',
+                  url: `${USER_URL}/me`,
                   method: 'get',
                   headers: {
                         "x-auth-token": token

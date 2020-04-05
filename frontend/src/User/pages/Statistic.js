@@ -35,19 +35,10 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-function createData(timeline, problem, status, language) {
-    return {timeline, problem, status, language};
-}
-
-const rows = [
-  createData(new Date(), "Hello world", "Accepted", "C++"),
-  createData(new Date(), "Hello world", "Wrong Answer", "C++"),
-];
-
 const labels = ['Accepted', 'Wrong answer', 'Compilation error', 'Runtime error'];
 const backgroundColor = [
-                '#fc2403',
                 '#0bfc03',
+                '#fc2403',
                 '#fce303',
                 '#0345fc',
             ]
@@ -76,7 +67,6 @@ export default function Statistic(){
                 "x-auth-token": token
             }
         }).then(res => {
-            console.log(res);
             let {acceptedSub, wrongAnswerSub, compileErrorSub, runtimeErrorSub}= res.data;
             let newChartState = {...chartState};
             let newSubmissions = {
@@ -121,10 +111,16 @@ export default function Statistic(){
     sortedSub.sort((sub1, sub2) => new Date(sub2.created_at) - new Date(sub1.created_at));
     sortedSub = sortedSub.slice(0, 30);
     let tableData = sortedSub.map(e => {
-        let statusTextColor = 'red';
         const statusDescription = e.status.description.toLowerCase();
-        if(statusDescription == 'accepted')
-            statusTextColor = 'green';
+        let statusTextColor;
+        if(statusDescription.includes("accepted"))
+            statusTextColor = '#0bfc03';
+        else if(statusDescription.includes("runtime error"))
+            statusTextColor = '#0345fc';
+        else if(statusDescription.includes("compilation error"))
+            statusTextColor = '#fce303';
+        else
+            statusTextColor = '#fc2403';
         return {
             submitted_time: e.created_at,
             problem: e.problem_id.name,
