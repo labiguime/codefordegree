@@ -17,8 +17,10 @@ import Button from '@material-ui/core/Button';
 import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import CourseForm from '../../shared/components/CourseForm';
+import {COURSE_URL} from '../../shared/constants';
+import Dashboard from '../../User/components/Dashboard';
 import {Link} from 'react-router-dom';
-import EnrollmentModal from '../../shared/components/EnrollmentModal';
+import EnrollmentModal from '../../shared/components/EnrollmentModal'
 
 function getModalStyle() {
   const top = 50;
@@ -81,6 +83,7 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2, 4, 3),
       }
 }));
+
 export default function AllCourses(props){
 
     //Context
@@ -282,9 +285,7 @@ export default function AllCourses(props){
         setModalState({});
         setIsModalOpen(false);
     }
-
-    return(
-    <main>
+    let content = (
         <Container className={classes.cardGrid} maxWidth="md">
             <div className={classes.main}>
                 <Modal onClose={() => handleCloseModal(isModalAdminModal)} open={isModalOpen}>
@@ -426,5 +427,9 @@ export default function AllCourses(props){
                 </div>
             </div>
         </Container>
-    </main>);
+    )
+    return(
+        <Dashboard title="Courses" content={content}/>
+        
+    );
 }

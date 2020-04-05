@@ -1,80 +1,46 @@
 import React, {useState, useEffect} from 'react';
 import Login from './User/pages/Login'
 import SignUp from './User/pages/SignUp'
-import Dashboard from './User/components/Dashboard'
-import Problem from './Problem/pages/Problem'
-import Course from './Course/pages/Course'
+import RequireAuthRoute from './shared/components/RequireAuthRoute';
+import AllCourses from './Course/pages/AllCourses';
+import Statistic from './User/pages/Statistic';
 
-import Editor from './CodeEditor/editor';
-import {AuthContext} from './shared/context/auth-context';
-import axios from 'axios';
+
+import Problem from './Problem/pages/Problem';
+import Course from './Course/pages/Course';
+import Profile from './User/pages/UserProfile';
+
 import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
 
-
 function App() {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userInfo, setUserInfo] = useState({});
-    const login = (data) => {
-      localStorage.setItem('token', data.token);
-      setIsLoggedIn(true);
-      setUserInfo(data.user);
-    }
-    const logout = () => {
-      localStorage.setItem('token', '');
-      setIsLoggedIn(false);
-      setUserInfo({});
-    }
-    useEffect(() => {
-      const token = localStorage.getItem('token');
-      if(token){
-        axios({
-          url: 'http://localhost:5000/api/user/me',
-          headers: {
-            'x-auth-token': token
-          }
-        }).then(res => {
-                login({token, user: res.data});
-              }).catch(error => {
-                console.log(error);
-              })
-      }
-    }, []);
-    let routes;
-    if(isLoggedIn){
-      routes = (
-        <Switch>
-          <Route path="/problem/:CourseId/:ProblemId" render={(props) => <Problem {...props}/>} exact/>
-          <Route path="/course/:CourseId/" render={(props) => <Course {...props}/>} exact/>
-          <Route path="/dashboard" render={(props) => <Dashboard {...props} userInfo={userInfo}/>} exact/>
-          <Route path="/editor" exact >
-              <Editor />
-          </Route>
-          <Redirect push to="/dashboard" />
-        </Switch>
-      )
-    }else{
-      routes = (
-        <Switch>
-          <Route path="/login" component={Login} exact/>
-          <Route path="/signup" component={SignUp} exact/>
-          <Redirect to="/login" />
-        </Switch>
-      )
-    }
     return (
-    <AuthContext.Provider value={{isLoggedIn, login, logout, userInfo}}>
       <div className="App">
         <Router>
-          {routes}
+          <Switch>  
+            <Route path="/signup" component={SignUp} exact />
+            <Route path="/login" component={Login} exact/>
+            
+            <RequireAuthRoute path="/problem/:CourseId/:ProblemId"
+                Component={Problem}
+            />
+            <RequireAuthRoute path="/course/:CourseId"
+                Component={Course} 
+            />
+
+            {/* Now we have to manually insert the dashboard component in every component where we wanna show dashboard*/}
+            <RequireAuthRoute exact path="/dashboard" Component={AllCourses}/>
+            <RequireAuthRoute exact path="/statistic" Component={Statistic}/>
+            <RequireAuthRoute exact path="/profile" Component={Profile} />
+            {/* <RequireAuthRoute exact path="/profile" Component={Profile}/> //Not done yet*/}
+            <Redirect to="/dashboard"/>
+          </Switch>
         </Router>
       </div>
-    </AuthContext.Provider>
-
   );
 }
 
