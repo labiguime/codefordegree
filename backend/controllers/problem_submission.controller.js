@@ -1,3 +1,4 @@
+const Course = require("../models/course.model");
 const Problem = require("../models/problem.model");
 const ProblemSubmission = require("../models/problem_submission.model");
 const JudegeSubmission = require("../models/judge_submission.model");
@@ -35,13 +36,24 @@ module.exports = {
     },
 
     getProblemSubmissions: async (req, res, next) => {
-        const {problemId} = res.locals;
+        const {problemId, courseId} = res.locals;
         const userId = req.user_id;
         const {passed, latest} = req.query;
         let filter = {
             problem_id: problemId,
-            user_id: userId
         };
+        try{
+            const foundCourse = await Course.findById(courseId);
+            if(!foundCourse){
+                return res.status(404).json({error: "Problem not found"});
+            }
+            if(foundCourse.admin_id != userId){
+               filter.user_id = userId; 
+            }
+        }catch(e){
+            console.log(e);
+            return res.status(500).json({error: "Internal server error"});
+        }
         let sort={};
         if(latest != undefined){
             sort.created_at = -1;
@@ -69,7 +81,7 @@ module.exports = {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
         const passedSubmission = await ProblemSubmission.
-                                            find({problem_id: problemId, passed: true});
+                                            find({user_id: userId, problem_id: problemId, passed: true});
         if(passedSubmission.length > 0){
             return res.status(400).json({error: "Cannot submit code for a passed problem"});
         }

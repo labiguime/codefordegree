@@ -7,7 +7,7 @@ let problemController = {};
 problemController.getProblem = async function (req, res) {
 	try {
 		const {problemId} = req.params;
-		const problem = await Problem.findById(problemId);
+		const problem = await Problem.findById(problemId).populate('course_id');
 		if (!problem) throw Error('Cannot find a problem that matches this id.');
 		// We don't need to populate 'course_id' because the course is already known
 		res.status(200).json(problem);
