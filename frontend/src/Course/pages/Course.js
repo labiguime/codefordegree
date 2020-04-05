@@ -103,6 +103,19 @@ export default function Course(props) {
       setOpen(true);
     }
 
+    const fetchProblems = async () => {
+        const token = localStorage.getItem('token');
+        const problemsData = await axios({
+            url: 'http://localhost:5000/api/courses/'+CourseId+'/problems',
+            method: "get",
+            headers: {
+                "x-auth-token": token
+            }
+        });
+        const myProblems = problemsData.data;
+        setAllProblems(myProblems);
+    };
+
     const handleOpenModalEx = (title, buttonTitle, defaultValueMap, onSubmit) => {
       // setOpen(true);
       let dl = defaultValueMap.deadline;
@@ -139,7 +152,7 @@ export default function Course(props) {
           headers: {
             "x-auth-token": token
           }
-        }) 
+        })
         const newTestcases = res.data;
         newProblem.testcases = newTestcases;
         setAllProblems([...allProblems, newProblem]);
