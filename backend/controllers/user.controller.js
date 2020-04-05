@@ -40,5 +40,26 @@ userController.getCurrentUser = async function(req, res) {
     return res.status(400).json({error: err.message});
   }
 };
+//TODO:
+userController.updateProfile = async function(req, res) {
+  let {name, email, studentNumber} = req.body;
+  let updatedProfile = {};
+
+  if(name) updatedProfile.name = name;  
+  if(studentNumber) updatedProfile.studentNumber = studentNumber;
+  if(email) updatedProfile.email = email;
+
+
+  console.log(updatedProfile);
+
+  const newProfile = await User.updateOne({_id: req.user_id}, 
+                updatedProfile,
+                {runValidators: true});
+  if (!newProfile) {
+    throw Error('Cannot update user profile.');
+  }
+
+  return res.status(200).json({newProfile}); 
+};
 
 module.exports = userController;

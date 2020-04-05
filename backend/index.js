@@ -24,6 +24,7 @@ mongoose.connect(mongoDBUrl, {
   useUnifiedTopology: true,
   useCreateIndex: true
 });
+mongoose.set('useFindAndModify', false);
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 db.once("open", function() {
