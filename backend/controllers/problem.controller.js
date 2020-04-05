@@ -1,6 +1,7 @@
 const Problem = require('../models/problem.model');
 const Course = require("../models/course.model");
-
+const Testcase = require("../models/testcase.model");
+const mongoose = require('mongoose');
 let problemController = {};
 
 problemController.getProblem = async function (req, res) {
@@ -17,10 +18,37 @@ problemController.getProblem = async function (req, res) {
 
 problemController.getProblems = async function(req, res) {
 	const {courseId} = res.locals;
+	const {testcases} = req.query;
 	try {
-		const problems = await Problem.find({course_id: courseId});
+		let problems = await Problem.find({course_id: courseId});
+		let result = problems.map(e => {
+			return {
+				_id: e._id,
+				name: e.name,
+				description: e.description,
+				mark: e.mark,
+				runtime_limit: e.runtime_limit,
+				deadline: e.deadline,
+				course_id: e.course_id
+			}
+		})
 		if (!problems) throw Error('Cannot find any problem in the Problem table.');
-		res.status(200).json(problems);
+		if(testcases){
+			for(let i = 0; i < result.length; ++i){
+				let problemTestcases = await Testcase.find({problem_id: result[i]._id});
+				problemTestcases = problemTestcases.map(e => {
+					return {
+							_id: e._id,
+							problem_id: e.problem_id,
+							hidden: e.hidden,
+							stdin: Buffer.from(e.stdin, 'base64').toString('ascii'),
+							expected_output: Buffer.from(e.expected_output, 'base64').toString('ascii')
+						}
+				})
+				result[i] = {...result[i], testcases: problemTestcases};
+			}
+		}
+		res.status(200).json(result);
 	} catch (e) {
 		res.status(400).json({ error: e.message });
 	}
