@@ -243,10 +243,12 @@ export default function Editor(props) {
                     return {...testcase, result, stdout};
                 }
             })
+
             setSubmitting(false);
             setConsoleExpanded(true);
             setTestcases(newTestCasesState);
             setSubmissionError(newSubmissionError);
+            setLatestSub(res.data);
             setIsCodeRunOrSubmitted(true);
         }).catch(error => {
             setSubmissionError(error.response.data);
