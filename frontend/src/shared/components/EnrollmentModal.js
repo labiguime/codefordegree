@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import Alert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
   searchFieldAppearance: {
@@ -25,7 +25,9 @@ export default function EnrollmentModal(props) {
 	const [chosenCourse, setChosenCourse] = React.useState();
 
 	const onCourseSelected = (e, v) => {
-		setChosenCourse(v.id);
+		//Handle the edge case when v is null
+		if(v)
+			setChosenCourse(v.id);
 	}
 
     const options = courseList.map((course, index) => {
@@ -46,10 +48,13 @@ export default function EnrollmentModal(props) {
 					  className={classes.searchFieldAppearance}
                       getOptionLabel={option => option.name}
                       onChange={(e, v) => onCourseSelected(e, v)}
-                      renderInput={params => (
-                        <TextField {...params} label="Search for course..." variant="outlined">
-                        </TextField>
-                      )}
+                      renderInput={params => {
+						return <div>
+                        	<TextField {...params} label="Search for course..." variant="outlined">
+                        	</TextField>
+							{props.submitError && <Alert style={{marginTop: "5px"}} severity="error">{props.submitError}</Alert>}
+						</div>
+                      }}
 					/>
 					</Grid>
 					<br />
