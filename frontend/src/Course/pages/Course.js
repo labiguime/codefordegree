@@ -336,7 +336,6 @@ export default function Course(props) {
                              <TableCell>Name</TableCell>
                              <TableCell>Total marks</TableCell>
                              <TableCell align="left">Deadline</TableCell>
-                             <TableCell align="left">Success ratio</TableCell>
                              <TableCell align="left">Action</TableCell>
                          </TableRow>
                          </TableHead>
@@ -349,7 +348,6 @@ export default function Course(props) {
                              <TableCell component="th" scope="row" align="left">
                                  <Moment format="HH:mm on MMM D, YYYY ">{data.deadline}</Moment> (<Moment fromNow style={{color: "blue"}}>{data.deadline}</Moment>)
                              </TableCell>
-                             <TableCell align="left">0</TableCell>
                              <TableCell>
 
                                  <IconButton size="small"
@@ -380,6 +378,7 @@ export default function Course(props) {
                                  <IconButton
                                      size="small"
                                      color="primary"
+                                     disabled={user._id != admin._id}
                                      onClick={() => handleOpenModalStats(
                                                                    "Problem statistics",
                                                                    "",
