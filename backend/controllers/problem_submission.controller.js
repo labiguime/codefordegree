@@ -53,7 +53,7 @@ module.exports = {
     createProblemSubmission: async (req, res, next) => {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
-        const {source_code, language_id} = req.body;
+        const {source_code, language_id, created_at = new Date()} = req.body;
         if(!language_id){
             return res.status(404).json({error: "Submission needs a language_id value"})
         }
@@ -65,6 +65,8 @@ module.exports = {
             problem = await Problem.findById(problemId);
             if(!problem)
                 return res.status(404).json({error: "Problem not found"});
+            if(new Date(created_at) - new Date(problem.created_at) > 0)
+                return res.status(400).json({error: "Submission is not accepted because of overdue"});
         }catch(e){
             console.log(e);
             return res.status(500).json({error: "Internal server error"});
@@ -72,7 +74,8 @@ module.exports = {
         const problemSub = new ProblemSubmission({source_code, 
                                                   language, 
                                                   problem_id: problemId,
-                                                  user_id: userId});
+                                                  user_id: userId,
+                                                  created_at});
         //Query for all test cases of problem
         let testcases = [];
         try{
@@ -122,11 +125,13 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output} = response.data;
+                    const {memory, time, status, compile_output, stdout, stderr} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
-                    if(status.id == 6){//Compile error status returned from judge0
+                    if(stdout)
+                        sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
+                    if(statusId.RUNTIME_ERRORS.includes(status.id) || status.id == 6){
                         problemSub.judge_submission_ids.push(sub._id);
                         problemSub.status = status;
                         try{
@@ -135,9 +140,14 @@ module.exports = {
                             console.log(e);
                             res.status(500).json({error: "Internal server error"});
                         }
-                        return res.status(404).json({
+                        if(status.id == 6){
+                            return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
-                            compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
+                            compile_error: Buffer.from(compile_output, 'base64').toString('utf8')}) ;
+                        }
+                        return res.status(404).json({
+                            runtime_error: Buffer.from(stderr, 'base64').toString('ascii')
+                        });
                     }
                 };
                 let acceptedSub = 0;
@@ -153,6 +163,7 @@ module.exports = {
                     }
                     let test = problemSub.testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
+                        test.stdout = Buffer.from(judge.stdout, 'base64').toString('ascii');
                         if(judge.status.id == statusId.ACCEPTED){
                             acceptedSub++;
                             test.result = true;
@@ -237,7 +248,7 @@ module.exports = {
                                 language_id,
                                 expected_output,
                                 stdin,
-                                runtime_limit: problem.runtime_limit
+                                runtime_limit: problem.runtime_limit,
                             });
                 judgeSubmission.token = sub.data.token;
                 judgeSubmissions.push(judgeSubmission);
@@ -264,20 +275,28 @@ module.exports = {
                 for(let i = 0; i < responses.length; ++i){
                     let response = responses[i];
                     let sub = judgeSubmissions.find(e => e.token == response.data.token);
-                    const {memory, time, status, compile_output} = response.data;
+                    const {memory, time, status, compile_output, stdout, stderr} = response.data;
                     sub.memory = memory;
                     sub.time = time;
                     sub.status = status;
+                    if(stdout)
+                        sub.stdout = Buffer.from(stdout, 'base64').toString('ascii');
+                    if(statusId.RUNTIME_ERRORS.includes(status.id)){
+                        return res.status(404).json({
+                            runtime_error: Buffer.from(stderr, 'base64').toString('ascii')
+                        });
+                    }
                     if(status.id == 6){
                         return res.status(404).json({
                             //Decode the error since judge0 api will return encoded error
-                            compile_error: Buffer.from(compile_output, 'base64').toString('ascii')                        }) ;
+                            compile_error: Buffer.from(compile_output, 'base64').toString('utf8')                        }) ;
                     }
                 }
                 for(judge of judgeSubmissions){
                     let test = testcase_results.find(e => judge.testcase_id == e.testcase_id);
                     if(test){
                         test.result = judge.status.id == 3;
+                        test.stdout = judge.stdout;
                     }
                 }
                 return res.json({testcase_results});

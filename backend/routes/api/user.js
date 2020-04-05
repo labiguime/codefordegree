@@ -19,6 +19,13 @@ router.post("/", userController.createUser);
  */
 router.get("/me", auth, userController.getCurrentUser);
 
+/**
+ * @route        UPDATE api/user/me
+ * @description  UPDATE user Information
+ * @access       Private, requires log in
+ */
+router.put("/me", auth, userController.updateProfile);
+
 router.get("/statistic", auth, getProblemSubmissionStat);
 
 module.exports = router;

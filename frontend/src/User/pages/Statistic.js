@@ -118,8 +118,8 @@ export default function Statistic(){
         totalSumissions += submissions[subStatus].length;
         sortedSub = sortedSub.concat(submissions[subStatus]);
     }
-    sortedSub.sort((sub1, sub2) => sub2.created_at - sub1.created_at);
-    sortedSub.slice(0, 30);
+    sortedSub.sort((sub1, sub2) => new Date(sub2.created_at) - new Date(sub1.created_at));
+    sortedSub = sortedSub.slice(0, 30);
     let tableData = sortedSub.map(e => {
         let statusTextColor = 'red';
         const statusDescription = e.status.description.toLowerCase();
@@ -164,7 +164,7 @@ export default function Statistic(){
                         <Grid item xs={4}>
                             <div className={classes.textCenter}>
                                 <p className={clsx(classes.textGreen, classes.textFont25, classes.noMarginBottom)}>
-                                    {submissions.acceptedSub.length / totalSumissions || 0}
+                                    {(submissions.acceptedSub.length / totalSumissions || 0).toPrecision(3)}
                                 </p>
                                 <p>Accepted rate</p>
                             </div>
