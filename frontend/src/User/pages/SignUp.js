@@ -4,15 +4,18 @@ import {AuthContext} from '../../shared/context/auth-context';
 import axios from 'axios';
 import {USER_URL} from '../../shared/constants';
 
-export default function SignUp(){
+export default function SignUp(props){
     const [signUpMessage, setSignUpMessage] = useState("");
-    const auth = useContext(AuthContext);
+    const {history, location} = props;
+    const {from} = location.state || {from: {pathname: '/dashboard'}};
     const onSubmit = (data) => {
        axios.post(USER_URL, data)
             .then(res => {
-                console.log(res);
-                auth.login({user: res.data, token: res.headers['x-auth-token']});
+                // auth.login({user: res.data, token: res.headers['x-auth-token']});
+                localStorage.setItem('token', res.headers['x-auth-token']);
+                history.push(from);
             }).catch(err => {
+                console.log(err);
                 setSignUpMessage(err.response.data.error);
             })
     }

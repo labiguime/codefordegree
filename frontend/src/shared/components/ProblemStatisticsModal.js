@@ -46,25 +46,7 @@ export default function ProblemStatisticsModal(props) {
 	useEffect(() => {
         const token = localStorage.getItem('token');
         try {
-            const getTotalStudents = async () => {
-				try {
-					const res = await axios({
-	                    url: COURSE_URL+"/"+problemInfo.course_id+"/problems/"+problemInfo._id+"/submissions?latest=true",
-	                    method: "get",
-	                    headers: {
-	                        "x-auth-token": token
-	                    }
-	                });
-					const data = res.data;
-					const total = data.length;
-					setTotalStudents(total);
-					console.log(total);
-				} catch (err) {
-		            console.log(err.message);
-		        }
-            }
-
-			const getTotalSubmissions = async () => {
+            const fetchData = async () => {
 				try {
 					const res = await axios({
 	                    url: COURSE_URL+"/"+problemInfo.course_id+"/problems/"+problemInfo._id+"/submissions",
@@ -73,31 +55,27 @@ export default function ProblemStatisticsModal(props) {
 	                        "x-auth-token": token
 	                    }
 	                });
-					const total = res.data.length;
-					setTotalSubmissions(total);
+					const totalSubmissions = res.data;
+					console.log(totalSubmissions);
+					let totalStudentsHaveAttempt = 0;
+					let totalPassed = 0;
+					const uniqueUser = {};
+					totalSubmissions.forEach(sub => {
+						if(!uniqueUser[sub.user_id]){
+							totalStudentsHaveAttempt++;
+							uniqueUser[sub.user_id] = true
+						}
+						if(sub.passed)
+							totalPassed++;
+					});
+					setTotalStudents(totalStudentsHaveAttempt);
+					setTotalSubmissions(totalSubmissions.length);
+					setTotalPassed(totalPassed);
 				} catch (err) {
 		            console.log(err.message);
 		        }
             }
-
-			const getNumberOfPassed = async () => {
-				try {
-					const res = await axios({
-	                    url: COURSE_URL+"/"+problemInfo.course_id+"/problems/"+problemInfo._id+"/submissions?passed=true",
-	                    method: "get",
-	                    headers: {
-	                        "x-auth-token": token
-	                    }
-	                });
-					const total = res.data.length;
-					setTotalPassed(total);
-				} catch (err) {
-		            console.log(err.message);
-		        }
-            }
-            getTotalStudents();
-			getTotalSubmissions();
-			getNumberOfPassed();
+            fetchData();
         }
         catch (err) {
             console.log(err.message);
@@ -106,6 +84,8 @@ export default function ProblemStatisticsModal(props) {
 	const fValue = (totalStudents-totalPassed);
 	const pieChartData = [{entry: 'Passed', value: totalPassed}, {entry: 'Failed', value: fValue}];
 	const graphData = [{state: 'Test', attempted: totalSubmissions, passed: totalPassed}];
+	console.log(pieChartData);
+	console.log(graphData);
 	return (
 		<div>
 		<Grid container alignItems="center" justify="center" direction="row">
@@ -113,7 +93,7 @@ export default function ProblemStatisticsModal(props) {
 				<Card className={classes.cardStyle}>
 			  		<CardContent>
 				  		<Grid container alignItems="center" justify="center" direction="row">
-					  		<Grid item xs={6}>
+					  		<Grid item xs={12}>
 								<Chart
 								  width={275}
 								  height={275}
@@ -122,20 +102,19 @@ export default function ProblemStatisticsModal(props) {
 				  					<PieSeries
 										valueField="value"
 										argumentField="entry"
-										labelField="entry"
 				  					/>
-									<Legend
-									position='left' />
+									<Legend position='left' />
 									<Animation />
 								</Chart>
 							</Grid>
-							<Grid item xs={6}>
+							<Grid item xs={12}>
 								<Grid container align="center" justify="center" direction="column">
-									<Typography>
-										Class average:
-									</Typography>
 									<Typography className={classes.typographyStyle}>
 										{(totalStudents == 0) ? 0 : (totalPassed/totalStudents)*100}%
+									</Typography>
+
+									<Typography>
+										Class average:
 									</Typography>
 								</Grid>
 							</Grid>
@@ -147,7 +126,7 @@ export default function ProblemStatisticsModal(props) {
 				<Card className={classes.cardStyle}>
 					<CardContent>
 						<Grid container alignItems="center" justify="center" direction="row">
-							<Grid item xs={6}>
+							<Grid item xs={12}>
 								<Chart
 						          data={graphData}
 								  width={275}
@@ -173,22 +152,22 @@ export default function ProblemStatisticsModal(props) {
 					          		<Stack />
 					        	</Chart>
 							</Grid>
-							<Grid item xs={6}>
-								<Grid container alignItems="center" justify="center" direction="column" spacing={2}>
+							<Grid item xs={12}>
+								<Grid container alignItems="center" justify="center" spacing={2}>
 									<Grid item xs={6}>
 										<Typography className={classes.typographyStyle} align="center">
-											{(totalStudents == 0) ? 0 : (totalSubmissions/totalStudents)}
+											{(totalStudents == 0) ? 0 : (totalSubmissions/totalStudents).toPrecision(3)}
 										</Typography>
-										<Typography variant="h7">
+										<Typography align="center">
 											Attempts per student
 										</Typography>
 									</Grid>
 									<Grid item xs={6}>
 										<Typography className={classes.typographyStyle} align="center">
-											{(totalSubmissions == 0) ? 0 : (totalPassed/totalSubmissions)*100}%
+											{(totalSubmissions == 0) ? 0 : ((totalPassed/totalSubmissions)*100).toPrecision(3)}%
 										</Typography>
-										<Typography variant="h7">
-										Success rate
+										<Typography align="center">
+										Submission success rate
 										</Typography>
 									</Grid>
 								</Grid>
@@ -206,7 +185,7 @@ export default function ProblemStatisticsModal(props) {
 					{totalStudents}
 				</Typography>
 				<Typography align='center'>
-				student(s) have made at least one submission
+				Student(s) attempted 
 				</Typography>
 
 			</Grid>
@@ -217,7 +196,7 @@ export default function ProblemStatisticsModal(props) {
 					{totalPassed}
 				</Typography>
 				<Typography align='center'>
-				student(s) have completed this problem
+				Student(s) completed this problem
 				</Typography>
 			</Grid>
 			<Grid item xs={4}>
@@ -227,7 +206,7 @@ export default function ProblemStatisticsModal(props) {
 					{totalSubmissions}
 				</Typography>
 				<Typography align='center'>
-				completion attemps have been made
+				Total attempts
 				</Typography>
 			</Grid>
 		</Grid>
