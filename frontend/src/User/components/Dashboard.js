@@ -19,7 +19,7 @@ export default function Dashboard(props){
 
   const auth = useContext(AuthContext);
   const pageTitle = props.title;
-
+  const {content} = props;
   const sections = [
     {title: 'Profile', icon: <AccountBoxIcon />, link:'/profile'},
     {title: 'Courses', icon: <SchoolIcon />, link:'/dashboard'},
@@ -29,7 +29,7 @@ export default function Dashboard(props){
   return (
     <React.Fragment>
       <CssBaseline />
-      <SideBar title={pageTitle}>
+      <SideBar title={pageTitle} content={content}>
         {sections.map((section, index) => (
             <ListItem selected={section.title == pageTitle} key={index} component={Link} to={section.link}>
               <ListItemIcon>
