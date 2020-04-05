@@ -227,8 +227,7 @@ export default function Course(props) {
                         "x-auth-token": token
                     }
                 });
-                setCourse(res.data);
-                setAdmin(res.data.admin_id);
+                
                 const problemsData = await axios({
                     url: 'http://localhost:5000/api/courses/'+CourseId+'/problems?testcases=true',
                     method: "get",
@@ -237,7 +236,6 @@ export default function Course(props) {
                     }
                 });
                 const myProblems = problemsData.data;
-                setAllProblems(myProblems);
                 const userData = await axios({
                   url: 'http://localhost:5000/api/user/me',
                   method: 'get',
@@ -245,6 +243,9 @@ export default function Course(props) {
                         "x-auth-token": token
                   }
                 });
+                setAllProblems(myProblems);
+                setCourse(res.data);
+                setAdmin(res.data.admin_id);
                 setUser(userData.data);
             }
             fetchData();
