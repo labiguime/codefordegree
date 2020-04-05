@@ -152,7 +152,7 @@ export default function Course(props) {
           headers: {
             "x-auth-token": token
           }
-        })
+        });
         const newTestcases = res.data;
         newProblem.testcases = newTestcases;
         setAllProblems([...allProblems, newProblem]);
