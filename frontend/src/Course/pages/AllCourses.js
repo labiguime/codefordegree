@@ -112,7 +112,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses/enrolled',
+                url: `${COURSE_URL}/enrolled`,
                 headers: {
                     "x-auth-token": token
                 }
@@ -129,7 +129,7 @@ export default function AllCourses(props){
        const token = localStorage.getItem('token');
        try {
            const result = await axios({
-               url: 'http://localhost:5000/api/courses',
+               url: COURSE_URL,
                headers: {
                    "x-auth-token": token
                }
@@ -146,7 +146,7 @@ export default function AllCourses(props){
        const token = localStorage.getItem('token');
        try {
            const result = await axios({
-               url: 'http://localhost:5000/api/courses/all',
+               url: `${COURSE_URL}/all`,
                headers: {
                    "x-auth-token": token
                }
@@ -163,7 +163,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses',
+                url: COURSE_URL,
                 method: "post",
                 data: data,
                 headers: {
@@ -184,7 +184,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses/' + updatedCourse._id,
+                url: `${COURSE_URL}/${updatedCourse._id}`,
                 method: "put",
                 data: updatedCourse,
                 headers: {
@@ -211,7 +211,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses/' + id,
+                url: `${COURSE_URL}/${id}`,
                 method: "delete",
                 headers: {
                     "x-auth-token": token
@@ -241,7 +241,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses/join/'+c,
+                url: `${COURSE_URL}/join/${c}`,
                 method: "post",
                 data: {userId: auth.userInfo._id},
                 headers: {
@@ -260,7 +260,7 @@ export default function AllCourses(props){
         const token = localStorage.getItem('token');
         try {
             const result = await axios({
-                url: 'http://localhost:5000/api/courses/leave/' + id,
+                url: `${COURSE_URL}/leave/${id}`,
                 method: "delete",
                 data: {userId: auth.userInfo._id},
                 headers: {
