@@ -103,13 +103,12 @@ export default function Course(props) {
     const modalStyle = getModalStyle();
     const [modalState, setModalState] = useState({});
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      // setOpen(true);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
     }
 
     const handleOpenModalStats = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      // setOpen(true);
+        console.log(defaultValueMap);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpenStats(true);
     }
@@ -282,7 +281,9 @@ export default function Course(props) {
             <Modal onClose={handleCloseModal} open={openStats}>
                 <div style={modalStyle} className={classes.modalBox}>
                   <h1 className={classes.modalTitle}> {modalState.title}</h1>
-                   <ProblemStatisticsModal/>
+                   <ProblemStatisticsModal
+                    defaultValueMap={modalState.defaultValueMap}
+                   />
                 </div>
             </Modal>
             <Container>
@@ -380,9 +381,9 @@ export default function Course(props) {
                                      size="small"
                                      color="primary"
                                      onClick={() => handleOpenModalStats(
-                                                                   "Edit problem",
-                                                                   "Save changes",
-                                                                   {},
+                                                                   "Problem statistics",
+                                                                   "",
+                                                                   data,
                                                                    (()=>{}))}
                                  >
                                      <InfoIcon />
