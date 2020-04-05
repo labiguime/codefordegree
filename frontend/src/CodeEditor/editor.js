@@ -26,7 +26,7 @@ import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
-import {languageMap, languagePlaceHolder} from '../shared/constants';
+import {languageMap, languagePlaceHolder, COURSE_URL} from '../shared/constants';
 
 function ExpansibleRunCodeResult(props){
     const {compile_error, runtime_error, wrong_answer, accepted, testcases=[]} = props || {};
@@ -142,6 +142,7 @@ export default function Editor(props) {
     const [consoleExpanded, setConsoleExpanded] = useState(false);
     const [splitSize, setSplitSize] = useState(500);
     const [testcases, setTestcases] = useState([]);
+    const [latestSub, setLatestSub] = useState({});
     const [submissionError, setSubmissionError] = useState({
         compile_error: "",
         runtime_error: "",
@@ -172,33 +173,54 @@ export default function Editor(props) {
 
 
     function onEditorBlur(event, editor) {
-        setEditorState({...editorState, value: editor.getValue()});
+        if(editor)
+            setEditorState({...editorState, value: editor.getValue()});
     }
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        axios({
-            url: `http://localhost:5000/api/courses/${courseId}/problems/${problemId}/testcases`,
-            medthod: "get",
-            headers: {
-                'x-auth-token': token
+        const fetchData = async () => {
+            const token = localStorage.getItem('token');
+            try{
+                let testcases = await axios({
+                    url: `${COURSE_URL}/${courseId}/problems/${problemId}/testcases`,
+                    medthod: "get",
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                let latestSub = await axios({
+                    url: `${COURSE_URL}/${courseId}/problems/${problemId}/submissions?latest=true`,
+                    method: "get",
+                    headers: {
+                        'x-auth-token': token
+                    }
+                });
+                latestSub = latestSub.data[0];
+                setTestcases(testcases.data);
+                if(latestSub){
+                    setLatestSub(latestSub);
+                    setEditorState({...editorState, value: latestSub.source_code, mode: languageMap[latestSub.language.id]});
+                }
+            }catch(error){
+                console.log(error);
             }
-        }).then(res => {
-            setTestcases(res.data);
-        }).catch(error => {
-            console.log(error);
-        })
+        }
+        fetchData();
+        
     }, [])
-
     function handleSplitSizeChange(size){
         setSplitSize(size);
     }
 
     function handleSubmitCode(){
         const token = localStorage.getItem('token');
+        if(latestSub.passed){
+            alert("You already passed this problem");
+            return;
+        }
         setSubmitting(true);
         axios({
-            url: `http://localhost:5000/api/courses/${courseId}/problems/${problemId}/submissions`,
+            url: `${COURSE_URL}/${courseId}/problems/${problemId}/submissions`,
             method: "post",
             headers: {
                 'x-auth-token': token
@@ -221,10 +243,12 @@ export default function Editor(props) {
                     return {...testcase, result, stdout};
                 }
             })
+
             setSubmitting(false);
             setConsoleExpanded(true);
             setTestcases(newTestCasesState);
             setSubmissionError(newSubmissionError);
+            setLatestSub(res.data);
             setIsCodeRunOrSubmitted(true);
         }).catch(error => {
             setSubmissionError(error.response.data);
@@ -238,7 +262,7 @@ export default function Editor(props) {
         const token = localStorage.getItem('token');
         setSubmitting(true);
         axios({
-            url: `http://localhost:5000/api/courses/${courseId}/problems/${problemId}/submissions/test`,
+            url: `${COURSE_URL}/${courseId}/problems/${problemId}/submissions/test`,
             method: "post",
             headers: {
                 'x-auth-token': token

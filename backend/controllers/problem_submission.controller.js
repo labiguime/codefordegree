@@ -37,8 +37,23 @@ module.exports = {
     getProblemSubmissions: async (req, res, next) => {
         const {problemId} = res.locals;
         const userId = req.user_id;
+        const {passed, latest} = req.query;
+        let filter = {
+            problem_id: problemId,
+            user_id: userId
+        };
+        let sort={};
+        if(latest != undefined){
+            sort.created_at = -1;
+        }
+        if(passed != undefined){
+            filter.passed = passed;
+        }
         try{
-            const submissions = await ProblemSubmission.find({problem_id: problemId, user_id: userId});
+            let submissions = await ProblemSubmission.find(filter,null, {sort: {...sort}});
+            if(latest){
+                submissions = submissions.slice(0, 1);
+            }
             return res.status(200).json(submissions);
         }catch(e){
             console.log(e);
@@ -53,6 +68,11 @@ module.exports = {
     createProblemSubmission: async (req, res, next) => {
         const {courseId, problemId} = res.locals;
         const userId = req.user_id;
+        const passedSubmission = await ProblemSubmission.
+                                            find({problem_id: problemId, passed: true});
+        if(passedSubmission.length > 0){
+            return res.status(400).json({error: "Cannot submit code for a passed problem"});
+        }
         const {source_code, language_id, created_at = new Date()} = req.body;
         if(!language_id){
             return res.status(404).json({error: "Submission needs a language_id value"})
@@ -62,9 +82,11 @@ module.exports = {
             return res.status(422).json({error: `Language with id ${language_id} doesn't exist`});
         let problem;
         try{
-            problem = await Problem.findById(problemId);
+            problem = await Problem.findById(problemId).populate('course_id');
             if(!problem)
                 return res.status(404).json({error: "Problem not found"});
+            if(problem.course_id.admin_id == userId)
+                return res.status(400).json({error: "Admin is not allower to submit code for this problem"});
             if(new Date(created_at) - new Date(problem.created_at) > 0)
                 return res.status(400).json({error: "Submission is not accepted because of overdue"});
         }catch(e){
@@ -186,6 +208,7 @@ module.exports = {
                     problemSub.status = statusMap[statusId.WRONG_ANSWER];
                 }else{
                     problemSub.status = statusMap[statusId.ACCEPTED];
+                    problemSub.passed = true;
                 }
                 problemSub.save(err => {
                     if(err){
@@ -303,6 +326,6 @@ module.exports = {
                 
             }))
 
-        }, testcases.length * 50);
+        }, 1000);
     }
 }

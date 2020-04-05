@@ -35,14 +35,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function TabWrapper(props) {
-    const classes = useStyles();
-    const theme = useTheme();
-    const [value, setValue] = useState(0);
-    const {tabHeaders, tabBodies} = props;
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
-    };
-
+  const classes = useStyles();
+  const theme = useTheme();
+  const [value, setValue] = useState(0);
+  const {tabHeaders, tabBodies} = props;
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
     <div className={classes.root}>

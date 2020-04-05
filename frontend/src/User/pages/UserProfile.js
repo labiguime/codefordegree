@@ -2,15 +2,14 @@ import React, {useState, useEffect} from 'react'
 import Grid from '@material-ui/core/Grid';
 import axios from 'axios';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 import Modal from '@material-ui/core/Modal';
 import ProfileForm from '../../shared/components/ProfileForm';
 import Dashboard from '../components/Dashboard';
+import {USER_URL} from '../../shared/constants';
  
 // import UserProfile from 'react-user-profile'
 function getModalStyle() {
@@ -70,7 +69,7 @@ export default function UserProfile(){
     useEffect(() => {
         const token = localStorage.getItem('token');
         axios({
-          url: 'http://localhost:5000/api/user/me',
+          url: `${USER_URL}/me`,
           headers: {
             "x-auth-token": token
           }
@@ -86,7 +85,7 @@ export default function UserProfile(){
     let handleEditProfile = (updatedProfile) => {
         const token = localStorage.getItem('token');
         axios({
-        url: 'http://localhost:5000/api/user/me',
+          url: `${USER_URL}/me`,
           method: "put",
           data: updatedProfile,
           headers: {

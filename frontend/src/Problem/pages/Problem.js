@@ -3,8 +3,7 @@ import axios from 'axios';
 import Editor from '../../CodeEditor/editor'
 import SplitPane, {Pane}from 'react-split-pane';
 import Moment from 'react-moment';
-import moment from 'moment';
-import TabWrapper from '../../shared/components/TabWrapper';
+import {COURSE_URL} from '../../shared/constants';
 import './problem.css';
 
 function ProblemDescription(props){
@@ -28,7 +27,7 @@ export default function Problem(props) {
         try {
             const fetchProblem = async () => {
                 const res = await axios({
-                    url: 'http://localhost:5000/api/courses/'+CourseId+'/problems/'+ProblemId,
+                    url: `${COURSE_URL}/${CourseId}/problems/${ProblemId}`,
                     method: "get",
                     headers: {
                         "x-auth-token": token

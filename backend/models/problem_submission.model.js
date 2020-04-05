@@ -51,6 +51,10 @@ const problemSubmissionSchema = new Schema({
         result: Boolean, //Passed(True) or Failed(False),
         stdout: String
     }],
+    passed: {
+        type: Boolean,
+        default: false
+    },
     status: statusSchema
 });
 
