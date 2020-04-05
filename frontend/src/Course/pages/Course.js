@@ -18,11 +18,13 @@ import AddIcon from '@material-ui/icons/Add';
 import Container from '@material-ui/core/Container';
 import Modal from '@material-ui/core/Modal';
 import ProblemForm from '../../shared/components/ProblemForm';
+import ProblemStatisticsModal from '../../shared/components/ProblemStatisticsModal';
 import Moment from 'react-moment';
 import {Link} from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import InfoIcon from '@material-ui/icons/Info';
 import Dashboard from '../../User/components/Dashboard';
 import axios from 'axios';
 import moment from 'moment';
@@ -97,12 +99,19 @@ export default function Course(props) {
     const {CourseId} = props.match.params;
 
     const [open, setOpen] = useState(false);
+    const [openStats, setOpenStats] = useState(false);
     const modalStyle = getModalStyle();
     const [modalState, setModalState] = useState({});
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
       // setOpen(true);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
+    }
+
+    const handleOpenModalStats = (title, buttonTitle, defaultValueMap, onSubmit) => {
+      // setOpen(true);
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setOpenStats(true);
     }
 
     const fetchProblems = async () => {
@@ -133,6 +142,7 @@ export default function Course(props) {
       setModalState({});
       fetchProblems();
       setOpen(false);
+      setOpenStats(false);
     }
 
     let handleCreateProblem = async (data) => {
@@ -228,7 +238,7 @@ export default function Course(props) {
                         "x-auth-token": token
                     }
                 });
-                
+
                 const problemsData = await axios({
                     url: `${COURSE_URL}/${CourseId}/problems?testcases=true`,
                     method: "get",
@@ -267,6 +277,12 @@ export default function Course(props) {
                       defaultValueMap={modalState.defaultValueMap}
                       onSubmit={modalState.onSubmit}
                    />
+                </div>
+            </Modal>
+            <Modal onClose={handleCloseModal} open={openStats}>
+                <div style={modalStyle} className={classes.modalBox}>
+                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
+                   <ProblemStatisticsModal/>
                 </div>
             </Modal>
             <Container>
@@ -360,6 +376,18 @@ export default function Course(props) {
                                      <DeleteIcon />
                                  </IconButton>
 
+                                 <IconButton
+                                     size="small"
+                                     color="primary"
+                                     onClick={() => handleOpenModalStats(
+                                                                   "Edit problem",
+                                                                   "Save changes",
+                                                                   {},
+                                                                   (()=>{}))}
+                                 >
+                                     <InfoIcon />
+                                 </IconButton>
+
                              </TableCell>
                              </TableRow>
                          ))}
@@ -372,6 +400,6 @@ export default function Course(props) {
     )
 
     return (
-        <Dashboard title={"Course Page"} content={content}/> 
+        <Dashboard title={"Course Page"} content={content}/>
     );
 }
