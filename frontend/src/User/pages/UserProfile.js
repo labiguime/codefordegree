@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import Modal from '@material-ui/core/Modal';
 import ProfileForm from '../../shared/components/ProfileForm';
-
+import Dashboard from '../components/Dashboard';
  
 // import UserProfile from 'react-user-profile'
 function getModalStyle() {
@@ -102,7 +102,8 @@ export default function UserProfile(){
         })
     } 
 
-    return (<React.Fragment>
+    let content = (
+        <React.Fragment>
         <Container className={classes.cardGrid} maxWidth="md">
         <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
@@ -146,6 +147,9 @@ export default function UserProfile(){
           </Button>
         </Container>
     </React.Fragment>
+    )
+    return (
+      <Dashboard content={content} title="Profile"/>
     )
 }
 

@@ -11,7 +11,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import Moment from 'react-moment';
-const STATISTIC_API = "http://localhost:5000/api/user/statistic"
+import Dashboard from '../../User/components/Dashboard'
+
+const statisticUrl = (process.env.REACT_APP_BASE_URL || "http://localhost:5000/") + "api/user/statistic";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -69,7 +71,7 @@ export default function Statistic(){
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        axios.get(STATISTIC_API, {
+        axios.get(statisticUrl, {
             headers: {
                 "x-auth-token": token
             }
@@ -131,8 +133,9 @@ export default function Statistic(){
             statusTextColor
         }
     })
-    return (<React.Fragment >
-            <div className={classes.root}>
+    let content = (
+        <div className={classes.root}>
+            <div>
                 <Grid container >
                     <Grid item xs={6}>
                         <Doughnut width={500} 
@@ -197,6 +200,11 @@ export default function Statistic(){
                     </Table>
                 </TableContainer> 
             </div>
+        </div>
+    )
+    return (<React.Fragment >
+            <Dashboard title='Statistic' content={content}/>
+            
         </React.Fragment>
     )
 }

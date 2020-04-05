@@ -23,6 +23,7 @@ import {Link} from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import Dashboard from '../../User/components/Dashboard';
 import axios from 'axios';
 import moment from 'moment'
 
@@ -254,7 +255,7 @@ export default function Course(props) {
     }, []);
 
     allProblems.sort((problem1, problem2) => new Date(problem2.deadline) - new Date(problem1.deadline))
-    return (
+    let content = (
         <div>
             <Modal onClose={handleCloseModal} open={open}>
                 <div style={modalStyle} className={classes.modalBox}>
@@ -366,5 +367,9 @@ export default function Course(props) {
 
              </Container>
       </div>
+    )
+
+    return (
+        <Dashboard title={"Course Page"} content={content}/> 
     );
 }
