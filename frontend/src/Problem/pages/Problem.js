@@ -4,6 +4,7 @@ import Editor from '../../CodeEditor/editor'
 import SplitPane, {Pane}from 'react-split-pane';
 import Moment from 'react-moment';
 import {COURSE_URL} from '../../shared/constants';
+import {AuthContext} from '../../shared/context/auth-context';
 import './problem.css';
 
 function ProblemDescription(props){
@@ -20,7 +21,9 @@ function ProblemDescription(props){
 export default function Problem(props) {
     const {CourseId, ProblemId} = props.match.params;
     
-    const [problem, setProblem] = useState([]);
+    const [problem, setProblem] = useState({});
+    const [isAdmin, setIsAdmin] = useState(false);
+    const auth = useContext(AuthContext);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -33,6 +36,9 @@ export default function Problem(props) {
                         "x-auth-token": token
                     }
                 });
+                const problem = res.data;
+                if(problem && problem.course_id && problem.course_id.admin_id == auth.userInfo._id)
+                    setIsAdmin(true);
                 setProblem(res.data);
             }
             fetchProblem();
@@ -41,6 +47,7 @@ export default function Problem(props) {
             console.log(err.message);
         }
     }, []);
+    
     return (
         <SplitPane 
             split="vertical"
@@ -52,7 +59,7 @@ export default function Problem(props) {
             <Pane>
                 <ProblemDescription problem={problem}/>
             </Pane>
-            <Editor submitDeadline={problem.deadline} courseId={CourseId} problemId={ProblemId}/>
+            <Editor isAdmin={isAdmin} submitDeadline={problem.deadline} courseId={CourseId} problemId={ProblemId}/>
         </SplitPane>
         
     );
