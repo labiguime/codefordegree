@@ -25,6 +25,8 @@ import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import InfoIcon from '@material-ui/icons/Info';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import Dashboard from '../../User/components/Dashboard';
 import axios from 'axios';
 import moment from 'moment';
@@ -96,6 +98,7 @@ export default function Course(props) {
     const [admin, setAdmin] = useState({});
     const [user, setUser] = useState({});
     const [allProblems, setAllProblems] = useState([]);
+    const [problemPassed, setProblemPassed] = useState([]);
     const {CourseId} = props.match.params;
 
     const [open, setOpen] = useState(false);
@@ -253,6 +256,28 @@ export default function Course(props) {
                         "x-auth-token": token
                   }
                 });
+                if(res.data.admin_id._id != userData.data._id) {
+                    let newProblemPassed = [];
+                    myProblems.forEach((problem)=> {
+                        let thisProblem = {id: problem._id};
+                        axios({
+                            url: `${COURSE_URL}/${CourseId}/problems/${problem._id}/submissions?passed=true`,
+                            method: "get",
+                            headers: {
+                                "x-auth-token": token
+                            }
+                        }).then(res => {
+                            if(res.data.length) {
+                                thisProblem = {...thisProblem, passed: true};
+                            } else {
+                                thisProblem = {...thisProblem, passed: false};
+                            }
+                            setProblemPassed([...problemPassed, thisProblem]);
+                        }).catch(err => {
+                          console.log(err);
+                      });
+                    });
+                }
                 setAllProblems(myProblems);
                 setCourse(res.data);
                 setAdmin(res.data.admin_id);
@@ -334,7 +359,7 @@ export default function Course(props) {
                          <TableHead>
                          <TableRow>
                              <TableCell>Name</TableCell>
-                             <TableCell>Total marks</TableCell>
+                             {(user._id == admin._id) ? null : <TableCell>Passed</TableCell>}
                              <TableCell align="left">Deadline</TableCell>
                              <TableCell align="left">Action</TableCell>
                          </TableRow>
@@ -344,7 +369,7 @@ export default function Course(props) {
                              <TableRow key={index}>
                              <TableCell>
                              <Button size="small" color="primary" color="inherit"><Link to={ "/problem/"+CourseId+"/"+data._id  }>{data.name}</Link></Button></TableCell>
-                             <TableCell>{data.mark}</TableCell>
+                             {(user._id == admin._id) ? null : ((problemPassed.find((e)=> (e.id == data._id && e.passed == true))) ? <TableCell> <CheckIcon /> </TableCell> : <TableCell> <ClearIcon /> </TableCell>)}
                              <TableCell component="th" scope="row" align="left">
                                  <Moment format="HH:mm on MMM D, YYYY ">{data.deadline}</Moment> (<Moment fromNow style={{color: "blue"}}>{data.deadline}</Moment>)
                              </TableCell>
