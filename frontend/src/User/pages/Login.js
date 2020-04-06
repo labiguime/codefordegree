@@ -7,7 +7,6 @@ import {useHistory, useLocation, withRouter} from 'react-router';
 export default function Login(props){
     const [loginMessage, setLoginMessage] = useState("");
     const {history, location} = props;
-    console.log(location);
     const {from} = location.state || {from: {pathname: "/dashboard"}};
     const auth = useContext(AuthContext);
     let onSubmit = (data) => {
