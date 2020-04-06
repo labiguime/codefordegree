@@ -47,7 +47,7 @@ function ProblemDescription(props){
             Deadline : <Moment format="HH:mm on MMM D, YYYY ">{problem.deadline}</Moment>
           </Typography>
           <Typography variant="body2" component="p">
-            Description: {problem.description}
+            Description: { (problem.description) ? problem.description.split("\n").map(e => <p>{e}</p>) : ""}
             <br /><br />
             Mark : {problem.mark}
             <br />
