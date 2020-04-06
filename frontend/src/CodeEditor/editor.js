@@ -156,7 +156,7 @@ export default function Editor(props) {
         value: languagePlaceHolder["javascript"]
     });
     const [submitting, setSubmitting] = useState(false);
-    const {courseId, problemId, submitDeadline} = props;
+    const {courseId, problemId, submitDeadline, isAdmin} = props;
 
     function handleEditorStateChange(newState){
         if(newState.mode){
@@ -251,6 +251,8 @@ export default function Editor(props) {
             setLatestSub(res.data);
             setIsCodeRunOrSubmitted(true);
         }).catch(error => {
+            let newTestcases = testcases.map(e => {return {...e, stdout: "", result: false}});
+            setSubmissionError(error.response.data);
             setSubmissionError(error.response.data);
             setConsoleExpanded(true);
             setSubmitting(false);
@@ -291,7 +293,9 @@ export default function Editor(props) {
             setSubmissionError(newSubmissionError);
             setIsCodeRunOrSubmitted(true);
         }).catch(error => {
-            setSubmissionError(error.response.data)
+            let newTestcases = testcases.map(e => {return {...e, stdout: "", result: false}});
+            setSubmissionError(error.response.data);
+            setTestcases(newTestcases);
             setConsoleExpanded(true);
             setSubmitting(false);
             setIsCodeRunOrSubmitted(true);
@@ -370,8 +374,9 @@ export default function Editor(props) {
                         </Button>
                     </div>
                     <div>
-                        <Button variant="contained" disabled={new Date() - new Date(submitDeadline) >= 0}
-                        color="primary" onClick={handleSubmitCode}>
+                        <Button variant="contained" 
+                            disabled={new Date() - new Date(submitDeadline) >= 0 || isAdmin}
+                            color="primary" onClick={handleSubmitCode}>
                             Submit
                         </Button>
                     </div>
