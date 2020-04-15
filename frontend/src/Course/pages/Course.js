@@ -119,7 +119,7 @@ export default function Course(props) {
     const fetchProblems = async () => {
         const token = localStorage.getItem('token');
         const problemsData = await axios({
-            url: `${COURSE_URL}/${CourseId}/problems`,
+            url: `${COURSE_URL}/${CourseId}/problems?testcases=true`,
             method: "get",
             headers: {
                 "x-auth-token": token
@@ -133,7 +133,7 @@ export default function Course(props) {
       // setOpen(true);
       let dl = defaultValueMap.deadline;
       if (dl) {
-          const date = moment(dl, "YYYY-MM-DD");
+          const date = moment(dl);
           defaultValueMap.deadline = date.format('MM-DD-YYYY');
       }
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
@@ -291,6 +291,7 @@ export default function Course(props) {
     }, []);
 
     allProblems.sort((problem1, problem2) => new Date(problem2.deadline) - new Date(problem1.deadline))
+    console.log(allProblems);
     let content = (
         <div>
             <Modal onClose={handleCloseModal} open={open}>
