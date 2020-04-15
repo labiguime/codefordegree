@@ -93,14 +93,13 @@ export default function AllCourses(props){
     const classes = useStyles();
     const modalStyle = getModalStyle();
 
-    const [open, setOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalAdminModal, setIsModalAdminModal] = useState(false);
     const [modalState, setModalState] = useState({});
     const [allCourses, setAllCourses] = useState([]);
     const [coursesAvailable, setCoursesAvailable] = useState([]);
     const [coursesEnrolled, setCoursesEnrolled] = useState([]);
-    const [course, setCourse] = useState([]);
+    const [modalError, setModalError] = useState();
 
     useEffect(() => {
        retrieveAllCourses();
@@ -174,9 +173,11 @@ export default function AllCourses(props){
             setAllCourses([...allCourses, createdCourse]);
             setCoursesAvailable([...coursesAvailable, createdCourse]);
             setIsModalOpen(false);
+            setModalError("");
         } catch (e) {
-            console.log(e);
-            setIsModalOpen(false);
+            console.log(e.response.data.error);
+            //setIsModalOpen(false);
+            setModalError(e.response.data.error);
         }
     };
 
@@ -201,9 +202,11 @@ export default function AllCourses(props){
 
             setAllCourses(updatedAllCoursesList);
             setIsModalOpen(false);
+            setModalError("");
         } catch (e) {
             console.log(e);
-            setIsModalOpen(false);
+            //setIsModalOpen(false);
+            setModalError(e.response.data.error);
         }
     };
 
@@ -230,10 +233,9 @@ export default function AllCourses(props){
 
             setCoursesAvailable(updatedAvailableCoursesList);
             setAllCourses(updatedAllCoursesList);
-            setIsModalOpen(false);
         } catch (e) {
             console.log(e);
-            setIsModalOpen(false);
+            alert(e.response.data.error);
         }
     };
 
@@ -250,9 +252,11 @@ export default function AllCourses(props){
             });
             await retrieveEnrolledCourses();
             setIsModalOpen(false);
+            setModalError("");
         } catch (e) {
             console.log(e);
-            setIsModalOpen(false);
+            //setIsModalOpen(false);
+            setModalError(e.response.data.error);
         }
     };
 
@@ -268,10 +272,9 @@ export default function AllCourses(props){
                 }
             });
             await retrieveEnrolledCourses();
-            setIsModalOpen(false);
         } catch (e) {
             console.log(e);
-            setIsModalOpen(false);
+            alert(e.response.data.error);
         }
     };
 
@@ -283,6 +286,7 @@ export default function AllCourses(props){
 
     const handleCloseModal = (isAdminCoursesModal) => {
         setModalState({});
+        setModalError("");
         setIsModalOpen(false);
     }
     let content = (
@@ -296,10 +300,12 @@ export default function AllCourses(props){
                             buttonTitle={modalState.buttonTitle}
                             defaultValueMap={modalState.defaultValueMap}
                             onSubmit={modalState.onSubmit}
+                            submitError={modalError}
                             /> : <EnrollmentModal
                                 buttonTitle={modalState.buttonTitle}
                                 defaultValueMap={modalState.defaultValueMap}
                                 onSubmit={modalState.onSubmit}
+                                submitError={modalError}
                             />
                         }
                     </div>

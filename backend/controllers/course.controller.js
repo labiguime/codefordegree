@@ -49,7 +49,7 @@ module.exports = {
             if(err){
                console.log(err);
                return res.status(400).json({
-                   error: "Cannot create course",
+                   error: "Cannot create course. A course with same name and term already created by you",
                 });
             }
             return res.status(201).json(newCourse);
