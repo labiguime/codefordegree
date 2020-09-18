@@ -18,11 +18,15 @@ import AddIcon from '@material-ui/icons/Add';
 import Container from '@material-ui/core/Container';
 import Modal from '@material-ui/core/Modal';
 import ProblemForm from '../../shared/components/ProblemForm';
+import ProblemStatisticsModal from '../../shared/components/ProblemStatisticsModal';
 import Moment from 'react-moment';
 import {Link} from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import InfoIcon from '@material-ui/icons/Info';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import Dashboard from '../../User/components/Dashboard';
 import axios from 'axios';
 import moment from 'moment';
@@ -94,21 +98,28 @@ export default function Course(props) {
     const [admin, setAdmin] = useState({});
     const [user, setUser] = useState({});
     const [allProblems, setAllProblems] = useState([]);
+    const [problemPassed, setProblemPassed] = useState([]);
     const {CourseId} = props.match.params;
 
     const [open, setOpen] = useState(false);
+    const [openStats, setOpenStats] = useState(false);
     const modalStyle = getModalStyle();
     const [modalState, setModalState] = useState({});
     const handleOpenModal = (title, buttonTitle, defaultValueMap, onSubmit) => {
-      // setOpen(true);
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
       setOpen(true);
+    }
+
+    const handleOpenModalStats = (title, buttonTitle, defaultValueMap, onSubmit) => {
+        console.log(defaultValueMap);
+      setModalState({title, buttonTitle, defaultValueMap, onSubmit});
+      setOpenStats(true);
     }
 
     const fetchProblems = async () => {
         const token = localStorage.getItem('token');
         const problemsData = await axios({
-            url: `${COURSE_URL}/${CourseId}/problems`,
+            url: `${COURSE_URL}/${CourseId}/problems?testcases=true`,
             method: "get",
             headers: {
                 "x-auth-token": token
@@ -122,7 +133,7 @@ export default function Course(props) {
       // setOpen(true);
       let dl = defaultValueMap.deadline;
       if (dl) {
-          const date = moment(dl, "YYYY-MM-DD");
+          const date = moment(dl);
           defaultValueMap.deadline = date.format('MM-DD-YYYY');
       }
       setModalState({title, buttonTitle, defaultValueMap, onSubmit});
@@ -133,6 +144,7 @@ export default function Course(props) {
       setModalState({});
       fetchProblems();
       setOpen(false);
+      setOpenStats(false);
     }
 
     let handleCreateProblem = async (data) => {
@@ -228,7 +240,7 @@ export default function Course(props) {
                         "x-auth-token": token
                     }
                 });
-                
+
                 const problemsData = await axios({
                     url: `${COURSE_URL}/${CourseId}/problems?testcases=true`,
                     method: "get",
@@ -244,6 +256,28 @@ export default function Course(props) {
                         "x-auth-token": token
                   }
                 });
+                if(res.data.admin_id._id != userData.data._id) {
+                    let newProblemPassed = [];
+                    myProblems.forEach((problem)=> {
+                        let thisProblem = {id: problem._id};
+                        axios({
+                            url: `${COURSE_URL}/${CourseId}/problems/${problem._id}/submissions?passed=true`,
+                            method: "get",
+                            headers: {
+                                "x-auth-token": token
+                            }
+                        }).then(res => {
+                            if(res.data.length) {
+                                thisProblem = {...thisProblem, passed: true};
+                            } else {
+                                thisProblem = {...thisProblem, passed: false};
+                            }
+                            setProblemPassed([...problemPassed, thisProblem]);
+                        }).catch(err => {
+                          console.log(err);
+                      });
+                    });
+                }
                 setAllProblems(myProblems);
                 setCourse(res.data);
                 setAdmin(res.data.admin_id);
@@ -257,6 +291,7 @@ export default function Course(props) {
     }, []);
 
     allProblems.sort((problem1, problem2) => new Date(problem2.deadline) - new Date(problem1.deadline))
+    console.log(allProblems);
     let content = (
         <div>
             <Modal onClose={handleCloseModal} open={open}>
@@ -266,6 +301,14 @@ export default function Course(props) {
                       buttonTitle={modalState.buttonTitle}
                       defaultValueMap={modalState.defaultValueMap}
                       onSubmit={modalState.onSubmit}
+                   />
+                </div>
+            </Modal>
+            <Modal onClose={handleCloseModal} open={openStats}>
+                <div style={modalStyle} className={classes.modalBox}>
+                  <h1 className={classes.modalTitle}> {modalState.title}</h1>
+                   <ProblemStatisticsModal
+                    defaultValueMap={modalState.defaultValueMap}
                    />
                 </div>
             </Modal>
@@ -317,9 +360,8 @@ export default function Course(props) {
                          <TableHead>
                          <TableRow>
                              <TableCell>Name</TableCell>
-                             <TableCell>Total marks</TableCell>
+                             {(user._id == admin._id) ? null : <TableCell>Passed</TableCell>}
                              <TableCell align="left">Deadline</TableCell>
-                             <TableCell align="left">Success ratio</TableCell>
                              <TableCell align="left">Action</TableCell>
                          </TableRow>
                          </TableHead>
@@ -328,11 +370,10 @@ export default function Course(props) {
                              <TableRow key={index}>
                              <TableCell>
                              <Button size="small" color="primary" color="inherit"><Link to={ "/problem/"+CourseId+"/"+data._id  }>{data.name}</Link></Button></TableCell>
-                             <TableCell>{data.mark}</TableCell>
+                             {(user._id == admin._id) ? null : ((problemPassed.find((e)=> (e.id == data._id && e.passed == true))) ? <TableCell> <CheckIcon /> </TableCell> : <TableCell> <ClearIcon /> </TableCell>)}
                              <TableCell component="th" scope="row" align="left">
                                  <Moment format="HH:mm on MMM D, YYYY ">{data.deadline}</Moment> (<Moment fromNow style={{color: "blue"}}>{data.deadline}</Moment>)
                              </TableCell>
-                             <TableCell align="left">0</TableCell>
                              <TableCell>
 
                                  <IconButton size="small"
@@ -360,6 +401,19 @@ export default function Course(props) {
                                      <DeleteIcon />
                                  </IconButton>
 
+                                 <IconButton
+                                     size="small"
+                                     color="primary"
+                                     disabled={user._id != admin._id}
+                                     onClick={() => handleOpenModalStats(
+                                                                   "Problem statistics",
+                                                                   "",
+                                                                   data,
+                                                                   (()=>{}))}
+                                 >
+                                     <InfoIcon />
+                                 </IconButton>
+
                              </TableCell>
                              </TableRow>
                          ))}
@@ -372,6 +426,6 @@ export default function Course(props) {
     )
 
     return (
-        <Dashboard title={"Course Page"} content={content}/> 
+        <Dashboard title={"Course Page"} content={content}/>
     );
 }
